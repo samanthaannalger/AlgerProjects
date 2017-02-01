@@ -1,0 +1,341 @@
+---
+title: "2015 National Honeybee Survey Figures"
+author: "P. Alexander Burnham & Samantha Alger"
+date: "October 10, 2016"
+output:
+  pdf_document:
+    fig_height: 5.5
+    fig_width: 7
+  html_document: default
+---
+
+**Metadata**
+
+**Author:** P. Alexander Burnham & Samantha Alger
+
+**Date:** 13 June 2016
+
+**Data Set:** These data were collected during the 2015 National Honey Bee Survey in Vermont by Samantha Alger and Alex Burnham with all testing is being done at the USDA Bee Research Lab in Beltsville Maryland and UMD.
+
+**Data Source:** 2015 Vermont National Honey Bee Survey
+
+**Funding Source:** United States Department of Agriculture (USDA), APHIS, Bee Informed Partnership 
+
+**Data Collection:** Collection methods are stipulated by the National Honey Bee Survey
+
+**Columns:** (from left to right) Beekeeper last name,each virus has a 3 to 4 letter abbreviation followed by (PA=presence/absence) or (CPB=genome copies per bee) VarroaTHR_PA is binary and consists of presence/absence above the threshold.  
+
+**Rows:** Data points for all columns in order from each collection event
+
+**Missing values:** NA
+
+# 2015 National Honey Bee Survey
+
+**Objective:**
+
+The objective of this survey is to document which bee diseases, parasites, or pests of honey bees are present and/or likely absent in the U.S. Specifically, this survey will attempt to verify the absence of the parasitic mite Tropilaelaps and other exotic threats to honey bee populations (e.g., Apis cerana and Slow Paralysis Virus). To maximize the information gained from this survey effort, collected samples will be analyzed for other honey bee diseases and parasites known to be present in the U.S. This cross-country survey continues to be the most comprehensive honey bee pest and health survey to date, and provides essential disease and pest load base line information. 
+
+**Methods:**
+
+Twenty-four apiaries from 8 participating beekeepers were sampled in 2015. Of the apiaries sampled, 12 were stationary operations (colonies remained in Vermont throughout the year) and 12 were migratory operations (colonies are transported out-of-state for at least part of the year). A composite sample of adult bees was collected from 8 randomly selected colonies from each of 24 apiaries. For each colony, after performing a visual inspection, a frame containing young brood was removed to shake the adult bees into a washtub. Two ¼ cups of bees were collected and placed into a ventilated bee box and a bottle containing alcohol. The frame was then ‘bumped’ to dislodge Varroa and exotic Tropilaelaps mites and/or pests such as small hive beetle.  The ventilated cardboard box was sent to USDA for analysis of viruses. The composite sample from the comb “bump” was filtered and placed in a small alcohol bottle and sent along with the adult bees preserved in alcohol to UMD were they will be analyzed for Nosema spores, mites and other pests. Sampling began when the bees were active in the spring with hive build up, and continued until all apiaries were samples.
+
+**Benefits:**
+
+Honey bee health decline has been documented for years. The known negative honey bee health challenges are attributable to parasites, diseases and environmental toxins. This national honey bee health survey is being conducted to ascertain the scope of additional unidentified parasite, disease and pests that may have a negative impact on honey bee populations in the United States. Results will benefit the U.S. apiculture industry by providing baseline knowledge that can be used to inform and guide research of honey bee diseases and parasites as well as inform management decisions to mitigate bee diseases.  
+
+# Results: 
+
+```{r, echo=FALSE}
+#Preliminaries:
+# Clear memory of characters
+ls()
+rm(list=ls())
+
+# Set Working Directory 
+setwd("~/Desktop/RScripts/NHBS_BurnhamAnalysis_2015")
+
+# read in data
+NHBS_DF <- read.table("NHBS_2015_DataSubset.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
+
+# Call blue color palette for graphics
+library(RColorBrewer)
+library(ggplot2)
+attach(NHBS_DF)
+```
+
+```{r, echo=FALSE}
+# barplot showing mite load for each of 24 anonamous apiaries
+# colors for each apiary in plot
+colors<-colorRampPalette(brewer.pal(9,"Blues"))(24)
+colors<-rev(colors)
+
+yards <- c("A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X")
+
+#OrdVarroa <- sort(x=Varroa100,decreasing = FALSE)
+
+plot2 <- barplot(height=Varroa100,
+                 names.arg=yards,
+                 ylab="Varroa Mites per 100 Bees",
+                 xlab="Apiaries",
+                 ylim=c(0,10),
+                 #main=paste("Mite load by Apiary"),
+                 col.main="black",
+                 font.lab=2,
+                 las=.5,
+                 lwd=2,
+                 col = colors,
+                 border="black",
+                 cex.names=.75,
+                 cex.lab=1.3
+)
+
+abline(a = 3, b = 0, col="red", lwd=3)
+
+
+```
+
+
+
+**Figure 1:** Mite load results for each of 24 apiaries sampled. All honey bee apiaries were positive for Varroa mites with 58% (14 of 24 apiaries) having mite loads above the threshold for safe mite levels, signified by red line (3 mites/100 bees). 
+
+
+
+```{r, echo=FALSE}
+# barplot showing nosema load for each of 24 anonamous apiaries
+# colors for each apiary in plot
+colors<-colorRampPalette(brewer.pal(9,"Blues"))(24)
+colors<-rev(colors)
+
+yards <- c("A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X")
+
+
+plot3 <- barplot(height=NosMil,
+                 names.arg=yards,
+                 ylab="Nosema spores per 100 bees (in millions)",
+                 xlab="Apiaries",
+                 ylim=c(0,1.5),
+                 #main=paste("Nosema load by Apiary"),
+                 col.main="black",
+                 font.lab=2,
+                 las=1,
+                 lwd=2,
+                 col = colors,
+                 border="black",
+                 cex.names=.75,
+                 cex.lab=1.3
+)
+
+abline(a = 1, b = 0, col="red", lwd=3)
+
+```
+
+
+
+**Figure 2:** Nosema Load (million spores/100 bees) for each of 24 apiaries sampled. 14 of the 24 apiaries were positive for Nosema with only one apiary above the threshold for safe Nosema levels, signified by red line (1 million spores/100 bees).
+
+
+```{r, echo=FALSE}
+# Looking at viral prevalence across 7 RNA viruses
+library(scales)
+
+SBPV <- mean(SBPV_PA)
+ABPV <- mean(ABPV_PA)
+IAPV <- mean(IAPV_PA)
+DWV <- mean(DWV_PA)
+LSV2 <- mean(LSV.2_PA) 
+CBPV <- mean(CBPV_PA)
+KBV <- mean(KBV_PA)
+
+Virus <- c("SBPV",	"ABPV",	"IAPV",	"DWV",	"LSV2",	"CBPV", "KBV")
+VirusPrev <- c(SBPV,	ABPV,	IAPV,	DWV,	LSV2,	CBPV, KBV)
+virus_data <- data.frame(Virus, VirusPrev)
+virus_data
+
+# colors for each virus in plot
+colors<-"cadetblue3"
+
+
+# plot in ggplot using minamal theme with some graphical additions
+plot1 <- ggplot(virus_data, aes(x = virus_data$Virus, 
+                                   y = virus_data$VirusPrev, fill=colors)) + geom_bar(stat="identity", position=position_dodge()) + labs(x="Virus", y = "% of Infected Apiaries")
+
+plot1 + theme_minimal(base_size = 17) + coord_cartesian(ylim = c(0, 1)) + scale_fill_manual(values=colors) + theme(legend.position=c(-1, -1)) + scale_y_continuous(labels=percent)
+
+
+```
+
+
+
+**Figure 3:** Apiaries were tested for 7 different RNA viruses. Figure shows the percentage of infected apiaries for RNA viruses: acute bee paralysis virus (ABPV), chronic bee paralysis virus (CBPV), deformed wing virus (DWV), Israeli acute paralysis virus (IAPV), Kashmir bee virus (KBV), Lake Sinai virus (LSV2), sac brood paralysis virus (SBPV). DWV was the most common virus detected (21 apiaries) followed by LSV (8 apiaries), CBPV (6 apiaries), and IAPV (2 apiaries). ABPV, KBV, and SBPV were not detected. Co-infections were common with 10 and 2 apiaries having 2 and 3 viruses detected, respectively. Eight apiaries had only virus detected and only 2 apiaries were negative for all viruses assayed.
+
+
+
+
+```{r, echo=FALSE}
+
+# Create vectors for Migratory, Genome copies and virus type
+MigBinary <- as.character(rep(Migratory,4))
+GenCopies <- c(IAPV_CPB, DWV_CPB, LSV.2_CPB, CBPV_CPB)
+RNA_Vlab <- c(rep("IAPV", 24), rep("DWV", 24), rep("LSV-2", 24), rep("CBPV", 24))
+
+# Create a data frame for it
+VirusDF <- data.frame(RNA_Vlab, MigBinary, GenCopies)
+
+# create presence/abscence vector (binary) for viruses:
+VirusPA <- ifelse(VirusDF$GenCopies > 0, 1, 0)
+
+VirusDF <- data.frame(VirusDF, VirusPA)
+
+library(plyr)
+library(ggplot2)
+library(scales)
+
+VirusSum <- ddply(VirusDF, c("MigBinary", "RNA_Vlab"), summarise, 
+                  n = length(VirusPA),
+                  mean = mean(VirusPA),
+                  sd = sd(VirusPA),
+                  se = sd / sqrt(n))
+
+
+colors <- c("slategray3", "dodgerblue4")
+
+plot1 <- ggplot(VirusSum, aes(x=RNA_Vlab, y=mean, fill=MigBinary)) + geom_bar(stat="identity", position=position_dodge()) + labs(x="Virus", y = "% of Infected Apiaries")
+
+plot1 + theme_minimal(base_size = 17) + coord_cartesian(ylim = c(0, 1)) + scale_fill_manual(values=colors, name="Apiary Type:", labels=c("Stationary", "Migratory")) + theme(legend.position=c(.8, .85)) + scale_y_continuous(labels=percent)
+
+
+```
+
+
+
+**Figure 4:** Percentage of infected apiaries by type (migratory vs. stationary). Although not statistically significant, trends show higher virus prevalence for migratory apiaries for chronic bee paralysis virus (CBPV), deformed wing virus (DWV), and Lake Sinai virus (LSV2). Israeli acute paralysis virus (IAPV) was detected in one stationary and one migratory apiary. 
+
+
+```{r, echo=FALSE}
+
+# Create vectors for Migratory, Genome copies and virus type
+MigBinary <- as.character(rep(Migratory,4))
+GenCopies <- c(IAPV_CPB, DWV_CPB, LSV.2_CPB, CBPV_CPB)
+RNA_Vlab <- c(rep("IAPV", 24), rep("DWV", 24), rep("LSV-2", 24), rep("CBPV", 24))
+
+# Create a data frame for it
+VirusDF <- data.frame(RNA_Vlab, MigBinary, GenCopies)
+
+# create presence/abscence vector (binary) for viruses:
+VirusPA <- ifelse(VirusDF$GenCopies > 0, 1, 0)
+
+VirusDF <- data.frame(VirusDF, VirusPA)
+
+# GeekGasm = log(GenCopies) 
+VirusDF$GeekGasm <- log(VirusDF$GenCopies)
+VirusDF$GeekGasm[VirusDF$GeekGasm=="-Inf"] <- NA
+
+library(plyr)
+VirusSum1 <- ddply(VirusDF, c("MigBinary", "RNA_Vlab"), summarise, 
+              n = length(GeekGasm),
+              mean = mean(GeekGasm, na.rm=TRUE),
+              sd = sd(GeekGasm, na.rm = TRUE),
+              se = sd / sqrt(n))
+
+colors <- c("slategray3", "dodgerblue4")
+
+plot1 <- ggplot(VirusSum1, aes(x=RNA_Vlab, y=mean, fill=MigBinary)) + 
+  geom_bar(stat="identity", 
+           position=position_dodge()) +
+  geom_errorbar(aes(ymin=mean-se, ymax=mean+se), 
+                width=.4,
+                position=position_dodge(.9)) + labs(x="Virus", y = "Viral Load log(genome copies/bee)")
+
+plot1 + theme_minimal(base_size = 17) + coord_cartesian(ylim = c(0, 30)) + scale_fill_manual(values=colors, name="Apiary Type:", labels=c("Stationary", "Migratory")) + theme(legend.position=c(.8, .85)) + annotate(geom = "text", x = 2, y = 28, label = "*",cex = 8) 
+
+```
+
+
+
+**Figure 5:** Mean viral load (virus genome copes/bee) by apiary type (migratory or stationary). Bars represent mean standard error. Deformed wing virus (DWV) load was significantly higher in migratory than in stationary apiaries (p = 0.04). Although not statistically significant, viral loads for chronic bee paralysis virus (CBPV) and Lake Sinai virus (LSV2) were also higher for migratory apiaries. Israeli acute paralysis virus (IAPV) was detected in one stationary and one migratory apiary. Asterisk represents statistical significance at the 0.05 level. 
+
+
+```{r, echo=FALSE}
+#-------------------------------------------------------------------
+# Stats -> t.test of DWV p<0.05
+
+VirusSplit <- split(VirusDF, RNA_Vlab)
+
+t.test(VirusSplit$DWV$GeekGasm~VirusSplit$DWV$MigBinary, alternative="less")
+```
+
+
+
+```{r, echo=FALSE}
+# stats - chi-sq 
+
+# split DF:
+splitVDF <- split(VirusDF, RNA_Vlab)
+
+#test for DWV
+chisq.test(splitVDF$DWV$VirusPA, splitVDF$DWV$MigBinary)
+
+#test for CBPV
+chisq.test(splitVDF$CBPV$VirusPA, splitVDF$CBPV$MigBinary)
+
+#testfor LSV-2
+chisq.test(splitVDF$`LSV-2`$VirusPA, splitVDF$`LSV-2`$MigBinary)
+```
+
+
+```{r, echo=FALSE}
+# varroa by yard type:
+
+VarroaSum <- ddply(NHBS_DF, c("MigBinary"), summarise, 
+                   n = length(Varroa100),
+                   mean = mean(Varroa100, na.rm=TRUE),
+                   sd = sd(Varroa100, na.rm = TRUE),
+                   se = sd / sqrt(n))
+
+colors <- c("slategray3", "dodgerblue4")
+
+plot2 <- ggplot(VarroaSum, aes(y=mean, x=c("Stationary", "Migratory"), fill=MigBinary)) + 
+  geom_bar(stat="identity", 
+           position=position_dodge()) +
+  geom_errorbar(aes(ymin=mean-se, ymax=mean+se), 
+                width=.4,
+                position=position_dodge(.9)) + labs(x="Apiary Type", y = "Varroa Load (per 100 bees)")
+
+plot2 + theme_minimal(base_size = 17) + coord_cartesian(ylim = c(0, 8)) + scale_fill_manual(values=colors) + theme(legend.position=c(-100, -100)) + annotate(geom = "text", x = 1.5, y = 7, label = "**",cex = 10)  
+
+```
+
+
+
+**Figure 6:** Mite loads (mites/100 bees) by apiary type. Migratory apiaries had significantly higher mite loads than stationary apiaries (p = 0.004). Asterisks represent statistical significance at the 0.01 level. Bars represent mean standard error. 
+
+
+```{r, echo=FALSE}
+
+# varroa by yard type:
+
+x <- aov(NHBS_DF$Varroa100~NHBS_DF$Migratory)
+summary(x)
+
+```
+
+# Figures 7-9 are from the National Honey Bee Survey State Report:
+
+
+https://bip2.beeinformed.org/state_reports/
+
+
+\includegraphics{NHBS3.png}
+
+**Figure 7:** The "Average Varroa" chart shows the national monthly average varroa level based on all samples  and all years in the APHIS survey, charted as a line. The error bars are based on the 95%  confidence interval which represents the range that 95% of all samples are within.  The columns represent the average varroa level in samples collected in the state  Vermont during the  year 2015. The error bars for the state monthly average represent the minimum and maximum  varroa levels found. Months without columns have no samples taken during those months.
+
+
+\includegraphics{NHBS1.png}
+
+
+**Figure 8:** The "Average Nosema" chart shows the national monthly average nosema level based on all samples  and all years in the APHIS survey, charted as a line. The error bars are based on the 95%  confidence interval which represents the range that 95% of all samples are within.  The columns represent the average nosema level in samples collected in the state  Vermont during the  year 2015. The error bars for the state monthly average represent the minimum and maximum  nosema level found. Months without columns have no samples taken during those months.
+
+
+\includegraphics{NHBS2.png}
+
+**Figure 9:** The virus prevalence chart shows the percentage of samples with each virus found to be positive  Nationally compared to this state and year.  The National prevalence uses data since 2013 only, due to improvements made to the molecular techniques used to determine if the virus is present. This gives us a National average that is considered to be most accurate.  For data collected previous to 2013, we still show the prevalence of these samples per state and those are still compared to improved (>2013) molecular data.
