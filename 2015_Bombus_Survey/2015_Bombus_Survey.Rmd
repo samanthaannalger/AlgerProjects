@@ -44,7 +44,7 @@ library(dplyr)
 library(plyr)
 
 # Set Working Directory 
-setwd("~/AlgerCollaborations/2015_Bombus_Survey/CSV_Files")
+setwd("~/AlgerProjects/2015_Bombus_Survey/CSV_Files")
 
 # read in data
 BombSurv <- read.table("BombSurv.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
@@ -228,24 +228,24 @@ sp <- split(BombSurv, BombSurv$species)
 
 # create summary and sd and se using plyr
 library(plyr)
-VirusSum2 <- ddply(sp$Bimaculatus, c("target_name", "Date_Pooled"), summarise, 
+VirusSum2 <- ddply(sp$Bimaculatus, c("target_name", "Date_collected"), summarise, 
                   n = length(virusBINY),
                   mean = mean(virusBINY),
                   sd = sd(virusBINY),
                   se = sd / sqrt(n))
 
-VirusSum2 <- VirusSum2[-(9:12),]
+VirusSum2 <- VirusSum2[-(31:44),]
 
 
 library(ggplot2)
 
 #Create plot in ggplot 
 plot <- ggplot(data = VirusSum2, 
-               aes(x = Date_Pooled, 
+               aes(x = Date_collected, 
                    y = mean, 
                    group = target_name, 
                    colour = target_name)
-               ) + geom_line(size=1.5) + geom_point(size=4) + scale_colour_manual(values = c("dodgerblue4", "black")) + coord_cartesian(ylim = c(0, 1)) + labs(x = "Time Point", y = "% Prevalence", color="Virus:") + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 1.5)) 
+               ) + geom_line(size=1.5) + geom_point(size=4) + scale_colour_manual(values = c("dodgerblue4", "black")) + coord_cartesian(ylim = c(0, 1)) + labs(x = "Time", y = "% Prevalence", color="Virus:") + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 1.5)) + scale_y_continuous(labels = scales::percent) 
 
 # add a theme and add asterix for significance 
 plot + scale_fill_brewer(palette = "Paired") + theme_minimal(base_size = 17) + theme(legend.position=c(.85, .85)) + coord_cartesian(ylim = c(0, 1), xlim=c(25,100))
