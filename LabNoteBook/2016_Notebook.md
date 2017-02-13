@@ -12,7 +12,7 @@
 * [Page 1: 2017-01-18](#id-section1). Experiment ideas and 'to do' items
 * [Page 2: 2017-01-22](#id-section2). Plant Trans Exp.
 * [Page 3: 2017 01-27](#id-section3). Lab Work To Do List
-* [Page 4:](#id-section4).
+* [Page 4: 2017-0207.](#id-section4)Disease Ecology Notes
 * [Page 5:](#id-section5).
 * [Page 6:](#id-section6).
 * [Page 7:](#id-section7).
@@ -277,15 +277,24 @@ All the BFT plants in the treatment group were positive for BQCV. None were posi
 * Extraction Protocols for migratory bees
 * Finish bees from plant transmission experiment 
 
-		- pre exp. pollen starved bees (check for BQCV)   
-		- finish all treatment bees   
+   - pre exp. pollen starved bees (check for BQCV)   
+     - finish all treatment bees   
 * Imidacloprid bees
 
 **LSV and Nosema in 2015 bees; funding from GCOA - centennial pollinator grant**
 
 ------
 <div id='id-section4'/>
-### Page 4:
+### Page 4: 2017-02-07
+
+### Disease Ecology Notes
+
+* Koch's postulates
+
+If an Ro of 5, even predicts that some % of the host population will persist, then why do alternative reservoir hosts or vectors increase the chance for extinction? Assuming that the living individuals are either recovered (and immune) or not resistant.
+
+Is it the evolution of the infectious agent?
+
 ------
 <div id='id-section5'/>
 ### Page 5:
