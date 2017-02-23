@@ -1,3 +1,6 @@
+---
+output: pdf_document
+---
 ### Bumble Bee Extraction Standard Protocol
 
 #### 2-11-17
@@ -80,74 +83,4 @@ ___________
 
 homogenized bees, crude extractions, RNA extractions
 
-______
 
-**NANODROP INSTRUCTIONS:**
-
-***Bring 10ul pipette, tips, Kimtech wipes, and flash drive to nanodrop room
-
-Click on Nanodrop icon
-
-Click nucleic acid
-
-Put 2ul RNase-free water on spec
-
-Initialize the spec
-
-Make sure system is set to RNA-40
-
-Add 2ul RNase-free water
-
-Click ‘blank’
-
-Wipe clean with Kimtech. Load 2ul of the first sample
-
-Enter in sample ID (Lab ID)
-
-Click measure
-
-Repeat for all specimen including control
-
-Click ‘save report’ and then ‘export table only’
-
-Save to flash drive w/Date_Nanodrop_Species/experiment_LabID#s
-
- 
-
-Results of Nanodrop: 
-
-            Quality:
-
-![img](file://localhost/private/var/folders/jc/dy93wkbx3594z9jf693bqyj80000gn/T/TemporaryItems/msoclip/0clip_image001.png)
-
-                                                            
-
-Good if between2.0 & 2.2
-
-______________
-
-**MAKING REAGENTS:**
-
-Label all containers with reagent name and datemade/allotted on lid and side. 
-
-Use the serological pipette and add reagent(s) into newfalcon tube. 
-
- 
-
-**Buffer RLT/B-mercap:** **THIS WILL LAST FOR 1 MONTH AFTERMERCAP HAS BEEN ADDED**
-
-\- 40 mL of Buffer RLV 
-
-\- 400 ul of B-mercaptoethanol. 
-
-**70% ethanol**: 
-
--      28 mL 100% ethanol
-
--      12 mL of RNase-free water. 
-
-**Buffer RW1:** Aliquot.
-
-**Buffer RPE: ** **Make sure 4 parts of ethanol has been added!** Aliquot.
-
-**RNase-free water: **Aliquot.
