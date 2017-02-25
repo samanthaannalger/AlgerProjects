@@ -32,7 +32,6 @@ library(scales)
 NFdata <- merge(NFdata, DilDF, by="ID")
 
 
-
 # set constant values for genome copies per bee calculations:
 crude_extr <- 100
 eluteRNA <- 50
