@@ -27,8 +27,9 @@ Make sure there is liquid nitrogen and enough of each reagent (RLT buffer/mercap
 
    e.    Get the following materials ready: 
 
-* Pestles- take pestles soaking in 10% bleach and rinse with DI water andthen ethanol- set to dry. Clean 1 pestle per specimen plus 1-2 more to preparefor error. *If pestle is touched/dropped at any point get new pestle soakingin bleach and follow procedure. 
+* Pestles- take pestles soaking in 10% bleach and rinse with DI water and then ethanol- set to dry. Clean 1 pestle per specimen plus 1-2 more to prepare for error. *If pestle is touched/dropped at any point get new pestle soaking in bleach and follow procedure. 
 * Buffer RLT (with B-mercaptoethanol) **Make sure <1 mo. old**
+* 1000 ul pippette and tips
 * Labeled 1.5 tubes with lab ID #(2 for each specimen) plus one for a negative control.
 * 2 pairs of small forceps, Kimtech wipes, large forceps, timer.
 * 2 small beakers labeled w/ 10% bleach and 70% ethanol (use DI water when dilutingbleach and ethanol).
@@ -66,13 +67,13 @@ _______
 1.    Label RNeasy spin column tubes for each specimen.
 2.    Use pipette to mix bee, buffer, and ethanol solution (crude extraction) 5-6 times before drawing up 700ul and moving into corresponding spin column.
 3.    Place crude extraction back on ice to be placed in freezer. 
-4.    Centrifuge spin columns for 1 minute at high speed then discard flow-through into small beaker.
-5.    Add 700ul of Buffer RW1 to spin column, centrifuge for 1 min at high speed and discard flow-through into small beaker.
-6.    Add 500ul Buffer RPE to spin column, centrifuge for 1 min at high speed and discard flow-through into small beaker.
-7.    Add 500ul Buffer RPE to spin column, centrifuge for 2 min at high speed and discard flow-through into small beaker. Discardbeaker contents down sink.
-8.    Transfer spin columns into new 2ml tubes and spin at high speed for 1 min. Discard old 2ml tubes.
+4.    Centrifuge spin columns for **1 minute** at high speed then discard flow-through into small beaker.
+5.    Add **700ul of Buffer RW1** to spin column, centrifuge for **1 min** at high speed and discard flow-through into small beaker.
+6.    Add **500ul Buffer RPE** to spin column, centrifuge for **1 min** at high speed and discard flow-through into small beaker.
+7.    Add **500ul Buffer RPE** to spin column, centrifuge for **2 min** at high speed and discard flow-through into small beaker. Discardbeaker contents down sink.
+8.    Transfer spin columns into new 2ml tubes and spin at high speed for **1 min**. Discard old 2ml tubes.
 9.    Assemble new 1.5ml tubes and cut off lids.Transfer spin columns to 1.5ml tubes.
-10.    Add 50ul of RNase-free water directly to the spin column membrane without touching the membrane. Centrifuge for 1 min. Do NOT discard flow-through.
+10.    Add 50ul of RNase-free water directly to the spin column membrane without touching the membrane. **Centrifuge for 1 min**. Do NOT discard flow-through.
 11.    Label 0.5ml tubes with corresponding lab ID #s. 
 12.    Pipette flow through from 1.5ml tubes into corresponding 0.5ml tubes and immediately place on ice. Discard spin columns and their tubes.
 13.    Take 0.5ml tubes up to nanodrop.

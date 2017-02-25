@@ -24,6 +24,8 @@ Click measure
 
 Repeat for all specimen including control
 
+Click 'show report'
+
 Click ‘save report’ and then ‘export table only’
 
 Save to flash drive in this format:
