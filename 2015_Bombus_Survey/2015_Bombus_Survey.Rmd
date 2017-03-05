@@ -289,3 +289,57 @@ hist(log(CopDist$mean),
 
 ```
 
+
+
+**USING THE SPACIAL DATA TO LOOK AT CORRELATIONS IN PERCENT PREVELENCE**
+```{r}
+# summaraizing data for % prev by site and target
+SiteVirPrev <- ddply(BombSurvNHBS, c("site", "target_name"), summarise, 
+                  n = length(virusBINY),
+                  mean = mean(virusBINY, na.rm=TRUE),
+                  sd = sd(virusBINY, na.rm=TRUE),
+                  se = sd / sqrt(n))
+
+SiteVirPrev<-SiteVirPrev[!SiteVirPrev$site==("PITH"),]
+SiteVirPrev<-SiteVirPrev[!SiteVirPrev$site==("STOW"),]
+
+SiteVirPrev
+
+
+# read in spacial data and select columns I want
+spac <- read.table("2015SurveySpatial.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
+spac <- select(spac, site, sumApiaries, sumColonies)
+
+# merge % prev data
+data <- merge(SiteVirPrev, spac, by="site")
+
+# split by virus type
+splitDF <- split(data, data$target_name)
+
+# plot % prev by sum Apiaries for all three targets:
+
+plot(y=splitDF$DWV$mean, x=splitDF$DWV$sumApiaries)
+
+plot(y=splitDF$IAPV$mean, x=splitDF$IAPV$sumApiaries)
+
+plot(y=splitDF$BQCV$mean, x=splitDF$BQCV$sumApiaries)
+
+# black queen cell lm
+mymod <- lm(data=splitDF$BQCV, splitDF$BQCV$mean~splitDF$BQCV$sumApiaries)
+abline(mymod)
+summary(mymod)
+
+# plot % prev by sumColonies for all three targets:
+plot(y=splitDF$DWV$mean, x=splitDF$DWV$sumColonies)
+
+plot(y=splitDF$IAPV$mean, x=splitDF$IAPV$sumColonies)
+
+plot(y=splitDF$BQCV$mean, x=splitDF$BQCV$sumColonies)
+
+# black queen cell lm
+mymod1 <- lm(data=splitDF$BQCV, splitDF$BQCV$mean~splitDF$BQCV$sumColonies)
+abline(mymod1)
+summary(mymod1)
+
+```
+
