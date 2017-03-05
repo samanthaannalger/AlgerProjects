@@ -12,7 +12,7 @@ ls()
 rm(list=ls())
 
 # Set Working Directory: 
-setwd("~/AlgerCollaborations/2015_Bombus_Survey/CSV_Files")
+setwd("~/AlgerProjects/2015_Bombus_Survey/CSV_Files")
 
 # read in data:
 BombSurvDF <- read.table("qPCR_results_dataframe.csv", header=TRUE, sep = ",") 
@@ -21,6 +21,7 @@ HbDF <- read.table("qPCR_results_dataframe_HB.csv", header=TRUE, sep =",")
 EcoHbDF <- read.table("2015EcoSurveyData_HB.csv", header=TRUE, sep = ",")
 NHBS <- read.table("NHBS_2015_DataSubset1.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
 Diversity <- read.table("Diversity.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
+SpacDF <-read.table("2015SurveySpatial.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
 
 length(EcoSurvDF$ID)
 # check dataframe to see what the fuck is wrong with it:
@@ -303,12 +304,16 @@ BombSurv <- merge(BombSurv, Diversity, by=c("site"), all.x=TRUE, all.y=FALSE)
 write.csv(BombSurv, file = "BombSurv.csv")
 
 #Working with NHBS data Adding NHBS data to BombSurv
-BombSurv2 <- merge(BombSurv, NHBS, by=c("site"), all.x=TRUE, all.y=FALSE)
+BombSurvNHBS <- merge(BombSurv, NHBS, by=c("site"), all.x=TRUE, all.y=FALSE)
 
-write.csv(BombSurv2, file = "BombSurv2.csv")
+BombSurvNHBS <- merge(BombSurvNHBS, SpacDF, by="site")
+
+write.csv(BombSurvNHBS, file = "BombSurvNHBS.csv")
 
 
 #---------------------------------------------------------------------
+
+
 
 # THE END!!!
 

@@ -49,13 +49,13 @@ setwd("~/AlgerProjects/2015_Bombus_Survey/CSV_Files")
 # read in data
 BombSurv <- read.table("BombSurv.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
 
-BombSurv2 <- read.table("BombSurv2.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
+BombSurvNHBS <- read.table("BombSurvNHBS.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
 
 # remove unneeded columns from the DF
 BombSurv <- select(BombSurv, -X, -Ct_mean, -Ct_sd, -quantity_mean, -quantity_sd, -run, -date_processed, -dil.factor, -genome_copbee, -Ct_mean_hb, -ID, -ACT_genome_copbee)
 
 # remove unneeded columns from the DF
-BombSurv2 <- select(BombSurv2, -City, -Name, -virusBINY_PreFilter)
+BombSurvNHBS <- select(BombSurvNHBS, -City, -Name, -virusBINY_PreFilter)
 
 ```
 
@@ -267,7 +267,7 @@ Clustered HoneyBees:
 
 ```{r}
 
-CopDist <- ddply(BombSurv2, c("target_name", "site"), summarise, 
+CopDist <- ddply(BombSurvNHBS, c("target_name", "site"), summarise, 
                   n = length(norm_genome_copbeeHB),
                   mean = mean(norm_genome_copbeeHB, na.rm=TRUE),
                   sd = sd(norm_genome_copbeeHB, na.rm=TRUE),
