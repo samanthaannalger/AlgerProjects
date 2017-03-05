@@ -126,10 +126,9 @@ VirusSummary <- ddply(x, c("Virus", "treatment"), summarise,
                       mean = mean(LOGviralLoad, na.rm = TRUE),
                       sd = sd(LOGviralLoad, na.rm = TRUE),
                       se = sd / sqrt(n))
-#subsetting the data to remove NA and IAPV (no viral loads)
-VirusSummary <- VirusSummary[-c(3,6),]
 
 print(VirusSummary)
+
 #----------------------------------------------------------------
 
 #choosing color pallet
