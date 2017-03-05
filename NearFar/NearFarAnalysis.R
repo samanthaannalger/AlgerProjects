@@ -87,7 +87,8 @@ Burnhams_Fabulous_Data_Cleanser <- function(dataframe=NFdata, variable=NFdata$Vi
   # make NA values 0
   x$virusBINY[is.na(x$virusBINY)] <- 0
   
-  return(x)}
+  return(x)
+  }
 
 
 # END OF FUNCTION
@@ -108,7 +109,12 @@ NFdata$LOGviralLoad <- log10(NFdata$viralLoad)
 NFdata$LOGviralLoad[NFdata$LOGviralLoad == -Inf] <-0
 head(NFdata)
 x <- NFdata[which(NFdata$LOGviralLoad>0),]
+
+# write out data file as .csv
+write.csv(x=NFdata, file="NFdata.csv")
 ##################################################################################-
+
+
 
 ###########_____DATA___ANALYSIS______############
 
@@ -168,7 +174,7 @@ plot2 <- ggplot(PrevSummary, aes(x=Virus, y=mean, fill=treatment)) +
   geom_errorbar(aes(ymin=mean-se, ymax=mean+se), 
                 width=.4,
                 position=position_dodge(.9)) + labs(x="Virus", 
-                                                    y = "Viral Load log(genome copies)")
+                                                    y = "Virus Prevalence")
 
 plot2 + theme_minimal(base_size = 17) + theme(legend.position=c(.85, .9)) + coord_cartesian(ylim = c(0, 1)) + scale_fill_manual(values=colors) 
 
