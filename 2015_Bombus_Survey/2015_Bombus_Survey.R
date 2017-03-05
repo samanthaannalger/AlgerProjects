@@ -306,6 +306,7 @@ write.csv(BombSurv, file = "BombSurv.csv")
 #Working with NHBS data Adding NHBS data to BombSurv
 BombSurvNHBS <- merge(BombSurv, NHBS, by=c("site"), all.x=TRUE, all.y=FALSE)
 
+#adding spatial data to dataframe that includes the apiary number and colony number for each bumble bee collection site
 BombSurvNHBS <- merge(BombSurvNHBS, SpacDF, by="site")
 
 write.csv(BombSurvNHBS, file = "BombSurvNHBS.csv")
