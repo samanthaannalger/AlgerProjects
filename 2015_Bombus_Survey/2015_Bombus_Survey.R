@@ -19,7 +19,7 @@ BombSurvDF <- read.table("qPCR_results_dataframe.csv", header=TRUE, sep = ",")
 EcoSurvDF <- read.table("2015EcoSurveyData.csv", header=TRUE, sep = ",")
 HbDF <- read.table("qPCR_results_dataframe_HB.csv", header=TRUE, sep =",")
 EcoHbDF <- read.table("2015EcoSurveyData_HB.csv", header=TRUE, sep = ",")
-NHBS <- read.table("NHBS_2015_DataSubset1.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
+NHBS <- read.csv("NHBS_2015_DataSubset1.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
 Diversity <- read.table("Diversity.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
 SpacDF <-read.table("2015SurveySpatial.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
 
