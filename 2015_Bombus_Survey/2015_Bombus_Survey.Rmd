@@ -47,21 +47,29 @@ library(plyr)
 setwd("~/AlgerProjects/2015_Bombus_Survey/CSV_Files")
 
 # read in data
-BombSurv <- read.table("BombSurv.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
+#BombSurv <- read.table("BombSurv.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
 
-BombSurvNHBS <- read.table("BombSurvNHBS.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
-
-# remove unneeded columns from the DF
-BombSurv <- select(BombSurv, -X, -Ct_mean, -Ct_sd, -quantity_mean, -quantity_sd, -run, -date_processed, -dil.factor, -genome_copbee, -Ct_mean_hb, -ID, -ACT_genome_copbee)
+BombSurv <- read.table("BombSurvNHBS.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
 
 # remove unneeded columns from the DF
-BombSurvNHBS <- select(BombSurvNHBS, -City, -Name, -virusBINY_PreFilter)
+#BombSurv <- select(BombSurv, -X, -Ct_mean, -Ct_sd, -quantity_mean, -quantity_sd, -run, -date_processed, -dil.factor, -genome_copbee, -Ct_mean_hb, -ID, -ACT_genome_copbee)
+
+# remove unneeded columns from the DF
+BombSurv <- select(BombSurv, -City, -Name, -virusBINY_PreFilter)
+
+# remove unwanted sites and bombus species
+BombSurv<-BombSurv[!BombSurv$site==("PITH"),]
+BombSurv<-BombSurv[!BombSurv$site==("STOW"),]
+
+BombSurv<-BombSurv[!BombSurv$species==("Griseocollis"),]
+BombSurv<-BombSurv[!BombSurv$species==("Sandersonii"),]
+
 
 ```
 
 
-
-Prevelence:
+___________________________________________________________________________________
+**Prevelence of viruses in bumble bees**
 ```{r,  echo=FALSE}
 
 # using ddply to get summary of virusBINY by species and target name:
@@ -83,8 +91,8 @@ plot1 + theme_minimal(base_size = 17) + theme(legend.position=c(3, 3)) + coord_c
 
 ```
 
-
-Prevalence by Species:
+___________________________________________________________________________________
+**Prevalence by bumble bee species:**
 ```{r}
 
 # using ddply to get summary of virusBINY by species and target name:
@@ -94,8 +102,6 @@ VirusSum <- ddply(BombSurv, c("species", "target_name"), summarise,
                   sd = sd(virusBINY, na.rm=TRUE),
                   se = sd / sqrt(n))
 
-# remove data for species other than vagans and :
-VirusSum <-VirusSum[-c(4:9),]
          
 #choosing color pallet
 colors <- c("slategray3", "dodgerblue4")
@@ -124,7 +130,9 @@ chisq.test(statsplit$DWV$virusBINY, statsplit$DWV$species)
 
 ```
 
+___________________________________________________________________________________
 
+**Bumble bee virus prevalence as a function of Apiary present/absent** 
 ```{r}
 
 # make apiary binary a character so we can use it as a factor in the model
@@ -137,8 +145,6 @@ VirusSum1 <- ddply(BombSurv, c("apiary_near_far", "target_name"), summarise,
                   mean = mean(virusBINY, na.rm=TRUE),
                   sd = sd(virusBINY, na.rm=TRUE),
                   se = sd / sqrt(n))
-
-VirusSum1 <-VirusSum1[-c(7:9),]
 
 #choosing color pallet
 colors <- c("slategray3", "dodgerblue4")
@@ -168,6 +174,35 @@ chisq.test(PresAbst_stat$BQCV$virusBINY, PresAbst_stat$BQCV$apiary_near_far)
 chisq.test(PresAbst_stat$DWV$virusBINY, PresAbst_stat$DWV$apiary_near_far)
 ```
 
+
+_____________________________________________________________________________________
+**Distribution of honey bee viral loads: "Clustered HoneyBees". Honey bee virus load data falls into a binomial distribution with samples eiher high or low.**
+
+```{r}
+
+CopDist <- ddply(BombSurv, c("target_name", "site"), summarise, 
+                  n = length(norm_genome_copbeeHB),
+                  mean = mean(norm_genome_copbeeHB, na.rm=TRUE),
+                  sd = sd(norm_genome_copbeeHB, na.rm=TRUE),
+                  se = sd / sqrt(n))
+
+CopDist <- CopDist[c(23:44),]
+
+hist(log(CopDist$mean), 
+     breaks=20,
+     xlim = c(5,25),
+     col = "dodgerblue4",
+     xlab = "Honeybee DWV level log(viral load)",
+     main = "Distribution of DWV Viral Load in Honeybees",
+     cex.lab = 1.3,
+     font.lab = 2
+     )
+
+
+
+```
+
+**Creating a figure showing bumble bee viral prevalence as a function of honey bee viral load (bins) or honey bees absent.**
 ```{r}
 
 BombSurvSplit <- split(BombSurv, BombSurv$target_name)
@@ -210,8 +245,11 @@ chisq.test(BombSurvSplit$HBSiteBin, BombSurvSplit$virusBINY)
 
 ```
 
-```{r}
 
+___________________________________________________________________________________
+**Difference in virus prevalence in bumble bees over the season:**
+```{r}
+# Figure to see differences in virus prevalence over time
 
 BombSurv$Date_collected <- as.Date(BombSurv$Date_collected, "%m/%d/%y")
 
@@ -263,58 +301,30 @@ sd(num)
 
 ```
 
-Clustered HoneyBees:
 
-```{r}
-
-CopDist <- ddply(BombSurvNHBS, c("target_name", "site"), summarise, 
-                  n = length(norm_genome_copbeeHB),
-                  mean = mean(norm_genome_copbeeHB, na.rm=TRUE),
-                  sd = sd(norm_genome_copbeeHB, na.rm=TRUE),
-                  se = sd / sqrt(n))
-
-CopDist <- CopDist[c(23:44),]
-
-hist(log(CopDist$mean), 
-     breaks=20,
-     xlim = c(5,25),
-     col = "dodgerblue4",
-     xlab = "Honeybee DWV level log(viral load)",
-     main = "Distribution of DWV Viral Load in Honeybees",
-     cex.lab = 1.3,
-     font.lab = 2
-     )
-
-
-
-```
-
-
-
+___________________________________________________________________________________
 **USING THE SPACIAL DATA TO LOOK AT CORRELATIONS IN PERCENT PREVELENCE**
 ```{r}
 # summaraizing data for % prev by site and target
-SiteVirPrev <- ddply(BombSurvNHBS, c("site", "target_name"), summarise, 
+SiteVirPrev <- ddply(BombSurv, c("site", "target_name"), summarise, 
                   n = length(virusBINY),
                   mean = mean(virusBINY, na.rm=TRUE),
                   sd = sd(virusBINY, na.rm=TRUE),
                   se = sd / sqrt(n))
-
-SiteVirPrev<-SiteVirPrev[!SiteVirPrev$site==("PITH"),]
-SiteVirPrev<-SiteVirPrev[!SiteVirPrev$site==("STOW"),]
 
 SiteVirPrev
 
 
 # read in spacial data and select columns I want
 spac <- read.table("2015SurveySpatial.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
+
 spac <- select(spac, site, sumApiaries, sumColonies)
 
-# merge % prev data
-data <- merge(SiteVirPrev, spac, by="site")
+# merge % prev data for spatial data
+spacData <- merge(SiteVirPrev, spac, by="site")
 
 # split by virus type
-splitDF <- split(data, data$target_name)
+splitDF <- split(spacData, spacData$target_name)
 
 # plot % prev by sum Apiaries for all three targets:
 
@@ -340,6 +350,63 @@ plot(y=splitDF$BQCV$mean, x=splitDF$BQCV$sumColonies)
 mymod1 <- lm(data=splitDF$BQCV, splitDF$BQCV$mean~splitDF$BQCV$sumColonies)
 abline(mymod1)
 summary(mymod1)
+
+```
+
+```{r}
+# Data setup for Logistic Regressions on mites and spatial data
+
+logRegDF <- select(BombSurv, site, target_name, species, norm_genome_copbee, virusBINY, Varroa100, sumApiaries, sumColonies)
+
+logRegDF$logViralLoad <- log10(logRegDF$norm_genome_copbee)
+
+# Log(Bombus Viral Load)
+splitDF <- split(logRegDF, logRegDF$target_name)
+
+# fitting a logistic regression to the data (regressing virusBINY on Varroa100)
+splitDFmite <- splitDF$DWV[complete.cases(splitDF$DWV),]
+
+hist(splitDFmite$norm_genome_copbee, breaks = 20)
+hist(splitDFmite$logViralLoad, breaks = 8)
+
+#splitDFmite<-splitDFmite[!splitDFmite$site==("PAT"),]
+#splitDFmite<-splitDFmite[!splitDFmite$site==("BOST-NEAR"),]
+#splitDFmite<-splitDFmite[!splitDFmite$species==("Bimaculatus"),]
+
+miteMod <- glm(virusBINY~Varroa100, data=splitDFmite, family=binomial(link='logit'))
+summary(miteMod)
+
+plot(x=splitDFmite$Varroa100, y=splitDFmite$virusBINY)
+```
+
+
+```{r}
+
+# Adding NHBS mite data
+
+NHBSdata <- read.csv("NHBS_2015_DataSubset1.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
+
+NHBSdata <- select(NHBSdata, site, Varroa100)
+
+# merge % prev data for mite data
+miteData <- merge(spacData, NHBSdata, by="site")
+
+# split by virus type
+splitMite <- split(miteData, miteData$target_name)
+
+# plot % prev by sum Apiaries for all three targets:
+
+plot(y=splitMite$DWV$mean, x=splitMite$DWV$Varroa100)
+
+plot(y=splitMite$IAPV$mean, x=splitMite$IAPV$Varroa100)
+
+plot(y=splitMite$BQCV$mean, x=splitMite$BQCV$Varroa100)
+
+# black queen cell lm
+mymod <- lm(data=splitMite$DWV, splitMite$DWV$mean~splitMite$DWV$Varroa100)
+abline(mymod)
+summary(mymod)
+
 
 ```
 
