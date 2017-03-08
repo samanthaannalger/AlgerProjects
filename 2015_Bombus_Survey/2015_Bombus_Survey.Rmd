@@ -186,8 +186,9 @@ CopDist <- ddply(BombSurv, c("target_name", "site"), summarise,
                   sd = sd(norm_genome_copbeeHB, na.rm=TRUE),
                   se = sd / sqrt(n))
 
-CopDist <- CopDist[c(23:44),]
-
+CopDist<-CopDist[!CopDist$target_name==("BQCV"),]
+CopDist<-CopDist[!CopDist$target_name==("IAPV"),]
+      
 hist(log(CopDist$mean), 
      breaks=20,
      xlim = c(5,25),
@@ -213,13 +214,16 @@ HBSiteSum <- ddply(BombSurvSplit$DWV, c("HBSiteBin", "target_name"), summarise,
                    sd = sd(virusBINY, na.rm=TRUE),
                    se = sd / sqrt(n))
 
+BombSurvSplit$DWV$HBSiteBin
+
+
+
+HBSiteSum$HBSiteBin[HBSiteSum$HBSiteBin== "<NA>"] <- "No Apis Caught"
 
 
 colors <- c("slategray3", "dodgerblue4", "blue4")
 
-plot1 <-ggplot(HBSiteSum, aes(x=HBSiteBin, y=mean, fill=HBSiteBin))
-
-plot1
+plot1 <-ggplot(HBSiteSum, aes(x=HBSiteBin, y=mean) + geom_bar())
 
 barplot(height=HBSiteSum$mean, 
         names.arg = c("High DWV Load", 
@@ -332,8 +336,9 @@ plot(y=splitDF$DWV$mean, x=splitDF$DWV$sumApiaries)
 
 plot(y=splitDF$IAPV$mean, x=splitDF$IAPV$sumApiaries)
 
-plot(y=splitDF$BQCV$mean, x=splitDF$BQCV$sumApiaries)
+plot1 <- plot(y=splitDF$BQCV$mean, x=splitDF$BQCV$sumApiaries, xlab="# apiaries within 3 km", ylab="prevalence BQCV in Bumble Bees")
 
+help(lines)
 # black queen cell lm
 mymod <- lm(data=splitDF$BQCV, splitDF$BQCV$mean~splitDF$BQCV$sumApiaries)
 abline(mymod)
