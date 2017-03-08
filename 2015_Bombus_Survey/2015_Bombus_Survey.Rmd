@@ -183,15 +183,14 @@ CopDist <- ddply(BombSurv, c("target_name", "site"), summarise,
                   se = sd / sqrt(n))
 CopDist <- split(CopDist, CopDist$target_name)
 
-<<<<<<< HEAD
+
 CopDist<-CopDist[!CopDist$target_name==("BQCV"),]
 CopDist<-CopDist[!CopDist$target_name==("IAPV"),]
       
-hist(log(CopDist$mean), 
-=======
+
+
 # histogram of log mean viral for DWV  at each site showing bimodality for site:
 hist(log(CopDist$DWV$mean), 
->>>>>>> origin/master
      breaks=20,
      xlim = c(5,25),
      col = "dodgerblue4",
@@ -217,8 +216,6 @@ HBSiteSum <- ddply(BombSurvSplit$DWV, c("HBSiteBin", "target_name"), summarise,
 
 BombSurvSplit$DWV$HBSiteBin
 
-<<<<<<< HEAD
-
 
 HBSiteSum$HBSiteBin[HBSiteSum$HBSiteBin== "<NA>"] <- "No Apis Caught"
 
@@ -227,10 +224,9 @@ colors <- c("slategray3", "dodgerblue4", "blue4")
 
 plot1 <-ggplot(HBSiteSum, aes(x=HBSiteBin, y=mean) + geom_bar())
 
-=======
+
 colors <- c("slategray3", "dodgerblue4", "blue4")
 
->>>>>>> origin/master
 barplot(height=HBSiteSum$mean, 
         names.arg = c("High DWV Load", 
                       "Low DWV Load", 
