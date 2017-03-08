@@ -409,11 +409,51 @@ viralLoadDF$apiary_near_far <- as.factor(viralLoadDF$apiary_near_far)
 library(lme4)
 library(MASS)
 
+# mixed model for DWV (significant) and apiary status
 mod <- glmmPQL(data=x$DWV, fixed = BombusViralLoad~apiary_near_far + sumApiaries, random = ~ 1 | site, family = gaussian)
 
 summary(mod)
+
+# mixed model for BQCV (NOT significant) and apiary status
+mod1 <- glmmPQL(data=x$BQCV, fixed = BombusViralLoad~apiary_near_far + sumApiaries, random = ~ 1 | site, family = gaussian)
+
+summary(mod1)
+
+# mixed model of prevalence on viral load
+mod2 <- glmmPQL(data=x$DWV, fixed = BombusViralLoad~BombPrev, random = ~ 1 | site, family = gaussian)
+
+summary(mod2)
+
+
+
+
+
 ```
 
+
+
+```{r}
+
+viralLoadDF$logViralLoad <- log10(viralLoadDF$BombMeanNA+1)
+
+VirusSum1 <- ddply(viralLoadDF, c("apiary_near_far", "target_name"), summarise, 
+              n = length(logViralLoad),
+              mean = mean(logViralLoad, na.rm=TRUE),
+              sd = sd(logViralLoad, na.rm = TRUE),
+              se = sd / sqrt(n))
+
+colors <- c("slategray3", "dodgerblue4")
+
+plot1 <- ggplot(VirusSum1, aes(x=target_name, y=mean, fill=apiary_near_far)) + 
+  geom_bar(stat="identity", 
+           position=position_dodge()) +
+  geom_errorbar(aes(ymin=mean-se, ymax=mean+se), 
+                width=.4,
+                position=position_dodge(.9)) + labs(x="Virus", y = "Viral Load log(genome copies/site)")
+
+plot1 + theme_minimal(base_size = 17) + coord_cartesian(ylim = c(0, 10)) + scale_fill_manual(values=colors, name="Apiary Status:", labels=c("Far from Apiary", "Near Apiary")) + theme(legend.position=c(.8, .85)) + annotate(geom = "text", x = 2, y = 6.5, label = "**",cex = 10) + annotate(geom = "text", x = 1, y = 8.5, label = "n.s.",cex = 7) 
+
+```
 
 
 
