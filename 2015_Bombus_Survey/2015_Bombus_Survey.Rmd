@@ -82,7 +82,7 @@ colors <- c("dodgerblue4", "dodgerblue4", "dodgerblue4")
 
 #Create a bar graph for viruses by bombus species (aes= aesthetics):
 plot1 <- ggplot(VirusSum, aes(x=target_name, y=mean, fill=target_name)) + 
-  geom_bar(stat="identity", 
+  geom_bar(stat="identity",
            position=position_dodge()) + labs(x="Virus", y = "% Prevalence")
 
 plot1 + theme_minimal(base_size = 17) + theme(legend.position=c(3, 3)) + coord_cartesian(ylim = c(0, 1)) + scale_fill_manual(values=colors) + scale_y_continuous(labels = scales::percent)
@@ -181,8 +181,6 @@ CopDist <- ddply(BombSurv, c("target_name", "site"), summarise,
                   mean = mean(norm_genome_copbeeHB, na.rm=TRUE),
                   sd = sd(norm_genome_copbeeHB, na.rm=TRUE),
                   se = sd / sqrt(n))
-CopDist <- split(CopDist, CopDist$target_name)
-
 
 CopDist<-CopDist[!CopDist$target_name==("BQCV"),]
 CopDist<-CopDist[!CopDist$target_name==("IAPV"),]
@@ -190,7 +188,7 @@ CopDist<-CopDist[!CopDist$target_name==("IAPV"),]
 
 
 # histogram of log mean viral for DWV  at each site showing bimodality for site:
-hist(log(CopDist$DWV$mean), 
+hist(log(CopDist$mean), 
      breaks=20,
      xlim = c(5,25),
      col = "dodgerblue4",
@@ -208,35 +206,21 @@ hist(log(CopDist$DWV$mean),
 
 BombSurvSplit <- split(BombSurv, BombSurv$target_name)
 
+BombSurvSplit$DWV$HBSiteBin[is.na(BombSurvSplit$DWV$HBSiteBin)] <- "No Apis Caught"
+
 HBSiteSum <- ddply(BombSurvSplit$DWV, c("HBSiteBin", "target_name"), summarise, 
                    n = length(virusBINY),
                    mean = mean(virusBINY, na.rm=TRUE),
                    sd = sd(virusBINY, na.rm=TRUE),
                    se = sd / sqrt(n))
 
-BombSurvSplit$DWV$HBSiteBin
-
-
-HBSiteSum$HBSiteBin[HBSiteSum$HBSiteBin== "<NA>"] <- "No Apis Caught"
-
 
 colors <- c("slategray3", "dodgerblue4", "blue4")
 
-plot1 <-ggplot(HBSiteSum, aes(x=HBSiteBin, y=mean) + geom_bar())
+plot1 <- ggplot(HBSiteSum, aes(x=HBSiteBin, y=mean, fill=colors)) + 
+  geom_bar(stat="identity") + labs(x=NULL, y = "% Prevalence")
 
-
-colors <- c("slategray3", "dodgerblue4", "blue4")
-
-barplot(height=HBSiteSum$mean, 
-        names.arg = c("High DWV Load", 
-                      "Low DWV Load", 
-                      "No Apis Caught"),
-        xlab="Site Type",
-        ylab ="% Prevalence (Bombus with DWV)",
-        ylim = c(0,0.2), 
-        main = "Bombus DWV Prevalence by Honey Bee DWV Load",
-        col = colors
-)
+plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors) + coord_cartesian(ylim = c(0, 0.2)) + scale_y_continuous(labels = scales::percent) + theme(legend.position=c(3, 3))
 
 ```
 **Figure 3:** Percent prevalance for Bumble bees infected with deformed wing virus at sites where honey bees had high and low viral loads, and sites where no honey bees were present and therefore could not be collected. DWV was more prevalent in bumble bees caught at sites with honey bees with high average viral loads, than sites with honey bees with low average viral loads (p = 0.046, X2 = 3.9767).  
@@ -424,14 +408,10 @@ mod2 <- glmmPQL(data=x$DWV, fixed = BombusViralLoad~BombPrev, random = ~ 1 | sit
 
 summary(mod2)
 
-
-
-
-
 ```
 
 
-
+## Viral load by Apiary status
 ```{r}
 
 viralLoadDF$logViralLoad <- log10(viralLoadDF$BombMeanNA+1)
