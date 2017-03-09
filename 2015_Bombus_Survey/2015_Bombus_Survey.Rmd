@@ -410,11 +410,17 @@ mod2 <- glmmPQL(data=x$DWV, fixed = BombusViralLoad~BombPrev, random = ~ 1 | sit
 
 summary(mod2)
 
+# mixed model of prevalence in BQCV vs sumApiries
+mod3 <- glmmPQL(data=x$BQCV, fixed = BombPrev~sumApiaries, random = ~ 1 | site, family = gaussian)
+
+summary(mod3)
+
 ```
 
 
 ## Viral load by Apiary status
 ```{r}
+
 
 viralLoadDF$logViralLoad <- log10(viralLoadDF$BombMeanNA+1)
 
@@ -437,6 +443,13 @@ plot1 + theme_minimal(base_size = 17) + coord_cartesian(ylim = c(0, 10)) + scale
 
 ```
 
+```{r}
+
+plot1 <- ggplot(data = x$BQCV, 
+               aes(x = sumApiaries, 
+                   y = BombPrev)
+) + geom_point(size=3) + labs(x = "# of Apiaries within 3 km", y = "Prevalence of BQCV") + coord_cartesian(ylim = c(0, 1), xlim = c(0,10)) + theme_minimal(base_size = 17)
+```
 
 
 
