@@ -42,13 +42,13 @@ PlantVirusSum <- ddply(plantTrans, c("target_name", "group"), summarise,
 
 PlantVirusSum$group <- as.factor(PlantVirusSum$group)
 
-PlantVirusSum$group <- factor(PlantVirusSum$group, levels=c("HB + Bombus","Bombus Only","Pre Experiment"))
+PlantVirusSum$group <- factor(PlantVirusSum$group, levels=c("Pre Experiment", "Bombus Only", "HB + Bombus"))
 
 
 #creating the figure
 
 #choosing color pallet
-colors <- c("slategray3", "dodgerblue4")
+colors <- c("olivedrab", "darkolivegreen2")
 
 # aes: aesthetics
 # geom_bar = type of graph

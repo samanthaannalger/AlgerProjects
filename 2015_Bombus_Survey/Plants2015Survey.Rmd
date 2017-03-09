@@ -75,13 +75,14 @@ PosPlantSpp <- ddply(PosPlants, c("target_name", "spp"), summarise,
 #creating the figure
 
 #choosing color pallet
-colors <- c("slategray3", "dodgerblue4")
+colors <- c("darkseagreen4", "wheat3")
 
 plot1 <- ggplot(PosPlantSpp, aes(x=spp, y=mean, fill=target_name)) +
-  geom_bar(stat="identity",
+  geom_bar(stat="identity", col = "black",
            position=position_dodge()) + labs(x=NULL, y="% plants with virus detected")
 
-plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Virus", labels=c("BQCV", "DWV")) + theme(legend.position=c(.8, .85)) + coord_cartesian(ylim = c(0, 1)) + scale_y_continuous(labels = scales::percent)
+plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Virus", labels=c("BQCV", "DWV")) + theme(legend.position=c(.8, .85)) + coord_cartesian(ylim = c(0, .5)) + scale_y_continuous(labels = scales::percent)
 
 
 ```
+

@@ -102,7 +102,7 @@ VirusSum <- ddply(BombSurv, c("species", "target_name"), summarise,
 
          
 #choosing color pallet
-colors <- c("slategray3", "dodgerblue4")
+colors <- c("steelblue", "tan3")
 
 #Create a bar graph for viruses by bombus species (aes= aesthetics):
 plot1 <- ggplot(VirusSum, aes(x=target_name, y=mean, fill=species)) + 
@@ -402,6 +402,8 @@ cbind(x$DWV$site, x$DWV$apiary_near_far, x$DWV$HBviralLoad, x$DWV$BombusViralLoa
 ```{r}
 # print my clean data frame for glm analysis 
 print(viralLoadDF)
+
+write.csv(viralLoadDF, file="MixedModelDF.csv")
 
 # make apiary near far a factor variable:
 viralLoadDF$apiary_near_far <- as.factor(viralLoadDF$apiary_near_far)
