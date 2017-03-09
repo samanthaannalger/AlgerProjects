@@ -448,7 +448,9 @@ plot1 + theme_minimal(base_size = 17) + coord_cartesian(ylim = c(0, 10)) + scale
 plot1 <- ggplot(data = x$BQCV, 
                aes(x = sumApiaries, 
                    y = BombPrev)
-) + geom_point(size=3) + labs(x = "# of Apiaries within 3 km", y = "Prevalence of BQCV") + coord_cartesian(ylim = c(0, 1), xlim = c(0,10)) + theme_minimal(base_size = 17)
+) + geom_point(size=3) + labs(x = "# of Apiaries within 3 km", y = "% Prevalence of BQCV") + coord_cartesian(ylim = c(0, 1), xlim = c(0,10)) + theme_minimal(base_size = 17) + scale_y_continuous(labels = scales::percent)
+
+plot1
 ```
 
 
