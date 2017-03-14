@@ -80,41 +80,9 @@ colors <- c("darkseagreen4", "wheat3")
 plot1 <- ggplot(PosPlantSpp, aes(x=spp, y=mean, fill=target_name)) +
   geom_bar(stat="identity", col = "black",
            position=position_dodge()) + labs(x=NULL, y="% plants with virus detected")
-<<<<<<< HEAD
-
-<<<<<<< HEAD
-```
-
-```{r}
-#Totals for each virus on all plants:
-#ddply summarize:
-fieldPlantsTotal <- ddply(fieldPlants, c("spp"), summarise, 
-                  sum = sum(BINYprefilter, na.rm=TRUE))
-              
-=======
-plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Virus", labels=c("BQCV", "DWV")) + theme(legend.position=c(.8, .85)) + coord_cartesian(ylim = c(0, .5)) + scale_y_continuous(labels = scales::percent)
->>>>>>> parent of 33ff7fb... figs
-=======
 
 plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Virus", labels=c("BQCV", "DWV")) + theme(legend.position=c(.8, .85)) + coord_cartesian(ylim = c(0, .5)) + scale_y_continuous(labels = scales::percent)
->>>>>>> parent of 33ff7fb... figs
 
 
 ```
 
-Flower Spp.:
-                    spp sum
-1       "white flowers"   1
-2              bee balm   3
-3  clammy ground cherry   0
-4             cow vetch   0
-5           crown vetch   0
-6              milkweed   2
-7                  mint   0
-8    purple loosestrife   0
-9            red clover   1
-10   spotted jewel weed   0
-11      st. john's wort   0
-12         white clover   0
-
-"mint"= creeping charlie!
