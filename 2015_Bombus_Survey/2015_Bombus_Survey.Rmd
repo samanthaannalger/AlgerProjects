@@ -448,7 +448,7 @@ plot1 <- ggplot(VirusSum1, aes(x=target_name, y=mean, fill=apiary_near_far)) +
                 width=.4,
                 position=position_dodge(.9)) + labs(x="Virus", y = "Viral Load log(genome copies/site)")
 
-plot1 + theme_minimal(base_size = 17) + coord_cartesian(ylim = c(0, 10)) + scale_fill_manual(values=colors, name="Site Type:", labels=c("Apiary Absent", "Apiary Present")) + theme(legend.position=c(.8, .85)) + annotate(geom = "text", x = 2, y = 6.5, label = "**", cex = 10)
+plot1 + theme_minimal(base_size = 17) + coord_cartesian(ylim = c(0, 10)) + scale_fill_manual(values=colors, name="Apiary Status:", labels=c("Far from Apiary", "Near Apiary")) + theme(legend.position=c(.8, .85)) + annotate(geom = "text", x = 2, y = 6.5, label = "**",cex = 10) + annotate(geom = "text", x = 1, y = 8.5, label = "n.s.",cex = 7) 
 
 ```
 

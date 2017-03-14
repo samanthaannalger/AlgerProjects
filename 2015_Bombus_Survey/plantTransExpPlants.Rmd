@@ -75,8 +75,6 @@ plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="V
 #subset to only include plants part of the HB+Bombus group
 plantTreat <- plantTrans[ which(plantTrans$group=="HB + Bombus"), ]
 
-plantTreat <- plantTreat[which(!plantTreat$exp=="diversity"), ]
-plantTreat
 
 #Checking out by plant species
 plantSpp <- ddply(plantTreat, c("target_name", "spp"), summarise, 
