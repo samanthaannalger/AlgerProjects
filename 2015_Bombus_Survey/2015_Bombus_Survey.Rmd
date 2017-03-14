@@ -228,7 +228,11 @@ plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors) + coord
 ```{r}
 # recode NAs for HBsiteBin as None to indicate no HB caught at site:
 
-BombSurvSplit$DWV$HBSiteBin[is.na(BombSurvSplit$DWV$HBSiteBin)] <- "None"
+x <- BombSurvSplit$DWV[BombSurvSplit$DWV$HBSiteBin!="No Apis Caught",]
+
+# loooking at diffence between high and low
+chisq.test(x$HBSiteBin, x$virusBINY)
+
 
 # chi.sq test for High and Low DWV load sites
 chisq.test(BombSurvSplit$DWV$HBSiteBin, BombSurvSplit$DWV$virusBINY)
