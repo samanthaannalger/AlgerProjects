@@ -78,7 +78,31 @@ PosPlantSpp <- ddply(PosPlants, c("target_name", "spp"), summarise,
 colors <- c("olivedrab", "darkolivegreen2")
 
 
+```
+
+```{r}
+#Totals for each virus on all plants:
+#ddply summarize:
+fieldPlantsTotal <- ddply(fieldPlants, c("spp"), summarise, 
+                  sum = sum(BINYprefilter, na.rm=TRUE))
+              
 
 
 ```
 
+Flower Spp.:
+                    spp sum
+1       "white flowers"   1
+2              bee balm   3
+3  clammy ground cherry   0
+4             cow vetch   0
+5           crown vetch   0
+6              milkweed   2
+7                  mint   0
+8    purple loosestrife   0
+9            red clover   1
+10   spotted jewel weed   0
+11      st. john's wort   0
+12         white clover   0
+
+"mint"= creeping charlie!

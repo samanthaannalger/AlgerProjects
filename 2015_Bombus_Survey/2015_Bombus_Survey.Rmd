@@ -234,6 +234,8 @@ BombSurvSplit$DWV$HBSiteBin[is.na(BombSurvSplit$DWV$HBSiteBin)] <- "None"
 chisq.test(BombSurvSplit$DWV$HBSiteBin, BombSurvSplit$DWV$virusBINY)
 fisher.test(BombSurvSplit$DWV$HBSiteBin, BombSurvSplit$DWV$virusBINY)
 
+BombSurvSplit$DWV
+
 ```
 
 ##Difference in virus prevalence in bumble bees over the season:
@@ -387,33 +389,40 @@ cbind(x$DWV$site, x$DWV$apiary_near_far, x$DWV$HBviralLoad, x$DWV$BombusViralLoa
 # print my clean data frame for glm analysis 
 print(viralLoadDF)
 
-write.csv(viralLoadDF, file="MixedModelDF.csv")
-
-# make apiary near far a factor variable:
-viralLoadDF$apiary_near_far <- as.factor(viralLoadDF$apiary_near_far)
+x <- split(viralLoadDF, viralLoadDF$target_name)
 
 library(lme4)
 library(MASS)
 
-# mixed model for DWV (significant) and apiary status
-mod <- glmmPQL(data=x$DWV, fixed = BombusViralLoad~apiary_near_far + sumApiaries, random = ~ 1 | site, family = gaussian)
+
+
+# mixed model for DWV load and apiary status (significant) 
+mod <- glmmPQL(data=x$DWV, fixed = BombMeanNA~apiary_near_far + sumApiaries, random = ~ 1 | site, family = gaussian)
 
 summary(mod)
 
-# mixed model for BQCV (NOT significant) and apiary status
-mod1 <- glmmPQL(data=x$BQCV, fixed = BombusViralLoad~apiary_near_far + sumApiaries, random = ~ 1 | site, family = gaussian)
+# mixed model for BQCV load and apiary status (NOT significant)
+mod1 <- glmmPQL(data=x$BQCV, fixed = BombMeanNA~apiary_near_far + sumApiaries, random = ~ 1 | site, family = gaussian)
 
 summary(mod1)
 
-# mixed model of prevalence on viral load
-mod2 <- glmmPQL(data=x$DWV, fixed = BombusViralLoad~BombPrev, random = ~ 1 | site, family = gaussian)
-
-summary(mod2)
-
-# mixed model of prevalence in BQCV vs sumApiries
-mod3 <- glmmPQL(data=x$BQCV, fixed = BombPrev~sumApiaries, random = ~ 1 | site, family = gaussian)
+# mixed model of prevalence in BQCV vs sumApiries (sumApiaries=significant)
+mod3 <- glmmPQL(data=x$BQCV, fixed = BombPrev~apiary_near_far + sumApiaries, random = ~ 1 | site, family = gaussian)
 
 summary(mod3)
+
+# mixed model of prevalence in DWV vs sumApiries (NOT significant)
+mod4 <- glmmPQL(data=x$DWV, fixed = BombPrev~apiary_near_far + sumApiaries, random = ~ 1 | site, family = gaussian)
+
+summary(mod4)
+
+
+
+
+# mixed model for all viruses and apiary  near/far and sum apiaries (not significant)
+mod5 <- glmmPQL(data=viralLoadDF, fixed = BombMeanNA~(apiary_near_far + sumApiaries) * target_name, random = ~ 1 | site, family = gaussian)
+
+summary(mod5)
 
 ```
 
@@ -448,7 +457,7 @@ plot1 + theme_minimal(base_size = 17) + coord_cartesian(ylim = c(0, 10)) + scale
 plot1 <- ggplot(data = x$BQCV, 
                aes(x = sumApiaries, 
                    y = BombPrev)
-) + geom_point(size=3) + labs(x = "# of Apiaries within 3 km", y = "% Prevalence of BQCV") + coord_cartesian(ylim = c(0, 1), xlim = c(0,10)) + theme_minimal(base_size = 17) + scale_y_continuous(labels = scales::percent)
+) + geom_point(size=3) + labs(x = "# of Apiaries within 3 km", y = "% Prevalence of BQCV in Bumblebees") + coord_cartesian(ylim = c(0, 1), xlim = c(0, 10)) + theme_minimal(base_size = 17) + scale_y_continuous(labels = scales::percent) + scale_x_continuous(breaks=c(0:10))
 
 plot1
 ```
