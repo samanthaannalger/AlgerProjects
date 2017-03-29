@@ -391,8 +391,6 @@ cbind(x$DWV$site, x$DWV$apiary_near_far, x$DWV$HBviralLoad, x$DWV$BombusViralLoa
 # print my clean data frame for glm analysis 
 print(viralLoadDF)
 
-write.csv(viralLoadDF, file="MixedModelDF.csv")
-
 # make apiary near far a factor variable:
 viralLoadDF$apiary_near_far <- as.factor(viralLoadDF$apiary_near_far)
 
@@ -456,7 +454,7 @@ plot1 + theme_minimal(base_size = 17) + coord_cartesian(ylim = c(0, 10)) + scale
 library(scales)
 plot1 <- ggplot(data = x$BQCV, 
               aes(x = sumApiaries, 
-              y = BombPrev)) + geom_point(size=3) + labs(x = "# of Apiaries within 3 km", y = "% Prevalence of BQCV") + coord_cartesian(ylim = c(0, 1), xlim = c(0,10)) + theme_minimal(base_size = 17) + scale_y_continuous(labels = scales::percent)
+              y = BombPrev)) + geom_point(size=3) + labs(x = "# of Apiaries within 3 km", y = "% Prevalence of BQCV") + coord_cartesian(ylim = c(0, 1), xlim = c(0,10)) + theme_minimal(base_size = 17) + scale_y_continuous(labels = scales::percent) + scale_x_continuous(1:10)
 
 plot1
 

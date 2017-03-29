@@ -1,0 +1,97 @@
+---
+title: "Moran’s i"
+author: "Samantha A. Alger"
+date: "3/25/2017"
+output: html_document
+---
+```{r}
+ls()
+rm(list=ls())
+
+#Set Working Directory: 
+setwd("~/AlgerProjects/2015_Bombus_Survey/CSV_Files")
+
+#install package for Morans.i
+install.packages(ape)
+
+# get programs
+library(ape)
+library(plyr)
+library(dplyr)
+
+
+# read in data:
+SurvData <- read.csv("MixedModelDF.csv", header=TRUE, sep = ",", stringsAsFactors=FALSE)
+
+SpatialData <- read.csv("2015SurveyLocations.csv", header=TRUE, sep = ",", stringsAsFactors=FALSE)
+
+head(SurvData)
+head(SpatialData)
+
+#merge the two datafiles by Site name
+SpatialData <- merge(SurvData,SpatialData, by="site")
+
+#Split by viruses
+SpatDWV <- subset(SpatialData, target_name=="DWV")
+SpatBQ <- subset(SpatialData, target_name=="BQCV")
+
+#not normal! so log transform each one
+#DWV:
+hist(SpatDWV$BombPrev)
+hist(SpatBQ$BombPrev)
+SpatDWV$logPrev <- log(SpatDWV$BombPrev)
+
+SpatDWV
+hist(SpatDWV$logPrev)
+SpatDWV$logPrev[SpatDWV$logPrev == "-Inf"] <- 0
+
+SpatDWV
+hist(SpatDWV$logPrev)
+
+#BQCV
+hist(SpatDWV$BombPrev)
+hist(SpatBQ$BombPrev)
+SpatBQ$logPrev <- (SpatBQ$BombPrev)^3
+
+SpatBQ
+hist(SpatBQ$logPrev)
+
+
+```
+
+#################################################################
+Calculating Moran's I
+#################################################################
+
+Steps:
+1. Generate a distance matrix
+
+2. take inverse of the matrix values 
+and replace the diagonal entries with zero
+
+3. repeat for each virus
+
+```{r}
+#For DWV:
+DWV.dists <- as.matrix(dist(cbind(SpatDWV$long, SpatDWV$lat)))
+
+DWV.dists.inv <- 1/DWV.dists
+diag(DWV.dists.inv) <- 0
+ 
+DWV.dists.inv[1:5, 1:5]
+
+#For BQCV:
+BQ.dists <- as.matrix(dist(cbind(SpatBQ$long, SpatBQ$lat)))
+
+BQ.dists.inv <- 1/BQ.dists
+diag(BQ.dists.inv) <- 0
+ 
+BQ.dists.inv[1:5, 1:5]
+
+#Calculating Morans i:
+Moran.I(SpatDWV$logPrev, DWV.dists.inv)
+Moran.I(SpatBQ$logPrev, BQ.dists.inv)
+Moran.I(SpatDWV$BombusViralLoad, DWV.dists.inv)
+Moran.I(SpatBQ$BombusViralLoad, BQ.dists.inv)
+Moran.I(SpatBQ$HBviralLoad, BQ.dists.inv)
+Moran.I(SpatDWV$HBviralLoad, DWV.dists.inv)
