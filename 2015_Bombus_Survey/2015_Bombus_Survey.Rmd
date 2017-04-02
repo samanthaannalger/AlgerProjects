@@ -455,37 +455,62 @@ summary(mod4)
 ```{r}
 # working with lme4 in R
 
+
+
 library(lme4)
 
 # BQCV prevalence
 # Using glmer because need to specify binomial distribution because virusBINY is 0s and 1s
 # controlling for the random effects of site, species, lat and long
-BQCVmod <- glmer(data=DFsplit$BQCV, formula = virusBINY~ sumApiaries + (1|site) + (1|species) + (1|lat) + (1|long), family=binomial(link = "logit"))
+BQCVmod <- glmer(data=DFsplit$BQCV, formula = virusBINY ~ apiary_near_far + (1|site) + (1|species) + (1|lat) + (1|long), family=binomial(link = "logit"))
 
 summary(BQCVmod)
 
 
 #DWV prevalence
-DWVmod <- glmer(data=DFsplit$DWV, formula = virusBINY~apiary_near_far + (1|site) + (1|species), family=binomial(link = "logit"))
+DWVmod <- glmer(data=DFsplit$DWV, formula = virusBINY ~ apiary_near_far + (1|site) + (1|species) + (1|lat) + (1|long), family=binomial(link = "logit"))
 
 summary(DWVmod)
 
-DWVpos <- subset(DFsplit$DWV, virusBINY==1)
 
-DWVpos$log10norm_genome_copbee <- log10(DWVpos$norm_genome_copbee)
 
 
 
 # DWV viral load test (likelyhood)
-lmermod1.null <- lmer(data=DWVpos, formula = log10norm_genome_copbee ~ apiary_near_far + (1|site) + (1|species), REML = FALSE)
+
+# substetting only positive DWV bees
+DWVpos <- subset(DFsplit$DWV, virusBINY==1)
+# log tranforming those bees
+DWVpos$log10norm_genome_copbee <- log10(DWVpos$norm_genome_copbee)
+
+
+# null model
+DWVvl.null <- lmer(data=DWVpos, formula = log10norm_genome_copbee ~ 1 + (1|site) + (1|species), REML = FALSE)
+
+# full model
+DWVvl <- lmer(data=DWVpos, formula = log10norm_genome_copbee ~ sumApiaries + (1|site) + (1|species), REML = FALSE)
+# anova between null and full
+anova(DWVvl.null,DWVvl)
+
+coef(DWVvl)
 
 
 
-lmermod1 <- lmer(data=DWVpos, formula = log10norm_genome_copbee ~ sumApiaries + apiary_near_far + (1|site) + (1|species), REML = FALSE)
+# BQCV viral load test (likelyhood)
 
-anova(lmermod1.null,lmermod1)
+# substetting only positive BQCV bees
+BQCVpos <- subset(DFsplit$BQCV, virusBINY==1)
+# log tranforming those bees
+BQCVpos$log10norm_genome_copbee <- log10(BQCVpos$norm_genome_copbee)
 
 
+# null model
+BQVCvl.null <- lmer(data=BQCVpos, formula = log10norm_genome_copbee ~ 1 + (1|site) + (1|species), REML = FALSE)
+
+# full model
+BQVCvl <- lmer(data=BQCVpos, formula = log10norm_genome_copbee ~ sumApiaries + (1|site) + (1|species), REML = FALSE)
+# anova between null and full
+anova(BQVCvl.null,BQVCvl)
 ```
 
 
