@@ -475,7 +475,6 @@ summary(DWVmod)
 
 
 
-
 # DWV viral load test (likelyhood)
 
 # substetting only positive DWV bees
@@ -511,6 +510,16 @@ BQVCvl.null <- lmer(data=BQCVpos, formula = log10norm_genome_copbee ~ 1 + (1|sit
 BQVCvl <- lmer(data=BQCVpos, formula = log10norm_genome_copbee ~ sumApiaries + (1|site) + (1|species), REML = FALSE)
 # anova between null and full
 anova(BQVCvl.null,BQVCvl)
+
+
+
+
+
+
+
+
+
+
 ```
 
 
