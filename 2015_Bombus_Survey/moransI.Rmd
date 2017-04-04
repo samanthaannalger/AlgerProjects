@@ -16,9 +16,6 @@ install.packages(ape)
 
 # get programs
 library(ape)
-library(plyr)
-library(dplyr)
-
 
 # read in data:
 SurvData <- read.csv("MixedModelDF.csv", header=TRUE, sep = ",", stringsAsFactors=FALSE)
@@ -31,21 +28,23 @@ head(SpatialData)
 #merge the two datafiles by Site name
 SpatialData <- merge(SurvData,SpatialData, by="site")
 
+#write out csv file:
+write.csv(SpatialData, file="spatialMerge.csv")
+
+
 #Split by viruses
 SpatDWV <- subset(SpatialData, target_name=="DWV")
 SpatBQ <- subset(SpatialData, target_name=="BQCV")
 
-#not normal! so log transform each one
+#not normal! transform data?
 #DWV:
-hist(SpatDWV$BombPrev)
-hist(SpatBQ$BombPrev)
-SpatDWV$logPrev <- log(SpatDWV$BombPrev)
+#hist(SpatDWV$BombPrev)
+#hist(SpatBQ$BombPrev)
+#SpatDWV$logPrev <- log(SpatDWV$BombPrev)
 
-SpatDWV
-hist(SpatDWV$logPrev)
-SpatDWV$logPrev[SpatDWV$logPrev == "-Inf"] <- 0
+#hist(SpatDWV$logPrev)
+#SpatDWV$logPrev[SpatDWV$logPrev == "-Inf"] <- 0
 
-SpatDWV
 hist(SpatDWV$logPrev)
 
 #BQCV
@@ -80,7 +79,7 @@ diag(DWV.dists.inv) <- 0
  
 DWV.dists.inv[1:5, 1:5]
 
-#For BQCV:
+#For BQCV, (this is actually same as above):
 BQ.dists <- as.matrix(dist(cbind(SpatBQ$long, SpatBQ$lat)))
 
 BQ.dists.inv <- 1/BQ.dists
