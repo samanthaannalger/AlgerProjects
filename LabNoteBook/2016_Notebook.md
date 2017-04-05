@@ -12,8 +12,8 @@
 * [Page 1: 2017-01-18](#id-section1). Experiment ideas and 'to do' items
 * [Page 2: 2017-01-22](#id-section2). Plant Trans Exp.
 * [Page 3: 2017 01-27](#id-section3). Lab Work To Do List
-* [Page 4: 2017-0207.](#id-section4)Disease Ecology Notes
-* [Page 5:](#id-section5).
+* [Page 4: 2017-02-07.](#id-section4)Disease Ecology Notes
+* [Page 5: 2017-04-05](#id-section5). Arc Gis Notes
 * [Page 6:](#id-section6).
 * [Page 7:](#id-section7).
 * [Page 8:](#id-section8).
@@ -297,7 +297,44 @@ Is it the evolution of the infectious agent?
 
 ------
 <div id='id-section5'/>
-### Page 5:
+### Page 5: 2017-04-05
+
+### ArcGIS notes
+
+Working on the 2015 Bombus Survey data: calculating the number of honeybee apiaries/colonies within a certain distance from each bumble bee sampling point. 
+
+I tried to change the projection coordinate system for the apiaryDump to match the other layers. This made the apiaryDump points not match the map at all. I could only see one point, far off from VT. Not sure why this happened. All layers are in NAD 1983- state plan_VT_FIPS_4400 except for apiaryDump. 
+
+* GIS toolbox>Projections and Transformations>Define Projection
+
+How to delete entries in an attribute table:
+
+* click on editor in the editor toolbar>choose which to edit>go to the attribute table and select rows to delete and delete. 
+
+How to calculate nearest apiary to each point
+
+* near (analysis) tool. input: specify the bumble bee collection site and the apiaries. Output: two columns with near_FAD= the ID of the nearest apiary, near_DIS= the distance (in meters) to the nearest apiary. The nearest apiary for the SANS honey bee sites is ~800 m. (so create a buffer at 800 m)
+
+How to calculate multiple buffer rings around each bumble bee collection site:
+
+* Multiple Ring Buffer tool. input: bumble bee collection sites,  distances for buffers (800m, 1 km-8km). The computer takes a long time for this step! and the output wasn't great… trying to use each buffer individuallly
+* Buffer (analysis tool) > Input: fieldSites (bombus sites), Linear distance: 1 km
+* repeat for each buffer and label accordingly 
+* make a column (counts) in apiary point data and make it equal 1: http://support.esri.com/technical-article/000008599
+* join this new buffer layer to the apiary point data:
+  * Right-click the polygon shapefile and click Joins and Relates > Joins. Click the dropdown list and select 'Join data from another layer based on spatial location'.
+  * Specify the point shapefile from Step 1.
+  * Select the first bullet (Each polygon is given a summary of the numeric attributes...) and check the 'Sum' box.
+  * Specify an output location, and click OK.
+  * A polygon shapefile with the 'Count' field indicating how many point features lie within each polygon feature is now present. This is usually named 'Sum_Count' or 'Count_'.
+    ​
+
+    ​
+
+     
+
+
+
 ------
 <div id='id-section6'/>
 ### Page 6:
