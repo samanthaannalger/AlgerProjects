@@ -99,7 +99,7 @@ VirusSum <- ddply(BombSurv, c("species", "target_name"), summarise,
                   mean = mean(virusBINY, na.rm=TRUE),
                   sd = sd(virusBINY, na.rm=TRUE),
                   se = sd / sqrt(n))
-
+                  
          
 #choosing color pallet
 colors <- c("steelblue", "tan3")
