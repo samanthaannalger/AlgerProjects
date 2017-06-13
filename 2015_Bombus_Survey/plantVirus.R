@@ -84,15 +84,6 @@ library(scales)
 
 ## Clean up for 2015 plant data___________________________________________
 
-# take only columns that we want:
-plantqPCR <- select(plantqPCR, labID, target_name, Ct_mean, Ct_sd, quantity_mean, quantity_sd, run)
-
-
-# remove unwanted rows from dataframe:
-plantqPCR<-plantqPCR[!(plantqPCR$labID=="No Sample"),]
-plantqPCR <- plantqPCR[!(plantqPCR$labID=="Gblock"),]
-plantqPCR <- plantqPCR[!(plantqPCR$labID=="NTC"),]
-
 
 # take only columns that we want:
 plantqPCR <- select(plantqPCR, labID, target_name, Ct_mean, Ct_sd, quantity_mean, quantity_sd, run)
@@ -103,7 +94,17 @@ plantqPCR<-plantqPCR[!(plantqPCR$labID=="No Sample"),]
 plantqPCR <- plantqPCR[!(plantqPCR$labID=="Gblock"),]
 plantqPCR <- plantqPCR[!(plantqPCR$labID=="NTC"),]
 
-# merge 2015 eco data with qPCR results
+
+# take only columns that we want:
+plantqPCR <- select(plantqPCR, labID, target_name, Ct_mean, Ct_sd, quantity_mean, quantity_sd, run)
+
+
+# remove unwanted rows from dataframe:
+plantqPCR<-plantqPCR[!(plantqPCR$labID=="No Sample"),]
+plantqPCR <- plantqPCR[!(plantqPCR$labID=="Gblock"),]
+plantqPCR <- plantqPCR[!(plantqPCR$labID=="NTC"),]
+
+# merge eco data with qPCR results
 plantTransPlants <- merge(plantqPCR, plantTransPlants, by="labID")
 
 head(plantTransPlants)
@@ -113,6 +114,7 @@ plantTransPlants$BINYprefilter <- ifelse(plantTransPlants$quantity_sd > 0, 1, 0)
 
 #select columns needed and make new dataframe
 plantTransPlants <- select(plantTransPlants, labID, ID, target_name, date, tent, group, fieldID, spp, exp, BINYprefilter)
+
 
 #delete unique rows to show only one entry for each sample. 
 plantTransPlants <- unique(plantTransPlants)
