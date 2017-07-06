@@ -92,7 +92,7 @@ return(data)
 # returns a dataframe with normalized virus values 
 ###########################################################################
 
-VirusNorm <- function(number_bees = 4, data=data){
+VirusNorm <- function(number_bees = 50, data=data){
   
   # set constant values for genome copies per bee calculations:
   crude_extr <- 100
@@ -100,13 +100,12 @@ VirusNorm <- function(number_bees = 4, data=data){
   GITCperbee <- 200
   cDNA_eff <- 0.1
   rxn_vol <- 3
-  num_bees <- 50
   
   #create column for total_extr_vol
-  data$total_extr_vol <- (GITCperbee * num_bees)
+  data$total_extr_vol <- (GITCperbee * number_bees)
   
   # create column for genome copies per bee:
-  data$genomeCopies <- ((((((data$quantity_mean / cDNA_eff) / rxn_vol) * data$dil.factor) * eluteRNA) / crude_extr) * total_extr_vol) / number_bees
+  data$genomeCopy <- ((((((data$quantity_mean / cDNA_eff) / rxn_vol) * data$dil.factor) * eluteRNA) / crude_extr) * total_extr_vol) / number_bees
   
   return(data)
   
@@ -119,28 +118,29 @@ VirusNorm <- function(number_bees = 4, data=data){
 
 
 
+actinNormal <- function(data=MigVirus){
+  
+  # pull only actin values out of dataframe
+  ActinOnly <- data[which(data$target_name=="ACTIN"),]
 
-# pull only actin values out of dataframe
-ActinOnly <- BombSurv[which(BombSurv$target_name=="ACTIN"),]
+  # create DF of ACTIN genome copies and lab ID:
+  ActinDF <- data.frame(ActinOnly$sample_name, ActinOnly$genomeCopy)
+  colnames(ActinDF) <- c("sample_name", "ACT_genomeCopy")
 
-# create DF of ACTIN genome copies and lab ID:
-ActinDF <- data.frame(ActinOnly$sample_name, ActinOnly$genome_copbee)
-colnames(ActinDF) <- c("sample_name", "ACT_genome_copbee")
+  # merge ACTIN dataframe with main dataframe:
+  #Need rownames and all.x=TRUE because data frames are different sizes.
+  data <- merge(data, ActinDF, by=c("sample_name", "run"))
 
-# merge ACTIN dataframe with main dataframe:
-#Need rownames and all.x=TRUE because data frames are different sizes.
+  # find mean of all ACTIN values:
+  ActinMean <- mean(ActinOnly$genomeCopy, na.rm = TRUE)
 
-BombSurv <- merge(BombSurv, ActinDF, by="sample_name")
+  # create column for normalized genome copies per bee:
+  data$NormGenomeCopy <- (data$genomeCopy/data$ACT_genomeCopy)*ActinMean
 
-# find mean of all ACTIN values:
-ActinMean <- mean(ActinOnly$genome_copbee, na.rm = TRUE)
+return(data)
+}
 
-# create column for normalized genome copies per bee:
-BombSurv$norm_genome_copbee <- (BombSurv$genome_copbee/BombSurv$ACT_genome_copbee)*ActinMean
-
-
-
-
+actinNormal(data=MigVirus)
 
 
 
