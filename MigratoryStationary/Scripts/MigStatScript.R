@@ -14,11 +14,113 @@ setwd("~/AlgerProjects/MigratoryStationary/")
 ###########################################################################################
 
 # Read in Data:
-MigStat <- read.table("Data/MigratoryStationaryData.csv", header=TRUE, sep = ",", stringsAsFactors = FALSE) 
+MigStat <- read.table("Data/MigratoryStationaryData.csv", 
+                      header=TRUE, 
+                      sep = ",", 
+                      stringsAsFactors = FALSE) 
+
+# create average Nosema Load between chambers
+MigStat$NosemaLoad <- (MigStat$NosemaChamber1 + MigStat$NosemaChamber2)/2
 
 ###########################################################################################
 
-MigStat$NosemaLoad <- (MigStat$NosemaChamber1 + MigStat$NosemaChamber2)/2
+
+###########################################################################
+# function name: RepANOVA
+# description:conducts a repeated measures ANOVA on a data set and plots 
+# parameters: 
+# data = data frame, 
+# column = name of continuous variable column in quotations
+###########################################################################
+
+RepANOVA <- function(data, column){
+  
+  data$x <- data[,column]
+  
+  # repeated measures on continuous variable
+  aov.out <- aov(x~Treatment * SamplingEvent + Error(ID), data=data)
+  
+
+  #PLOT:
+  library(plyr)
+  
+  sum <- ddply(data, c("Treatment", "SamplingEvent"), summarise, 
+               n = length(x),
+               mean = mean(x, na.rm = TRUE),
+               sd = sd(x, na.rm = TRUE),
+               se = sd / sqrt(n))
+  
+  # split data frame by origin  
+  sumsplit <- split(sum, sum$Treatment)
+  
+  # create matrix of values and vector of time
+  SamplingEvent <- c(1:3)
+  Migratory <- sumsplit$Migratory$mean
+  Stationary <- sumsplit$Stationary$mean
+  Exposed <- sumsplit$Exposed$mean
+  mat <- as.matrix(cbind(Migratory, Stationary, Exposed))
+  
+  # plot matrix
+  matplot(x=SamplingEvent, y=mat,
+          type="l",
+          xlab="Sampling Event", 
+          ylab=as.character(column), 
+          lwd=2,
+          lty=1,
+          font.lab=2,
+          bty="l", 
+          col=2:6)
+  
+  grid(col="gray")
+  
+  # create legend for plot
+  legend(x=1,y=max(Migratory),
+         c("Migratory",
+           "Stationary",
+           "Exposed"),
+         pch=19,
+         col=2:6,
+         bty="n",
+         bg="white")
+  
+  # return matrix and stats for ANOVA
+  return(list(mat, aov.out, summary(aov.out)))
+}
+
+
+###########################################################################
+# END OF FUNCITON
+###########################################################################
+
+RepANOVA(data=MigStat, column="FOB")
+
+
+
+aov.out <- aov(FOB ~ Treatment * SamplingEvent + Error(ID), data=MigStat)
+summary(aov.out)
+
+
+sum <- ddply(MigStat, c("Treatment", "SamplingEvent"), summarise, 
+             n = length(FOB),
+             mean = mean(FOB, na.rm = TRUE),
+             sd = sd(FOB, na.rm = TRUE),
+             se = sd / sqrt(n))
+
+sumsplit <- split(sum, sum$Treatment)
+
+# create matrix of values and vector of time
+SamplingEvent <- c(1:3)
+Migratory <- sumsplit$Migratory$mean
+Stationary <- sumsplit$
+Exposed <- sumsplit$Exposed$mean
+mat <- as.matrix(cbind(Migratory, Stationary, Exposed))
+
+
+
+
+
+
+
 
 
 
