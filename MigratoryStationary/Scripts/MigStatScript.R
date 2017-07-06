@@ -12,6 +12,12 @@ rm(list=ls())
 setwd("~/AlgerProjects/MigratoryStationary/")
 
 ###########################################################################################
+# Read in Virus Data:
+MigVirus <- read.table("Data/MigVirus.csv", 
+                      header=TRUE, 
+                      sep = ",", 
+                      stringsAsFactors = FALSE) 
+
 
 # Read in Data:
 MigStat <- read.table("Data/MigratoryStationaryData.csv", 
@@ -94,6 +100,61 @@ RepANOVA <- function(data, column){
 ###########################################################################
 
 RepANOVA(data=MigStat, column="Varroa")
+
+
+
+
+################################################################################################
+# DATA CLEANING
+
+###########################################################################
+# function name: PrelimClean
+# description: removes unneed PCR file columns, gblock, NTC and duplicates 
+# parameters: 
+# data = data frame, 
+# returns a DF that is partially cleaned
+###########################################################################
+
+PrelimClean <- function(data=MigVirus){
+  
+  # take only columns that we want:
+  library(dplyr)
+  data <- select(data, sample_name, target_name, Ct_mean, Ct_sd, quantity_mean, quantity_sd, run)
+
+  # remove duplicate rows
+  data<-data[!duplicated(data), ]
+
+  # remove NTC rows from dataframe:
+  data<-data[!(data$sample_name=="No Sample"),]
+
+  # remove Gblock rows from dataframe:
+  data<-data[!(data$sample_name=="G-Block"),]
+
+return(data)
+
+}
+
+###########################################################################
+# END OF FUNCITON
+###########################################################################
+
+
+
+MigVirus <- PrelimClean(data=MigVirus) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
