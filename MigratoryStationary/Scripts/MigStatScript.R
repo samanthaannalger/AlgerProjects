@@ -114,6 +114,9 @@ source("Scripts/BurnhamFunctions.R")
 
 MigVirus <- PrelimClean(data=MigVirus) 
 
+MigStat <- merge(MigVirus, MigStat, by=c("sample_name"), all.x =TRUE)
+
+
 
 RepANOVA(data=MigStat, column="Varroa")
 
