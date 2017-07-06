@@ -22,6 +22,8 @@ MigStat <- read.table("Data/MigratoryStationaryData.csv",
 # create average Nosema Load between chambers
 MigStat$NosemaLoad <- (MigStat$NosemaChamber1 + MigStat$NosemaChamber2)/2
 
+MigStat$Varroa <- MigStat$VarroaLoad / MigStat$TotBees
+
 ###########################################################################################
 
 
@@ -87,38 +89,28 @@ RepANOVA <- function(data, column){
   return(list(mat, aov.out, summary(aov.out)))
 }
 
-
 ###########################################################################
 # END OF FUNCITON
 ###########################################################################
 
-RepANOVA(data=MigStat, column="FOB")
+RepANOVA(data=MigStat, column="Varroa")
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 aov.out <- aov(FOB ~ Treatment * SamplingEvent + Error(ID), data=MigStat)
 summary(aov.out)
-
-
-sum <- ddply(MigStat, c("Treatment", "SamplingEvent"), summarise, 
-             n = length(FOB),
-             mean = mean(FOB, na.rm = TRUE),
-             sd = sd(FOB, na.rm = TRUE),
-             se = sd / sqrt(n))
-
-sumsplit <- split(sum, sum$Treatment)
-
-# create matrix of values and vector of time
-SamplingEvent <- c(1:3)
-Migratory <- sumsplit$Migratory$mean
-Stationary <- sumsplit$
-Exposed <- sumsplit$Exposed$mean
-mat <- as.matrix(cbind(Migratory, Stationary, Exposed))
-
-
-
-
-
 
 
 
