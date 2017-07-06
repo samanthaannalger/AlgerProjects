@@ -33,6 +33,119 @@ MigStat$Varroa <- MigStat$VarroaLoad / MigStat$TotBees
 ###########################################################################################
 
 
+
+
+
+###############################################################################################
+################################### FUNCTIONS #################################################
+###############################################################################################
+
+
+
+
+
+
+
+
+###########################################################################
+# function name: PrelimClean
+# description: removes unneed PCR file columns, gblock, NTC and duplicates 
+# parameters: 
+# data = data frame, 
+# returns a DF that is partially cleaned
+###########################################################################
+
+PrelimClean <- function(data=MigVirus){
+  
+  # take only columns that we want:
+  library(dplyr)
+  data <- select(data, sample_name, ID, labID, SamplingEvent, target_name, Ct_mean, Ct_sd, quantity_mean, quantity_sd, run)
+
+  # remove duplicate rows
+  data<-data[!duplicated(data), ]
+
+  # remove NTC rows from dataframe:
+  data<-data[!(data$sample_name=="No Sample"),]
+
+  # remove Gblock rows from dataframe:
+  data<-data[!(data$sample_name=="G-Block"),]
+
+return(data)
+
+}
+
+###########################################################################
+# END OF FUNCITON
+###########################################################################
+
+
+
+
+
+
+
+
+###########################################################################
+# function name: VirusNorm
+# description: normalizes virus data with actin values and constants 
+# parameters: number of bees and a data frame 
+# returns a dataframe with normalized virus values 
+###########################################################################
+
+VirusNorm <- function(number_bees = 4, data=data){
+  
+  # set constant values for genome copies per bee calculations:
+  crude_extr <- 100
+  eluteRNA <- 50
+  GITCperbee <- 200
+  cDNA_eff <- 0.1
+  rxn_vol <- 3
+  num_bees <- 50
+  
+  #create column for total_extr_vol
+  data$total_extr_vol <- (GITCperbee * num_bees)
+  
+  # create column for genome copies per bee:
+  data$genomeCopies <- ((((((data$quantity_mean / cDNA_eff) / rxn_vol) * data$dil.factor) * eluteRNA) / crude_extr) * total_extr_vol) / number_bees
+  
+  return(data)
+  
+}
+
+###########################################################################
+# END OF FUNCITON
+###########################################################################
+
+
+
+
+
+# pull only actin values out of dataframe
+ActinOnly <- BombSurv[which(BombSurv$target_name=="ACTIN"),]
+
+# create DF of ACTIN genome copies and lab ID:
+ActinDF <- data.frame(ActinOnly$sample_name, ActinOnly$genome_copbee)
+colnames(ActinDF) <- c("sample_name", "ACT_genome_copbee")
+
+# merge ACTIN dataframe with main dataframe:
+#Need rownames and all.x=TRUE because data frames are different sizes.
+
+BombSurv <- merge(BombSurv, ActinDF, by="sample_name")
+
+# find mean of all ACTIN values:
+ActinMean <- mean(ActinOnly$genome_copbee, na.rm = TRUE)
+
+# create column for normalized genome copies per bee:
+BombSurv$norm_genome_copbee <- (BombSurv$genome_copbee/BombSurv$ACT_genome_copbee)*ActinMean
+
+
+
+
+
+
+
+
+
 ###########################################################################
 # function name: RepANOVA
 # description:conducts a repeated measures ANOVA on a data set and plots 
@@ -48,7 +161,7 @@ RepANOVA <- function(data, column){
   # repeated measures on continuous variable
   aov.out <- aov(x~Treatment * SamplingEvent + Error(ID), data=data)
   
-
+  
   #PLOT:
   library(plyr)
   
@@ -99,49 +212,23 @@ RepANOVA <- function(data, column){
 # END OF FUNCITON
 ###########################################################################
 
-RepANOVA(data=MigStat, column="Varroa")
 
 
 
 
-################################################################################################
-# DATA CLEANING
-
-###########################################################################
-# function name: PrelimClean
-# description: removes unneed PCR file columns, gblock, NTC and duplicates 
-# parameters: 
-# data = data frame, 
-# returns a DF that is partially cleaned
-###########################################################################
-
-PrelimClean <- function(data=MigVirus){
-  
-  # take only columns that we want:
-  library(dplyr)
-  data <- select(data, sample_name, target_name, Ct_mean, Ct_sd, quantity_mean, quantity_sd, run)
-
-  # remove duplicate rows
-  data<-data[!duplicated(data), ]
-
-  # remove NTC rows from dataframe:
-  data<-data[!(data$sample_name=="No Sample"),]
-
-  # remove Gblock rows from dataframe:
-  data<-data[!(data$sample_name=="G-Block"),]
-
-return(data)
-
-}
-
-###########################################################################
-# END OF FUNCITON
-###########################################################################
 
 
+
+
+
+###############################################################################################
+################################### PROGRAM BODY ##############################################
+###############################################################################################
 
 MigVirus <- PrelimClean(data=MigVirus) 
 
+
+RepANOVA(data=MigStat, column="Varroa")
 
 
 
