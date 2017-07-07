@@ -32,8 +32,8 @@
 5. Transfer the lysate to a Homogenizer Column.
 6. Centrifuge at 14,000 x g for 5 minutes at room temperature.
 7. Transfer cleared lysate to a new 1.5 mL microcentrifuge tube. Do not disturb or
-   transfer any of the insoluble pellet. Measure the volume of the lysate.
-8. Add 1 volume 70% ethanol. Vortex at maximum speed for 20 seconds. A precipitate
+   transfer any of the insoluble pellet. Measure the volume of the lysate (550 ul).
+8. Add 1 volume (550 ul) 70% ethanol. Vortex at maximum speed for 20 seconds. A precipitate
    may form at this point; it will not interfere with DNA isolation. Passing the mixture
    through a needle using a syringe or by pipetting up and down 10-15 times may break
    up the precipitates.
