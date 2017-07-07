@@ -26,107 +26,97 @@ MigStat <- read.table("Data/MigratoryStationaryData.csv",
                       stringsAsFactors = FALSE) 
 
 
-###########################################################################################
-
-
-
-
-
-###############################################################################################
-################################### FUNCTIONS #################################################
-###############################################################################################
-
-
-###########################################################################
-# function name: VirusNorm
-# description: normalizes virus data with actin values and constants 
-# parameters: number of bees and a data frame 
-# returns a dataframe with normalized virus values 
-###########################################################################
-
-VirusNorm <- function(number_bees = 50, data=data){
-  
-  # set constant values for genome copies per bee calculations:
-  crude_extr <- 100
-  eluteRNA <- 50
-  GITCperbee <- 200
-  cDNA_eff <- 0.1
-  rxn_vol <- 3
-  
-  #create column for total_extr_vol
-  data$total_extr_vol <- (GITCperbee * number_bees)
-  
-  # create column for genome copies per bee:
-  data$genomeCopy <- ((((((data$quantity_mean / cDNA_eff) / rxn_vol) * data$dil.factor) * eluteRNA) / crude_extr) * total_extr_vol) / number_bees
-  
-  return(data)
-  
-}
-
-###########################################################################
-# END OF FUNCITON
-###########################################################################
-
-
-
-
-actinNormal <- function(data=MigVirus){
-  
-  # pull only actin values out of dataframe
-  ActinOnly <- data[which(data$target_name=="ACTIN"),]
-
-  # create DF of ACTIN genome copies and lab ID:
-  ActinDF <- data.frame(ActinOnly$sample_name, ActinOnly$genomeCopy)
-  colnames(ActinDF) <- c("sample_name", "ACT_genomeCopy")
-
-  # merge ACTIN dataframe with main dataframe:
-  #Need rownames and all.x=TRUE because data frames are different sizes.
-  data <- merge(data, ActinDF, by=c("sample_name", "run"))
-
-  # find mean of all ACTIN values:
-  ActinMean <- mean(ActinOnly$genomeCopy, na.rm = TRUE)
-
-  # create column for normalized genome copies per bee:
-  data$NormGenomeCopy <- (data$genomeCopy/data$ACT_genomeCopy)*ActinMean
-
-return(data)
-}
-
-actinNormal(data=MigVirus)
-
-
-
-
-
-
-
-
-
-
-
-
 ###############################################################################################
 ################################### PROGRAM BODY ##############################################
 ###############################################################################################
 
+# source my functions
 source("Scripts/BurnhamFunctions.R")
+library(plyr)
+library(ggplot2)
+library(dplyr)
 
+#--------------------------------------------------------------------------
+# data cleaning
 
+# preliminary data cleaning
 MigVirus <- PrelimClean(data=MigVirus) 
 
-MigStat <- merge(MigVirus, MigStat, by=c("sample_name"), all.x =TRUE)
+# take only columns that we want:
+data <- select(MigStat, sample_name, Treatment, dil.factor)
 
+# merge with dilution factors
+MigVirus <- merge(MigVirus, data, by=c("sample_name"), all.x =TRUE)
 
+# use dilution factors to calcualte normalized virus load
+MigVirus <- VirusNorm(data=MigVirus, number_bees = 50)
 
-RepANOVA(data=MigStat, column="Varroa")
+# use actin to normalize normalized viral load
+MigVirus <- actinNormal(data=MigVirus)
 
+# remove actin from data frame
+MigVirus <- MigVirus[!(MigVirus$target_name=="ACTIN"),]
 
+# adds virus binary data and makes norm genome copy 0 if above threashold CT
+MigVirus <- CT_Threash(data=MigVirus)
 
+# create full ID to check for inccorrect duplicates 
+MigVirus$fullID <- with(MigVirus, paste0(sample_name, target_name))
+
+# remove duplicates for examples with Cts above threashold (i.e. both coerced to 0s) 
+MigVirus <- MigVirus[!duplicated(MigVirus$fullID), ] 
+
+# merge the virus data to the main dataset
+MigStat <- VirusMerger2000(data1 = MigVirus, data2 = MigStat)
 
 # create average Nosema Load between chambers
 MigStat$NosemaLoad <- (MigStat$NosemaChamber1 + MigStat$NosemaChamber2)/2
 
-MigStat$Varroa <- MigStat$VarroaLoad / MigStat$TotBees
+# normalize varroa load by number of bees sampled
+MigStat$Varroa <- (MigStat$VarroaLoad / MigStat$TotBees) * 100
+
+# log transform virus data:
+MigStat$logDWV <- log(MigStat$DWVload + 1)
+MigStat$logBQCV <- log(MigStat$BQCVload + 1)
+
+# data analysis for DWV (repeated measures ANOVA)
+RepANOVA(data=MigStatPositiveDWV, column="logDWV")
+
+# data analysis for BQCV (repeated measures ANOVA)
+RepANOVA(data=MigStatPositiveBQCV, column="logBQCV")
+
+# data analysis for FOB (repeated measures ANOVA)
+RepANOVA(data=MigStat, column="FOB")
+
+# data analysis for Varroa (repeated measures ANOVA)
+RepANOVA(data=MigStat, column="Varroa")
+
+# data analysis for Varroa (repeated measures ANOVA)
+RepANOVA(data=MigStat, column="NosemaLoad")
+
+# data analysis for Varroa (repeated measures ANOVA)
+RepANOVA(data=MigStat, column="BroodPattern")
+
+
+# data analysis for Varroa (repeated measures ANOVA)
+RepANOVA(data=MigStat, column="DWVbinary")
+
+
+
+# substetting only positive BQCV bees
+MigStatPositiveBQCV <- subset(MigStat, BQCVbinary==1)
+
+# substetting only positive BQCV bees
+MigStatPositiveDWV <- subset(MigStat, DWVbinary==1)
+
+
+
+
+VirusSum1 <- ddply(MigStatPositiveDWV, c("Treatment", "SamplingEvent"), summarise, 
+                   n = length(logDWV),
+                   mean = mean(logDWV, na.rm=TRUE),
+                   sd = sd(logDWV, na.rm = TRUE),
+                   se = sd / sqrt(n))
 
 
 
@@ -164,25 +154,6 @@ MigStat$Varroa <- MigStat$VarroaLoad / MigStat$TotBees
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-library(plyr)
-library(ggplot2)
 
 ggplot(data = Summary, 
                aes(x = SamplingEvent, 
