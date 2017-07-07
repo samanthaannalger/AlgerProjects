@@ -82,25 +82,6 @@ MigStat$logDWV <- log(MigStat$DWVload + 1)
 MigStat$logBQCV <- log(MigStat$BQCVload + 1)
 
 #################################################################################################
-# preliminary data analysis with RepANOVA function:
-#################################################################################################
-
-# data analysis for FOB (repeated measures ANOVA)
-RepANOVA(data=MigStat, column="FOB")
-
-# data analysis for Varroa (repeated measures ANOVA)
-RepANOVA(data=MigStat, column="Varroa")
-
-# data analysis for Varroa (repeated measures ANOVA)
-RepANOVA(data=MigStat, column="NosemaLoad")
-
-# data analysis for Varroa (repeated measures ANOVA)
-RepANOVA(data=MigStat, column="BroodPattern")
-
-# data analysis for Varroa (repeated measures ANOVA)
-RepANOVA(data=MigStat, column="DWVbinary")
-
-#################################################################################################
 # DATA ANLAYSIS AND GRAPHICS FOR EXPERIMENT 1:
 #################################################################################################
 
@@ -216,25 +197,25 @@ ggplot(data = VarSum,
 
 
 #-----------------------------------------------------------------------------------
-# Frames of Brood:
+# Frames of Bees:
 
 # repeated measures anova for BQCV
 aov.FOB <- aov(FOB~Treatment * SamplingEvent + Error(ID), data=MigStatExp_1)
 summary(aov.FOB)
 
-# Summary of DWV prev. for experiment 1
+# Summary of FOB for experiment 1
 FOB <- ddply(MigStatExp_1, c("Treatment", "SamplingEvent"), summarise, 
                 n = length(FOB),
                 mean = mean(FOB, na.rm=TRUE),
                 sd = sd(FOB, na.rm = TRUE),
                 se = sd / sqrt(n))
 
-# plotting DWV prev. for experiment 1
+# plotting FOB for experiment 1
 ggplot(data = FOB, 
        aes(x = SamplingEvent, 
            y = mean, 
            group = Treatment)
-) + geom_point(size=4) + labs(x = "Sampling Event", y = "Frames of Brood") + coord_cartesian(ylim = c(5, 25), xlim = c(1,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05)) + geom_line(aes(linetype=Treatment), size=1.5) + scale_fill_brewer(palette = "Paired") + theme_classic(base_size = 17) + theme(legend.position=c(.2, .85),legend.key.width=unit(5,"line"), panel.border = element_blank(), axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'), axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'), panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs(linetype="Operation Type:") + scale_x_continuous(breaks=c(1,2,3))
+) + geom_point(size=4) + labs(x = "Sampling Event", y = "Frames of Bees") + coord_cartesian(ylim = c(5, 25), xlim = c(1,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05)) + geom_line(aes(linetype=Treatment), size=1.5) + scale_fill_brewer(palette = "Paired") + theme_classic(base_size = 17) + theme(legend.position=c(.2, .85),legend.key.width=unit(5,"line"), panel.border = element_blank(), axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'), axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'), panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs(linetype="Operation Type:") + scale_x_continuous(breaks=c(1,2,3))
 
 
 #-----------------------------------------------------------------------------------
@@ -409,7 +390,7 @@ ggplot(data = BroodPat2,
 ) + geom_point(size=4) + scale_colour_manual(values = c("black", "darkgrey", "black")) + scale_linetype_manual(values = c(1, 1, 2)) + labs(x = "Sampling Event", y = "Brood Pattern") + coord_cartesian(ylim = c(3, 5), xlim = c(2,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05), linetype=1, show.legend=FALSE) + geom_line(size=1.5) + theme_classic(base_size = 17) + theme(legend.position=c(.2, .85), legend.key.width=unit(5,"line"), panel.border = element_blank(), axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'), axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'), panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + scale_x_continuous(breaks=c(2,3)) 
 
 #-----------------------------------------------------------------------------------
-# Frames of Brood:
+# Frames of Bees:
 
 # repeated measures anova for FOB
 aov.FOB2 <- aov(FOB~Treatment * SamplingEvent + Error(ID), data=MigStatExp_2_analysis)
@@ -428,7 +409,7 @@ ggplot(data = FOB2,
            y = mean, 
            col = Treatment,
            linetype= Treatment)
-) + geom_point(size=4) + scale_colour_manual(values = c("black", "darkgrey", "black")) + scale_linetype_manual(values = c(1, 1, 2)) + labs(x = "Sampling Event", y = "Frames of Brood") + coord_cartesian(ylim = c(10, 30), xlim = c(2,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05), linetype=1, show.legend=FALSE) + geom_line(size=1.5) + theme_classic(base_size = 17) + theme(legend.position=c(.2, .85), legend.key.width=unit(5,"line"), panel.border = element_blank(), axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'), axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'), panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + scale_x_continuous(breaks=c(2,3)) 
+) + geom_point(size=4) + scale_colour_manual(values = c("black", "darkgrey", "black")) + scale_linetype_manual(values = c(1, 1, 2)) + labs(x = "Sampling Event", y = "Frames of Bees") + coord_cartesian(ylim = c(10, 30), xlim = c(2,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05), linetype=1, show.legend=FALSE) + geom_line(size=1.5) + theme_classic(base_size = 17) + theme(legend.position=c(.2, .85), legend.key.width=unit(5,"line"), panel.border = element_blank(), axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'), axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'), panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + scale_x_continuous(breaks=c(2,3)) 
 
 
 
