@@ -81,6 +81,9 @@ MigStat$Varroa <- (MigStat$VarroaLoad / MigStat$TotBees) * 100
 MigStat$logDWV <- log(MigStat$DWVload + 1)
 MigStat$logBQCV <- log(MigStat$BQCVload + 1)
 
+# write out the clean .csv file to directory 
+write.csv(MigStat, file = "MigStatClean.csv")
+
 #################################################################################################
 # DATA ANLAYSIS AND GRAPHICS FOR EXPERIMENT 1:
 #################################################################################################
@@ -282,6 +285,15 @@ ggplot(data = VirusSum5,
 # repeated measures anova for DWV
 aov.DWV2 <- aov(logDWV~Treatment * SamplingEvent + Error(ID), data=MigStatExp_2_analysis)
 summary(aov.DWV2)
+
+
+DWV2full <- lmer(logDWV~Treatment * SamplingEvent + (1|ID), data=MigStatExp_2_analysis)
+
+DWVnull <- lmer(logDWV~SamplingEvent + (1|ID), data=MigStatExp_2_analysis)
+
+anova(DWV2full, DWVnull)
+Anova(DWV2full)
+
 
 # Summary of DWV prev. for experiment 2
 VirusSum6 <- ddply(MigStatExp_2_plot, c("Treatment", "SamplingEvent"), summarise, 
