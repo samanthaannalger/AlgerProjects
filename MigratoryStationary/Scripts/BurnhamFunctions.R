@@ -38,10 +38,10 @@ RepANOVA <- function(data, column, key=10){
   sumsplit <- split(sum, sum$Treatment)
   
   # create matrix of values and vector of time
-  SamplingEvent <- c(2:3)
+  SamplingEvent <- c(1:3)
   Migratory <- sumsplit$Migratory$mean
   Stationary <- sumsplit$Stationary$mean
-  Exposed <- c(sumsplit$Exposed$mean)
+  Exposed <- sumsplit$Exposed$mean
   mat <- as.matrix(cbind(Migratory, Stationary, Exposed))
   
   # plot matrix
