@@ -19,12 +19,24 @@ library("ape")
 library("lme4")
 library("car")
 library("ape")
+library("MuMIn")
 
 # Set Working Directory 
 setwd("~/AlgerProjects/2015_Bombus_Survey/CSV_Files")
 
 # load in data
 BombSurv <- read.table("BombSurvNHBS.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
+
+# load site level data and merge pathogen data with GIS HB colony/apiary output:
+SpatDat <- read.table("SpatDatBuffs.csv", header=TRUE,sep=",",stringsAsFactors=FALSE)
+SpatDat <- select(SpatDat, -elevation, -town, -apiary, -siteNotes, -apiaryNotes)
+SurvData <- read.csv("MixedModelDF.csv", header=TRUE, sep = ",", stringsAsFactors=FALSE)
+SpatialDat <- merge(SurvData, SpatDat, by = "site")
+
+
+# merge data to create final APC data frame:
+SpatDat <- select(SpatDat, -lat, -long)
+BombSurv <- merge(BombSurv, SpatDat, by = "site")
 
 # remove unneeded columns from the DF
 BombSurv <- select(BombSurv, -X, -Ct_mean, -Ct_sd, -quantity_mean, -quantity_sd, -run, -date_processed, -dil.factor, -genome_copbee, -Ct_mean_hb, -ID, -ACT_genome_copbee, -City, -Name, -virusBINY_PreFilter, -siteNotes, -X)
@@ -35,35 +47,21 @@ BombSurv<-BombSurv[!BombSurv$site==("STOW"),]
 BombSurv<-BombSurv[!BombSurv$species==("Griseocollis"),]
 BombSurv<-BombSurv[!BombSurv$species==("Sandersonii"),]
 
+# create variable that bins apiaries by how many colonies are there
+BombSurv$ColoniesPooled <- ifelse(BombSurv$sumColonies1 <= 0, "0", ifelse(BombSurv$sumColonies1 <= 20, "1-19","20+"))
+
 ###############################################################################################
 ################################### PROGRAM BODY ##############################################
 ###############################################################################################
-
-
-###############################################################################################
-
-# load site level data and merge pathogen data with GIS HB colony/apiary output:
-SpatDat <- read.table("SpatDatBuffs.csv", header=TRUE,sep=",",stringsAsFactors=FALSE)
-SpatDat <- select(SpatDat, -elevation, -town, -apiary, -siteNotes, -apiaryNotes)
-
-SurvData <- read.csv("MixedModelDF.csv", header=TRUE, sep = ",", stringsAsFactors=FALSE)
-SpatialDat <- merge(SurvData, SpatDat, by = "site")
-
-###############################################################################################
-###############################################################################################
 # formatting bombsurv to test Spatial Autocorralation on
-
-# merge data to create final APC data frame:
-SpatDat <- select(SpatDat, -lat, -long)
-BombSurv <- merge(BombSurv, SpatDat, by = "site")
 
 # create log virus data:
 BombSurv$logVirus <- log(1+BombSurv$norm_genome_copbee)
 BombSurv$logHB <- log(1+BombSurv$norm_genome_copbeeHB)
 
 # two data frames for DWV and BQCV for Morans I
-DWV <- subset(BombSurv, target_name=="BQCV")
-BQCV <- subset(BombSurv, target_name=="DWV")
+BQCV <- subset(BombSurv, target_name=="BQCV")
+DWV <- subset(BombSurv, target_name=="DWV")
 
 ###############################################################################################
 # function to pull out AIC and pval for DWV (prev) and BQCV (prev)
@@ -146,8 +144,8 @@ sapply(X=Xvar, FUN=AICfinderLoad, data=BQCV)
 ###################################################################################################
 
 # create data frames to test spatial AC
-SpatialDatDWV <- subset(SpatialDat, target_name=="BQCV")
-SpatialDatBQCV <- subset(SpatialDat, target_name=="DWV")
+SpatialDatBQCV <- subset(SpatialDat, target_name=="BQCV")
+SpatialDatDWV <- subset(SpatialDat, target_name=="DWV")
 
 #----------------------------------------------------------------------------------------------------
 # BQCV PREV:
@@ -219,16 +217,16 @@ diag(BQ.dists.inv) <- 0
 ###################################################################################################
 
 # BQCV PREV:
-Moran.I(BQCVprevResid$residuals, BQ.dists.inv) # NO SPACIAL-AUTO COR
+Moran.I(BQCVprevResid$residuals, BQ.dists.inv) # YES SPACIAL-AUTO COR (clustered)
 
 # DWV PREV:
-Moran.I(DWVprevResid$residuals, DWV.dists.inv) # YES SPACIAL-AUTO COR (clustered)
+Moran.I(DWVprevResid$residuals, DWV.dists.inv) # NO SPACIAL-AUTO COR 
 
 # BQCV LOAD:
-Moran.I(BQCVloadResid$residual, BQ.dists.inv) # YES SPACIAL-AUTO COR (clustered)
+Moran.I(BQCVloadResid$residual, BQ.dists.inv) # NO SPACIAL-AUTO COR 
 
 # DWV LOAD:
-Moran.I(DWVloadResid$residual, DWV.dists.inv) # NO SPACIAL-AUTO COR
+Moran.I(DWVloadResid$residual, DWV.dists.inv) # YES SPACIAL-AUTO COR (clustered)
 
 # BQCV HB LOAD
 Moran.I(HBbqcvResid$residual, BQ.dists.inv) # NO SPACIAL-AUTO COR
@@ -250,11 +248,16 @@ DWVprevMod <- glmer(data=DWV, formula = virusBINY~sumColonies1 + Density + (1|si
 summary(DWVprevMod)
 Anova(DWVprevMod)
 
+#r.squaredGLMM(DWVprevMod)
+
 #####################################################################################
 # DWV LOAD ##########################################################################
 #####################################################################################
 
-DWVloadMod <- lmer(data=DWV, formula = norm_genome_copbee ~ sumColonies1 + Density + (1|site) + (1|species) + (1|lat) + (1|long))
+# remove 0s to look at viral load of infected
+DWVno0 <- DWV[!DWV$virusBINY==0,]
+
+DWVloadMod <- lmer(data=DWVno0, formula = logVirus ~ sumColonies1 + Density + (1|site) + (1|species) + (1|lat) + (1|long))
 
 summary(DWVloadMod)
 Anova(DWVloadMod)
@@ -265,6 +268,7 @@ Anova(DWVloadMod)
 
 BQCVprevMod <- glmer(data=BQCV, formula = virusBINY~sumColonies1 + Density + (1|site) + (1|species) + (1|lat) + (1|long), family = binomial(link = "logit"))
 
+
 summary(BQCVprevMod)
 Anova(BQCVprevMod)
 
@@ -272,10 +276,13 @@ Anova(BQCVprevMod)
 # BQCV LOAD #########################################################################
 #####################################################################################
 
-BQCVloadMod <- lmer(data=BQCV, formula = y~x + (1|site))
+# remove 0s to look at viral load of infected
+BQCVno0 <- BQCV[!BQCV$virusBINY==0,]
 
-Summary()
-Anova()
+BQCVloadMod <- lmer(data=BQCVno0, formula = logVirus ~ sumColonies1 + Density + (1|site) + (1|species) + (1|lat) + (1|long))
+
+summary(BQCVloadMod)
+Anova(BQCVloadMod)
 
 # END MODELS
 
@@ -289,79 +296,61 @@ BombSurvNoAIPV<-BombSurv[!BombSurv$target_name==("IAPV"),]
 ###################################################################################################
 # Load:
 
-# using ddply to get summary of virus load by target name and sumColonies1:
-VirusSum <- ddply(BombSurvNoAIPV, c("sumColonies1", "target_name"), summarise, 
-                   n = length(logVirus),
-                   mean = mean(logVirus, na.rm=TRUE),
-                   sd = sd(logVirus, na.rm=TRUE),
-                   se = sd / sqrt(n))
-
-VirusSum$sumColonies1 <- as.character(VirusSum$sumColonies1)
-levels(VirusSum$sumColonies1) <- c(0,1,2,15,19,25,27,32)
-
+# remove 0s
+BombSurvNoAIPVno0<-BombSurvNoAIPV[!BombSurvNoAIPV$logVirus==0,]
 
 #Create plot in ggplot 
-plot <- ggplot(data = VirusSum, 
-               aes(x = sumColonies1, 
-                   y = mean, 
-                   group = target_name, 
-                   colour = target_name)
-) + geom_point(size=4) + scale_colour_manual(values = c("dodgerblue4", "black")) + coord_cartesian(ylim = c(0, 20)) + labs(x = "# colonies within 1km radius", y = "log(genome copies/bee)", color="Virus:") + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.4)) 
+plot <- ggplot(data = BombSurvNoAIPVno0, 
+               aes(x = ColoniesPooled, 
+                   y = logVirus, 
+                   fill = target_name)
+) + geom_boxplot(color="black") + coord_cartesian(ylim = c(5, 20)) + labs(x = "# apis colonies within 1km radius", y = "log(genome copies/bee)", fill="Virus:") 
 
-# add a theme and add asterix for significance 
-plot + scale_fill_brewer(palette = "Paired") + theme_classic(base_size = 17) + theme(legend.position=c(.85, .85))  
+# add a theme 
+plot + theme_bw(base_size = 17) + scale_fill_manual(values=c("white", "gray40")) 
 
 
 ###################################################################################################
 # Prevalence 
 
+VirusSum <- ddply(BombSurvNoAIPV, c("target_name", "ColoniesPooled"), summarise, 
+                   n = length(virusBINY),
+                   mean = mean(virusBINY),
+                   sd = sqrt(((mean(virusBINY))*(1-mean(virusBINY)))/n))
 
-# using ddply to get summary of virus load by target name and sumColonies1:
-VirusSumPrev <- ddply(BombSurvNoAIPV, c("sumColonies1", "target_name"), summarise, 
-                  n = length(virusBINY),
-                  mean = mean(virusBINY, na.rm=TRUE),
-                  sd = sd(virusBINY, na.rm=TRUE),
-                  se = sd / sqrt(n))
-
-VirusSumPrev$sumColonies1 <- as.factor(VirusSumPrev$sumColonies1)
-
-levels(VirusSumPrev$sumColonies1) <- c(0,1,2,15,19,25,27,32)
 
 #Create plot in ggplot 
-plot <- ggplot(data = VirusSumPrev, 
-               aes(x = sumColonies1, 
+plot1 <- ggplot(data = VirusSum, 
+               aes(x = ColoniesPooled, 
                    y = mean, 
-                   group = target_name, 
-                   colour = target_name)
-) + geom_point(size=4) + scale_colour_manual(values = c("dodgerblue4", "black")) + coord_cartesian(ylim = c(0, 1)) + labs(x = "# Colonies Within 1km Radius", y = "Precent Prevalence", color="Virus:") + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.4)) + scale_y_continuous(labels = scales::percent)  
+                   shape = target_name)
+) + geom_point(size=4) + coord_cartesian(ylim = c(0, 1)) + labs(x = "# apis colonies within 1km radius", y = "% prevalence", shape="Virus:") + scale_y_continuous(labels = scales::percent) + geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd, width = 0.2))
 
-# add a theme and add asterix for significance 
-plot + scale_fill_brewer(palette = "Paired") + theme_classic(base_size = 17) 
+# add a theme 
+plot1 + theme_bw(base_size = 17) + scale_shape_manual(values=c(19, 1)) + annotate(geom = "text", x = 1, y = .11, label = "n=205",cex = 4) + annotate(geom = "text", x = 2, y = .18, label = "n=71",cex = 4) + annotate(geom = "text", x = 3, y = .3, label = "n=92",cex = 4) + annotate(geom = "text", x = 1, y = .72, label = "n=188",cex = 4) + annotate(geom = "text", x = 2, y = 1, label = "n=62",cex = 4) + annotate(geom = "text", x = 3, y = .98, label = "n=88",cex = 4) 
 
 
-# create a data frame of all the other fixed effects
-CoFixed <- select(SpatialDatDWV, sumColonies1, sumApiaries1, ShannonDIV, Density, HBviralLoad)
 
-# remove duplicate values for sum Colonies 
-CoFixed0<-CoFixed[CoFixed$sumColonies1==0,]
-CoFixed32<-CoFixed[CoFixed$sumColonies1==32,]
 
-# and find the column means
-CoFixed0 <- colMeans(CoFixed0)
-CoFixed32 <- colMeans(CoFixed32)
 
-# remove the duplicates
-CoFixed<-CoFixed[!CoFixed$sumColonies1==c(0),]
-CoFixed<-CoFixed[!CoFixed$sumColonies1==c(32),]
 
-# append to create fixed dataframe
-CoFixed <- rbind(CoFixed, CoFixed0, CoFixed32)
 
-# created scaled version of Density 
-CoFixed$ScaledDensity <- (CoFixed$Density - min(CoFixed$Density))/(max(CoFixed$Density)-min(CoFixed$Density))
 
-# created scaled version of HB viral load
-CoFixed$ScaledHBviralLoad <- (CoFixed$HBviralLoad - min(CoFixed$HBviralLoad))/(max(CoFixed$HBviralLoad)-min(CoFixed$HBviralLoad))
 
-# created scaled version of Shannon Diversity
-CoFixed$ScaledShannonDIV <- (CoFixed$ShannonDIV - min(CoFixed$ShannonDIV))/(max(CoFixed$ShannonDIV)-min(CoFixed$ShannonDIV))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
