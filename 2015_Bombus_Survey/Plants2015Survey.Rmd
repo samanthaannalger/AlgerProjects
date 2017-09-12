@@ -60,7 +60,7 @@ plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="V
 
 #Subset only plant species positive for virus
 
-PosSites <- fieldPlants[which(fieldPlants$site=="MART", "WHAL","JOSH"), ]
+PosSites <- fieldPlants[which(fieldPlants$site==c("MART", "WHAL","JOSH")), ]
 
 
 #ddply summarize:
