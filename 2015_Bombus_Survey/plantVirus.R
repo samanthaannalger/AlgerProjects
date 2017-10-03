@@ -32,7 +32,7 @@ library(scales)
 ## Clean up for 2015 plant data___________________________________________
 
 # take only columns that we want:
-plantqPCR <- select(plantqPCR, labID, target_name, Ct_mean, Ct_sd, quantity_mean, quantity_sd, run)
+plantqPCR <- select(plantqPCR, labID, target_name, Ct_mean, Ct_sd, quantity_mean, quantity_sd)
 
 
 # remove unwanted rows from dataframe:
@@ -45,6 +45,7 @@ plants2015 <- merge(plantqPCR, plants2015, by="labID")
 
 # create a binary vector in dataframe that pulled out samples where both replicates are positive (samples that are positive will receive a 1):
 plants2015$BINYprefilter <- ifelse(plants2015$quantity_sd > 0, 1, 0)
+
 
 #select columns needed and make new dataframe
 plants2015 <- select(plants2015, labID, ID, target_name, site, spp, dateCollected, sampleType, BINYprefilter)

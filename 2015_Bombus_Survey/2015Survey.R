@@ -27,6 +27,9 @@ setwd("~/AlgerProjects/2015_Bombus_Survey/CSV_Files")
 # load in data
 BombSurv <- read.table("BombSurvNHBS.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
 
+# plant virus prevalence data:
+Plants <- read.table("plants2015DF.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
+
 # load site level data and merge pathogen data with GIS HB colony/apiary output:
 SpatDat <- read.table("SpatDatBuffs.csv", header=TRUE,sep=",",stringsAsFactors=FALSE)
 SpatDat <- select(SpatDat, -elevation, -town, -apiary, -siteNotes, -apiaryNotes)
@@ -54,14 +57,21 @@ BombSurv$ColoniesPooled <- ifelse(BombSurv$sumColonies1 <= 0, "0", ifelse(BombSu
 ################################### PROGRAM BODY ##############################################
 ###############################################################################################
 # formatting bombsurv to test Spatial Autocorralation on
+BeeAbund <- read.table("BeeAbund.csv", header=TRUE, sep=",", stringsAsFactors=FALSE)
 
 # create log virus data:
 BombSurv$logVirus <- log(1+BombSurv$norm_genome_copbee)
 BombSurv$logHB <- log(1+BombSurv$norm_genome_copbeeHB)
 
+BombSurv <- merge(BombSurv, BeeAbund, by = "site")
+
 # two data frames for DWV and BQCV for Morans I
 BQCV <- subset(BombSurv, target_name=="BQCV")
 DWV <- subset(BombSurv, target_name=="DWV")
+
+# create Plants dataframe:
+Plants <- merge(Plants, BeeAbund, all.x=TRUE, all.y=FALSE)
+Plants <- merge(Plants, SpatialDat, by=c("site","target_name"), all.x=TRUE, all.y=FALSE)
 
 ###############################################################################################
 # function to pull out AIC and pval for DWV (prev) and BQCV (prev)
@@ -235,20 +245,73 @@ Moran.I(HBbqcvResid$residual, BQ.dists.inv) # NO SPACIAL-AUTO COR
 Moran.I(HBdwvResid$residual, DWV.dists.inv) # NO SPACIAL-AUTO COR
 
 ###################################################################################################
-# CREATING FULL MODELS:
+# CREATING FULL MODELS FOR BOMBUS VIRUSES:
 ###################################################################################################
+
+
+
+
+###########################################################################
+# function name: TheExtractor
+# description:extracts log liklihood test stats and p vals for null vs full
+# and the reduced models
+# parameters: 
+# Full = full model (glmer or lmer)
+# Null = null model
+# Density = density removed
+# Colonies = colonies removed
+# Species = species removed
+###########################################################################
+
+TheExtractor <- function(Full, Null, Colonies, Density, Species){
+  
+  sumFull <- summary(Full)
+  modelFit <- anova(Full, Null, test="LRT")
+  Cols <- anova(Full, Colonies, test="LRT")
+  Dens <- anova(Full, Density, test="LRT")
+  Spec <- anova(Full, Species, test="LRT")
+  
+  ModFit <- list("Model Fit P"=modelFit$`Pr(>Chisq)`[2], "Model Fit Df"=modelFit$`Chi Df`[2], "Model Fit Chi2"=modelFit$Chisq[2])
+  
+  ColFit <- list("Colony Fit P"=Cols$`Pr(>Chisq)`[2],"Colony Fit Df"=Cols$`Chi Df`[2],"Colony Fit Chi2"=Cols$Chisq[2])
+  
+  DensFit <- list("Density Fit P"=Dens$`Pr(>Chisq)`[2],"Density Fit Df"=Dens$`Chi Df`[2],"Density Fit Chi2"=Dens$Chisq[2])
+  
+  SpecFit <- list("Species Fit P"=Spec$`Pr(>Chisq)`[2],"Species Fit Df"=Spec$`Chi Df`[2],"Species Fit Chi2"=Spec$Chisq[2])
+  
+  return(list(sumFull$coefficients[1:4,1:2],ModFit, ColFit, DensFit, SpecFit))
+  
+}
+
+###########################################################################
+# END OF FUNCITON
+###########################################################################
+
+
 
 
 #####################################################################################
 # DWV PREV ##########################################################################
 #####################################################################################
 
-DWVprevMod <- glmer(data=DWV, formula = virusBINY~sumColonies1 + Density + (1|site) + (1|species) + (1|lat) + (1|long), family = binomial(link = "logit"))
+DWVprevModFull <- glmer(data=DWV, formula = virusBINY~sumColonies1 + Density + species + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
 
-summary(DWVprevMod)
-Anova(DWVprevMod)
+DWVprevModNull <- glmer(data=DWV, formula = virusBINY~1 + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
 
-#r.squaredGLMM(DWVprevMod)
+DWVprevModnoCols <- glmer(data=DWV, formula = virusBINY~ Density + species + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+
+DWVprevModnoDens <- glmer(data=DWV, formula = virusBINY~sumColonies1 + species + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+
+DWVprevModnoSpec <- glmer(data=DWV, formula = virusBINY~sumColonies1 + Density + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+
+
+TheExtractor(Full=DWVprevModFull, 
+             Null=DWVprevModNull, 
+             Colonies=DWVprevModnoCols, 
+             Density=DWVprevModnoDens,
+             Species = DWVprevModnoSpec)
+
+
 
 #####################################################################################
 # DWV LOAD ##########################################################################
@@ -257,20 +320,43 @@ Anova(DWVprevMod)
 # remove 0s to look at viral load of infected
 DWVno0 <- DWV[!DWV$virusBINY==0,]
 
-DWVloadMod <- lmer(data=DWVno0, formula = logVirus ~ sumColonies1 + Density + (1|site) + (1|species) + (1|lat) + (1|long))
+DWVloadModFull <- lmer(data=DWVno0, formula = logVirus ~ sumColonies1 + Density + species + (1|site) + (1|species) + (1|lat) + (1|long))
 
-summary(DWVloadMod)
-Anova(DWVloadMod)
+DWVloadModNull <- lmer(data=DWVno0, formula = logVirus ~ 1  + (1|site) + (1|lat) + (1|long))
+
+DWVloadModnoCols <- lmer(data=DWVno0, formula = logVirus ~ Density + species + (1|site) + (1|species) + (1|lat) + (1|long))
+
+DWVloadModnoDens <- lmer(data=DWVno0, formula = logVirus ~ sumColonies1 + species + (1|site) + (1|species) + (1|lat) + (1|long))
+
+DWVloadModnoSpec <- lmer(data=DWVno0, formula = logVirus ~ sumColonies1 + Density + (1|site) + (1|species) + (1|lat) + (1|long))
+
+
+TheExtractor(Full=DWVloadModFull, 
+             Null=DWVloadModNull, 
+             Colonies=DWVloadModnoCols, 
+             Density=DWVloadModnoDens,
+             Species = DWVloadModnoSpec )
 
 #####################################################################################
 # BQCV PREV #########################################################################
 #####################################################################################
 
-BQCVprevMod <- glmer(data=BQCV, formula = virusBINY~sumColonies1 + Density + (1|site) + (1|species) + (1|lat) + (1|long), family = binomial(link = "logit"))
+BQCVprevModFull <- glmer(data=BQCV, formula = virusBINY~sumColonies1 + Density + species + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
 
+BQCVprevModNull <- glmer(data=BQCV, formula = virusBINY~1 + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
 
-summary(BQCVprevMod)
-Anova(BQCVprevMod)
+BQCVprevModnoCols <- glmer(data=BQCV, formula = virusBINY~Density + species + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+
+BQCVprevModnoDens <- glmer(data=BQCV, formula = virusBINY~sumColonies1 + species + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+
+BQCVprevModnoSpec <- glmer(data=BQCV, formula = virusBINY~sumColonies1 + Density + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+
+TheExtractor(Full=BQCVprevModFull, 
+             Null=BQCVprevModNull, 
+             Colonies=BQCVprevModnoCols, 
+             Density=BQCVprevModnoDens,
+             Species = BQCVprevModnoSpec)
+
 
 #####################################################################################
 # BQCV LOAD #########################################################################
@@ -279,15 +365,28 @@ Anova(BQCVprevMod)
 # remove 0s to look at viral load of infected
 BQCVno0 <- BQCV[!BQCV$virusBINY==0,]
 
-BQCVloadMod <- lmer(data=BQCVno0, formula = logVirus ~ sumColonies1 + Density + (1|site) + (1|species) + (1|lat) + (1|long))
+BQCVloadModFull <- lmer(data=BQCVno0, formula = logVirus ~ sumColonies1 + Density + species + (1|site) + (1|lat) + (1|long))
 
-summary(BQCVloadMod)
-Anova(BQCVloadMod)
+BQCVloadModNull <- lmer(data=BQCVno0, formula = logVirus ~ 1 + (1|site) + (1|lat) + (1|long))
+
+BQCVloadModnoCols <- lmer(data=BQCVno0, formula = logVirus ~ Density + species + (1|lat) + (1|long) + (1|site))
+
+BQCVloadModnoDens <- lmer(data=BQCVno0, formula = logVirus ~ sumColonies1 + species + (1|lat) + (1|long) + (1|site))
+
+BQCVloadModnoSpec <- lmer(data=BQCVno0, formula = logVirus ~ sumColonies1 + Density + (1|site) + (1|lat) + (1|long))
+
+
+
+TheExtractor(Full=BQCVloadModFull, 
+             Null=BQCVloadModNull, 
+             Colonies=BQCVloadModnoCols, 
+             Density=BQCVloadModnoDens,
+             Species = BQCVloadModnoSpec)
 
 # END MODELS
 
 ###################################################################################################
-# CREATING FINAL PUBLICATION GRAPHICS:
+# CREATING FINAL PUBLICATION GRAPHICS FOR BOMBUS VIRUSES:
 ###################################################################################################
 
 # remove unwanted target:
@@ -304,11 +403,10 @@ plot <- ggplot(data = BombSurvNoAIPVno0,
                aes(x = ColoniesPooled, 
                    y = logVirus, 
                    fill = target_name)
-) + geom_boxplot(color="black") + coord_cartesian(ylim = c(5, 20)) + labs(x = "# apis colonies within 1km radius", y = "log(genome copies/bee)", fill="Virus:") 
+) + geom_boxplot(color="black") + coord_cartesian(ylim = c(5, 20)) + labs(x = "# apis colonies within 1km radius", y = "log(genome copies/bee)", fill="Virus:")
 
 # add a theme 
 plot + theme_bw(base_size = 17) + scale_fill_manual(values=c("white", "gray40")) 
-
 
 ###################################################################################################
 # Prevalence 
@@ -330,6 +428,135 @@ plot1 <- ggplot(data = VirusSum,
 plot1 + theme_bw(base_size = 17) + scale_shape_manual(values=c(19, 1)) + annotate(geom = "text", x = 1, y = .11, label = "n=205",cex = 4) + annotate(geom = "text", x = 2, y = .18, label = "n=71",cex = 4) + annotate(geom = "text", x = 3, y = .3, label = "n=92",cex = 4) + annotate(geom = "text", x = 1, y = .72, label = "n=188",cex = 4) + annotate(geom = "text", x = 2, y = 1, label = "n=62",cex = 4) + annotate(geom = "text", x = 3, y = .98, label = "n=88",cex = 4) 
 
 
+###################################################################################################
+# CREATING FULL MODELS FOR PLANT PREV:
+###################################################################################################
+
+# Remove ernat sites from plants data
+Plants <- Plants[!Plants$site==("SIND"),]
+Plants <- Plants[!Plants$site==("BOST"),]
+
+# create a binary varaible for apiary or no apiary 
+Plants$apiary <- ifelse(Plants$sumColonies1 <= 0, "no apiary","apiary")
+
+Plants$HBlowHigh <- ifelse(Plants$apis <= 4, "Low HB","High HB")
+
+PlantsFull <- glmer(data=Plants, formula = BINYprefilter ~ apis + target_name + (1|apiary/site), family = binomial(link = "logit"))
+
+PlantsNoApis <- glmer(data=Plants, formula = BINYprefilter ~ target_name + (1|apiary/site), family = binomial(link = "logit"))
+
+PlantsNoTarg <- glmer(data=Plants, formula = BINYprefilter ~ apis + (1|apiary/site), family = binomial(link = "logit"))
+
+PlantsNull <- glmer(data=Plants, formula = BINYprefilter ~ 1 + (1|apiary/site), family = binomial(link = "logit"))
+
+
+
+summary(PlantsFull)
+
+anova(PlantsFull, PlantsNull, test="LRT")
+
+anova(PlantsFull, PlantsNoApis, test="LRT")
+
+anova(PlantsFull,PlantsNoTarg, test="LRT")
+
+
+###################################################################################################
+# CREATING PUBLICATION GRAPHICS FOR PLANT PREV:
+###################################################################################################
+
+#ddply summarize:
+fieldPlantsSum <- ddply(Plants, c("target_name", "apiary"), summarise, 
+                        n = length(BINYprefilter),
+                        mean = mean(BINYprefilter, na.rm=TRUE),
+                        sd = sqrt(((mean(BINYprefilter))*(1-mean(BINYprefilter)))/n))
+# remove 0 (make NA) for values so they dont plot error bars
+                        fieldPlantsSum$sd[fieldPlantsSum$sd==0] <- NA 
+                        fieldPlantsSum$mean[fieldPlantsSum$mean==0] <- NA
+
+#creating the figure
+
+#choosing color pallet
+colors <- c("white", "grey30")
+
+plot1 <- ggplot(fieldPlantsSum, aes(x=apiary, y=mean, fill=target_name)) +
+  geom_bar(stat="identity", color="black",
+           position=position_dodge()) + labs(y="% plants with virus detected", x="Site Type") + geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd, width = 0.2),position=position_dodge(.9))
+
+plot1 + theme_bw(base_size = 17) + scale_fill_manual(values=colors, name="Virus", labels=c("BQCV", "DWV")) + theme(legend.position=c(.86, .8),legend.background = element_rect(color = "black", fill = "white", size = .4, linetype = "solid")) + coord_cartesian(ylim = c(0, .5)) + scale_y_continuous(labels = scales::percent) 
+
+
+
+###################################################################################################
+# CREATING FULL MODELS FOR HB:
+###################################################################################################
+
+# rename NAs "no apis caught"
+DWV$HBSiteBin[is.na(DWV$HBSiteBin)] <- "No Apis Caught"
+
+ApisFull <- glmer(data=DWV, formula = virusBINY ~ HBSiteBin + Density + apis + (1|site), family = binomial(link = "logit"))
+
+ApisNull <- glmer(data=DWV, formula = virusBINY ~ 1 + (1|site), family = binomial(link = "logit"))
+
+ApisNoHB <- glmer(data=DWV, formula = virusBINY ~ Density + apis + (1|site), family = binomial(link = "logit"))
+
+ApisNoApis <- glmer(data=DWV, formula = virusBINY ~ HBSiteBin + Density + (1|site), family = binomial(link = "logit"))
+
+ApisNoDens <- glmer(data=DWV, formula = virusBINY ~ HBSiteBin + apis + (1|site), family = binomial(link = "logit"))
+
+summary(ApisFull)
+
+
+anova(ApisFull, ApisNull, test="LRT")
+
+anova(ApisFull, ApisNoHB, test="LRT")
+
+anova(ApisFull, ApisNoApis, test="LRT")
+
+anova(ApisFull, ApisNoDens, test="LRT")
+
+###################################################################################################
+# CREATING PUBLICATION GRAPHICS FOR HB:
+###################################################################################################
+
+# histogram showing apis DWV load (bimodal)
+
+# summary of viral load for by target and site
+CopDist <- ddply(BombSurv, c("target_name", "site"), summarise, 
+                 n = length(norm_genome_copbeeHB),
+                 mean = mean(norm_genome_copbeeHB, na.rm=TRUE),
+                 sd = sd(norm_genome_copbeeHB, na.rm=TRUE),
+                 se = sd / sqrt(n))
+
+# remove BQCV and IAPV:
+CopDist<-CopDist[!CopDist$target_name==("BQCV"),]
+CopDist<-CopDist[!CopDist$target_name==("IAPV"),]
+
+
+ggplot(data=CopDist, aes(log(1 + mean))) + 
+  geom_histogram(breaks=seq(5, 25, by = 1), 
+                 col="black", 
+                 fill="grey30") +
+  labs(x="Apis DWV log(viral load)", y="Frequency") + theme_bw(base_size=17)
+
+################################################################################################
+
+# bar plot showing DWV level in apis by DWV prev in bombus
+
+HBSiteSum <- ddply(DWV, c("HBSiteBin", "target_name"), summarise, 
+                   n = length(virusBINY),
+                   mean = mean(virusBINY, na.rm=TRUE),
+                   sd = sqrt(((mean(virusBINY))*(1-mean(virusBINY)))/n))
+
+# remove 0 (make NA) for values so they dont plot error bars
+HBSiteSum$sd[HBSiteSum$sd==0] <- NA 
+HBSiteSum$mean[HBSiteSum$mean==0] <- NA
+
+colors <- c("grey30", "white", "white")
+
+plot1 <- ggplot(HBSiteSum, aes(x=HBSiteBin, y=mean, fill=colors)) + 
+  geom_bar(stat="identity", color = "black") + labs(x="Level of DWV in Apis", y = "% Prevalence in Bombus")
+
+plot1 + theme_bw(base_size = 17) + scale_fill_manual(values=colors) + coord_cartesian(ylim = c(0, 0.2)) + scale_y_continuous(labels = scales::percent) + theme(legend.position=c(3, 3)) + geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd, width = 0.2),position=position_dodge(.9))
 
 
 
@@ -345,6 +572,100 @@ plot1 + theme_bw(base_size = 17) + scale_shape_manual(values=c(19, 1)) + annotat
 
 
 
+
+
+###################################################################################################
+# MODELING VIRUS PREVALANCE MATHMATICALLY:
+###################################################################################################
+
+library(sjPlot)
+library(sjmisc)
+
+# normalize density to be between 0 and 1
+normDens <- ((SpatialDat$Density) - min(SpatialDat$Density))/(max(SpatialDat$Density)-min(SpatialDat$Density))
+
+Opar <- par()
+
+
+sdDens <- 0.2417879
+meanDens <- 0.2353109
+numCols <- c(1:25)
+slopeDW <- 0.0682
+slopeBQC <- 0.0662
+interBQC <- 0.62766
+interDW <- 0.03415
+sdDW <-  0.018627 
+sdBQ <-0.02689
+
+model1 <- function(numCols = c(1:25),
+                   slopeDW = 0.0682,
+                   slopeBQC = 0.0662,
+                   interBQC = 0.62766,
+                   interDW = 0.03415,
+                   sdDens = 0.02,
+                   meanDens = 0.2353109,
+                   sdDW =  0.018627, 
+                   sdBQ = 0.02689){
+  
+
+  funcBQ <- (exp((interBQC + slopeBQC*numCols)) / (1 + exp((interBQC + slopeBQC*numCols))))
+  
+  Dens <- rnorm(n = length(numCols), mean = meanDens, sd = sdDens)
+  
+  funcDW <- (exp((interDW + slopeDW*numCols)) / (1 + exp((interDW + slopeDW*numCols))))-.49
+  
+ DW <- ifelse(Dens < meanDens, funcDW + sdDW , funcDW - sdDW)
+  
+  mat <- cbind(DW, funcBQ, Dens)
+  
+  par(mar = c(mar = 5.1,4.1,5.5,5), xpd=TRUE)
+  
+  matplot(x=mat, 
+          ylim = c(0,1), 
+          type="l",
+          ylab = "Virus Prevalence",
+          col=c("blue","red", "green"),
+          xlab = "# Colonies within 1km",
+          lwd=3,
+          lty=1,
+          font.lab=2,
+          bty="l")
+
+  
+  axis(side = 4)
+  mtext(side = 4, line = 3, "Standardized Floral Density", font.lab=2)
+
+  legend(x="topright",
+         legend=c("DWV Prevalence",
+                  "BQCV Prevalence",
+                  "Floral Density"),
+         inset=c(.3,-0.3),
+         pch=19,
+         col=c("blue","red", "green"),
+         bty="n",
+         bg="white")
+  
+  
+  return(mat)
+}
+
+
+model1()
+
+
+
+
+
+
+
+
+
+sjp.glm(DWVprevModFull, type = "slope")
+
+
+x <- sjp.glm(DWVprevModFull, type = "slope", facet.grid = FALSE, show.ci = TRUE, vars = "sumColonies1")
+
+x$data.list
 
 
 
