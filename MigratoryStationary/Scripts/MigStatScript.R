@@ -84,6 +84,41 @@ MigStat$logBQCV <- log(MigStat$BQCVload + 1)
 # write out the clean .csv file to directory 
 write.csv(MigStat, file = "MigStatClean.csv")
 
+# create binary variable for Nosema:
+MigStat$NosemaBinary <- ifelse(MigStat$NosemaLoad == 0, 0, 1)
+
+# create binary variable for Varroa:
+MigStat$VarroaBinary <- ifelse(MigStat$VarroaLoad == 0, 0, 1)
+
+# calculate how many pathogens are in each sample (pathgogen richness)
+PathRich <- rowSums(select(MigStat, ChalkBrood, AFB, EFB, PMS, SBV, Snot, BSB, DWV, WaxMoth, SmallBeetle, DWVbinary, IAPVbinary, BQCVbinary, NosemaBinary, VarroaBinary), na.rm = TRUE)
+
+# merge pathrich with MigStat
+MigStat <- cbind(MigStat, PathRich)
+
+
+# repeated measures anova for DWV
+aov.Path <- aov(PathRich~Treatment * SamplingEvent + Error(ID), data=MigStat)
+summary(aov.Path)
+
+# Summary of DWV prev. for experiment 1
+PathSum <- ddply(MigStat, c("Treatment", "SamplingEvent"), summarise, 
+                  n = length(PathRich),
+                  mean = mean(PathRich, na.rm=TRUE),
+                  sd = sd(PathRich, na.rm = TRUE),
+                  se = sd / sqrt(n))
+
+# plotting DWV prev. for experiment 1
+ggplot(data = PathSum, 
+       aes(x = SamplingEvent, 
+           y = mean, 
+           group = Treatment)
+) + geom_point(size=4) + labs(x = "Sampling Event", y = "Pathogen Richness") + coord_cartesian(ylim = c(0, 5), xlim = c(1,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05)) + geom_line(aes(linetype=Treatment), size=1.5) + scale_fill_brewer(palette = "Paired") + theme_classic(base_size = 17) + theme(legend.position=c(.2, .85),legend.key.width=unit(5,"line"), panel.border = element_blank(), axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'), axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'), panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs(linetype="Operation Type:") + scale_x_continuous(breaks=c(1,2,3))
+
+
+
+
+
 #################################################################################################
 # DATA ANLAYSIS AND GRAPHICS FOR EXPERIMENT 1:
 #################################################################################################
