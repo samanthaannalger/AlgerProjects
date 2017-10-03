@@ -80,7 +80,7 @@ RepANOVA <- function(data, column, key=10){
 
 ###########################################################################
 # function name: PrelimClean
-# description: removes unneed PCR file columns, gblock, NTC and duplicates 
+# description: removes unneeded PCR file columns, gblock, NTC and duplicates 
 # parameters: 
 # data = data frame, 
 # returns a DF that is partially cleaned
