@@ -1,4 +1,4 @@
-### Plant Extraction Standard Protocol
+### Plant Extraction Standard Protocol For variable amount of flower material
 
 #### 2-11-17
 
@@ -14,15 +14,15 @@ Make sure there is liquid nitrogen and enough of each reagent (GITC buffer, RLT 
 
 1. Write in lab notebook:
 
-​	a.    Procedure to be done
+   ​a.    Procedure to be done
 
-​	b.    Date
+   ​b.    Date
 
-​	c.     Headings for lab ID, field ID, etc.
+   ​c.     Headings for lab ID, field ID, etc.
 
-​	d.    name(s) of individuals doing extractions
+   ​d.    name(s) of individuals doing extractions
 
-1. Get the following materials ready:
+2. Get the following materials ready:
 
 - Clean lab bench with 10% bleach and enthanol
 - scale, weigh boats, kim wipes, 2 small beakers labeled w/ 10% bleach and 70% ethanol (use DI water when diluting bleach and ethanol).
@@ -37,16 +37,16 @@ Make sure there is liquid nitrogen and enough of each reagent (GITC buffer, RLT 
 
 **PREPARING SPECIMENSAND HOMOGENIZING TO CREATE CRUDE EXTRACTIONS:**
 
-1. Using disinfected forceps, weigh out 1.5 g of flower material (use fresh looking flowers). Transfer to labeled extraction bag. Place bag into the canister of liquid nitrogen. 
-2. Note sample name in lab notebook and mark the top of the falcon tube with the lab ID. Return rest of plant material back into the cooler with liquid nitrogen. 
+1. Using disinfected forceps, weigh out flower material (use fresh looking flowers). If using variable amounts of flower material, use excel sheet to determine the amount of GITC buffer to add. (3mL per 1.5 grams). Transfer flower material to labeled extraction bag. Write GITC buffer amount on bag. Place bag into the canister of liquid nitrogen. 
+2. Note sample name in lab notebook and mark the top of the vial with the lab ID. If applicable, return rest of plant material back into the cooler with liquid nitrogen. 
 3. After flash freezing, use a pestle on outside of extraction bag to crush plant sample into powder (~30 sec.).
-4. Add 3 mL of GITC buffer to the extraction bag and homogenize using pestle on outside of bag for 2.5 minutes.
-5. Use pippette to extract as much liquid as possible and place into 1.4 ml vial.
+4. Add specified amount of GITC buffer to the extraction bag and homogenize using pestle on outside of bag for 2.5 minutes.
+5. Use pippette to extract as much liquid as possible and place into 1.5 ml vial.
 6. Put vial on ice and throw away extraction bag.
 7. Repeat for all specimens.
 8. Centrifuge for 3 minutes to push specimen to bottom of tube. Before continuing, sample should be brought to room temperature.
 
- 
+
 
 **BEGINNING RNAISOLATION (Making Crude Extraction)**
 

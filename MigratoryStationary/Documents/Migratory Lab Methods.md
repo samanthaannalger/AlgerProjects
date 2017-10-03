@@ -2,7 +2,7 @@
 
 Mite Counts:
 
-* We transferred about 300 bees from each ethanol sample into the glass jar with the screen attached. We shook the jar over a white tray for 45 seconds until all mites fell out of the sample. We counted and recorded the mites/300 bees. Greer Sargeant
+* We transferred about 300 bees (1/2 cup) from each ethanol sample into the glass jar with the screen attached. We shook the jar over a white tray for 45 seconds until all mites fell out of the sample. We counted and recorded the mites/300 bees. All bees were counted to calculate mites/100 bees. Greer Sargeant
 
 Nosema sample preparation and spore counts:
 
@@ -71,10 +71,10 @@ Virus Detection and Quantification:
 9. Centrifuge at 10,000 x g for 30 seconds.
 10. Discard the filtrate and reuse collection tube.
 11. Centrifuge the empty HiBind® RNA Mini Column at maximum speed for 2 minutes to
-    dry the column.
-    Note: This step is critical for removal of trace ethanol that may interfere with
-    downstream applications.
+   dry the column.
+   Note: This step is critical for removal of trace ethanol that may interfere with
+   downstream applications.
 12. Transfer the HiBind® RNA Mini Column to a clean 1.5 mL microcentrifuge tube.
 13. Add 50 ul RNAse free Water.
-    Note: Make sure to add water directly onto the HiBind® RNA Mini Column matrix.
+   Note: Make sure to add water directly onto the HiBind® RNA Mini Column matrix.
 14. Centrifuge at maximum speed for 1 minute and store eluted RNA at -70°C.

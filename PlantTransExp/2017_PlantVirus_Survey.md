@@ -12,8 +12,8 @@ June 21, 2017
 
 * 3 sites 
   * Whal
-  * Dodd
-  * TBD
+  * Lin Lang
+  * Nordic
 
 
 * 35 inflorescences collected at each site (175 total inflorescences per site)
