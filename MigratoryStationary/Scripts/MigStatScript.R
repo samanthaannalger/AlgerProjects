@@ -176,14 +176,14 @@ ggplot(data = VirusSum2,
 aov.BQCV <- aov(logBQCV~Treatment * SamplingEvent + Error(ID), data=MigStatExp_1)
 summary(aov.BQCV)
 
-# Summary of DWV prev. for experiment 1
+# Summary of BQCV prev. for experiment 1
 VirusSum1 <- ddply(MigStatExp_1, c("Treatment", "SamplingEvent"), summarise, 
                   n = length(logBQCV),
                   mean = mean(logBQCV, na.rm=TRUE),
                   sd = sd(logBQCV, na.rm = TRUE),
                   se = sd / sqrt(n))
 
-# plotting DWV prev. for experiment 1
+# plotting BQCV prev. for experiment 1
 ggplot(data = VirusSum1, 
        aes(x = SamplingEvent, 
            y = mean, 
@@ -193,19 +193,19 @@ ggplot(data = VirusSum1,
 #-----------------------------------------------------------------------------------
 # BQCV PREV:
 
-#DWV prevalence using glmer
+#BQCV prevalence using glmer
 Fullmod2 <- glmer(data=MigStatExp_1, formula = BQCVbinary~Treatment * SamplingEvent + (1|ID), family = binomial(link = "logit"))
 
 Anova(Fullmod2)
 
-# Summary of DWV prev. for experiment 1
+# Summary of BQCV prev. for experiment 1
 VirusSum3 <- ddply(MigStatExp_1, c("Treatment", "SamplingEvent"), summarise, 
                   n = length(BQCVbinary),
                   mean = mean(BQCVbinary, na.rm=TRUE),
                   sd = sd(BQCVbinary, na.rm = TRUE),
                   se = sd / sqrt(n))
 
-# plotting DWV prev. for experiment 1
+# plotting BQCV prev. for experiment 1
 ggplot(data = VirusSum3, 
        aes(x = SamplingEvent, 
            y = mean, 
@@ -215,18 +215,18 @@ ggplot(data = VirusSum3,
 #-----------------------------------------------------------------------------------
 # Varroa Load:
 
-# repeated measures anova for BQCV
+# repeated measures anova for Varroa
 aov.Var <- aov(Varroa~Treatment * SamplingEvent + Error(ID), data=MigStatExp_1)
 summary(aov.Var)
 
-# Summary of DWV prev. for experiment 1
+# Summary of Varroa prev. for experiment 1
 VarSum <- ddply(MigStatExp_1, c("Treatment", "SamplingEvent"), summarise, 
                    n = length(Varroa),
                    mean = mean(Varroa, na.rm=TRUE),
                    sd = sd(Varroa, na.rm = TRUE),
                    se = sd / sqrt(n))
 
-# plotting DWV prev. for experiment 1
+# plotting Varroa prev. for experiment 1
 ggplot(data = VarSum, 
        aes(x = SamplingEvent, 
            y = mean, 
@@ -237,7 +237,7 @@ ggplot(data = VarSum,
 #-----------------------------------------------------------------------------------
 # Frames of Bees:
 
-# repeated measures anova for BQCV
+# repeated measures anova for FOB
 aov.FOB <- aov(FOB~Treatment * SamplingEvent + Error(ID), data=MigStatExp_1)
 summary(aov.FOB)
 
@@ -330,14 +330,14 @@ anova(DWV2full, DWVnull)
 Anova(DWV2full)
 
 
-# Summary of DWV prev. for experiment 2
+# Summary of DWV VL for experiment 2
 VirusSum6 <- ddply(MigStatExp_2_plot, c("Treatment", "SamplingEvent"), summarise, 
                    n = length(logDWV),
                    mean = mean(logDWV, na.rm=TRUE),
                    sd = sd(logDWV, na.rm = TRUE),
                    se = sd / sqrt(n))
 
-# plotting DWV prev. for experiment 2
+# plotting DWV VL for experiment 2
 ggplot(data = VirusSum6, 
        aes(x = SamplingEvent, 
            y = mean, 

@@ -28,34 +28,34 @@ July 7, 2017
   * Treatment:Time =  (F(1,1) = 5.497, p = 0.0223) ****** 
 * **Brood Pattern** (repeated measures ANOVA)
   * Treatment = (F(1,1) =  1.722,  p = 0.199)
-  * Time = 
+  * Time = (F(1,1) = 48.113, p = 2.77e-09)******
   * Treatment:Time =  (F(1,1) = 1.105, p = 0.297)
 
 ### Experiment 2: Exposed vs Stationary (control) 
 
 * **DWV Load** (repeated measures ANOVA) 
   - Treatment = (F(1,1) = 2.056  ,  p = 0.162)
-  - Time = 
+  - Time =  (F(1,1) =  23.510, p = 3.57e-05) ******
   - Treatment:Time =  (F(1,1) = 9.229, p = 0.0049)****** 
 * **DWV Prevalence** (generalized linear model) 
   - Treatment =  (${\chi}_1$ = 0.0251 , p = 0.874164)
-  - Time = 
+  - Time =  (${\chi}_1$ = 8.8113, p = 0.002994)******
   - Treatment:Time = (${\chi}_1$ = 4.9447, p = 0.026171) ******
 * **BQCV Load** (repeated measures ANOVA) 
   - Treatment = (F(1,1) = 0.045,  p = 0.834)
-  - Time = 
+  - Time =  (F(1,1) = 83.307, p= 3.67e-10) ******
   - Treatment:Time =  (F(1,1) = 0.156, p = 0.696) 
 * **Varroa Load** (repeated measures ANOVA)
   - Treatment = (F(1,1) = 0.005,  p = 0.943)
-  - Time = 
+  - Time = (F(1,1) = 12.683, p = 0.00125) **
   - Treatment:Time =  (F(1,1) = 0.268, p = 0.60858)
 * **Frames of Bees** (repeated measures ANOVA)
   - Treatment = (F(1,1) = 2.068,  p = 0.16112)
-  - Time = 
+  - Time = (F(1,1) = 87.109, p = 3.08e-10) ******
   - Treatment:Time =  (F(1,1) = 8.903, p = 0.00573) ****** 
 * **Brood Pattern** (repeated measures ANOVA)
   - Treatment = (F(1,1) = 0.069,  p = 0.795)
-  - Time = 
+  - Time =  (F(1,1) = 0.104, p = 0.749)
   - Treatment:Time =  (F(1,1) = 0.128, p = 0.723)
 
 ### 
