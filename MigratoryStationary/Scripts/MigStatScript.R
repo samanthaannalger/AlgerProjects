@@ -233,6 +233,29 @@ ggplot(data = VarSum,
            group = Treatment)
 ) + geom_point(size=4) + labs(x = "Sampling Event", y = "Varroa (mites/100 bees))") + coord_cartesian(ylim = c(0, 3), xlim = c(1,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05)) + geom_line(aes(linetype=Treatment), size=1.5) + scale_fill_brewer(palette = "Paired") + theme_classic(base_size = 17) + theme(legend.position=c(.2, .85),legend.key.width=unit(5,"line"), panel.border = element_blank(), axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'), axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'), panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs(linetype="Operation Type:") + scale_x_continuous(breaks=c(1,2,3))
 
+#-----------------------------------------------------------------------------------
+# Varroa PREV:
+
+#Varroa prevalence using glmer
+Fullmod2 <- glmer(data=MigStatExp_1, formula = VarroaBinary~Treatment * SamplingEvent + (1|ID), family = binomial(link = "logit"))
+
+Anova(Fullmod2)
+
+# Summary of Varroa prev. for experiment 1
+VarroaBin <- ddply(MigStatExp_1, c("Treatment", "SamplingEvent"), summarise, 
+                   n = length(VarroaBinary),
+                   mean = mean(VarroaBinary, na.rm=TRUE),
+                   sd = sd(VarroaBinary, na.rm = TRUE),
+                   se = sd / sqrt(n))
+
+# plotting Varroa prev. for experiment 1
+ggplot(data = VarroaBin, 
+       aes(x = SamplingEvent, 
+           y = mean, 
+           group = Treatment)
+) + geom_point(size=4) + labs(x = "Sampling Event", y = "Prevalance of Varroa") + coord_cartesian(ylim = c(0, 1), xlim = c(1,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05)) + geom_line(aes(linetype=Treatment), size=1.5) + scale_fill_brewer(palette = "Paired") + theme_classic(base_size = 17) + theme(legend.position=c(.8, .2),legend.key.width=unit(5,"line"), panel.border = element_blank(), axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'), axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'), panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs(linetype="Operation Type:") + scale_x_continuous(breaks=c(1,2,3))
+
+
 
 #-----------------------------------------------------------------------------------
 # Frames of Bees:
@@ -368,7 +391,35 @@ ggplot(data = VarSum2,
            linetype= Treatment)
 ) + geom_point(size=4) + scale_colour_manual(values = c("black", "darkgrey", "black")) + scale_linetype_manual(values = c(1, 1, 2)) + labs(x = "Sampling Event", y = "Varroa (mites/100 bees)") + coord_cartesian(ylim = c(0, 5), xlim = c(2,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05), linetype=1, show.legend=FALSE) + geom_line(size=1.5) + theme_classic(base_size = 17) + theme(legend.position=c(.2, .85), legend.key.width=unit(5,"line"), panel.border = element_blank(), axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'), axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'), panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + scale_x_continuous(breaks=c(2,3)) 
 
+
+
 #-----------------------------------------------------------------------------------
+
+# Varroa PREV:
+
+#Varroa prevalence using glmer
+Fullmod10 <- glmer(data=MigStatExp_2_analysis, formula = VarroaBinary~Treatment * SamplingEvent + (1|ID), family = binomial(link = "logit"))
+
+Anova(Fullmod10)
+
+# Summary of Varroa prev. for experiment 2
+VirusSum5 <- ddply(MigStatExp_2_plot, c("Treatment", "SamplingEvent"), summarise, 
+                   n = length(DWVbinary),
+                   mean = mean(DWVbinary, na.rm=TRUE),
+                   sd = sd(DWVbinary, na.rm = TRUE),
+                   se = sd / sqrt(n))
+
+# plotting DWV prev. for experiment 2
+ggplot(data = VirusSum5, 
+       aes(x = SamplingEvent, 
+           y = mean, 
+           col = Treatment,
+           linetype= Treatment)
+) + geom_point(size=4) + scale_colour_manual(values = c("black", "darkgrey", "black")) + scale_linetype_manual(values = c(1, 1, 2)) + labs(x = "Sampling Event", y = "Prevalance of DWV") + coord_cartesian(ylim = c(0, 1), xlim = c(2,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05), linetype=1, show.legend=FALSE) + geom_line(size=1.5) + theme_classic(base_size = 17) + theme(legend.position=c(.2, .85), legend.key.width=unit(5,"line"), panel.border = element_blank(), axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'), axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'), panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + scale_x_continuous(breaks=c(2,3)) 
+
+
+#-----------------------------------------------------------------------------------
+
 # BQCV PREV:
 
 #BQCV prevalence using glmer
