@@ -1,4 +1,4 @@
-### Plant Extraction Standard Protocol For variable amount of flower material
+### Plant Extraction Standard Protocol (Extraction Bag)
 
 #### 2-11-17
 
