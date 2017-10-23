@@ -1,4 +1,4 @@
-###############
+###########################################################################################
 # Data Analysis for Ross Conrad SARE project
 # Samantha Alger and P. Alexander Burnham
 # September 12, 2017
@@ -74,7 +74,7 @@ plot1 <- ggplot(HoneySum, aes(x=Treatment, y=mean, fill=Treatment)) +
                 width=.4,
                 position=position_dodge(.9)) + labs(x="Treatment", y = "Honey Harvested (# Supers)")
 
-plot1 + theme_minimal(base_size = 17) + coord_cartesian(ylim = c(0, 2)) + scale_fill_manual(values=colors, name="", labels=c("Stationary", "Migratory")) + theme(legend.position=c(2, 2))
+plot1 + theme_minimal(base_size = 17) + coord_cartesian(ylim = c(0, 3)) + scale_fill_manual(values=colors, name="", labels=c("Stationary", "Migratory")) + theme(legend.position=c(2, 2))
 
 #ANOVA testing honey
 
@@ -89,7 +89,9 @@ TukeyHSD(HoneyModel)
 # Survival Figure
 Conrad$SurvivalBINY <- ifelse(Conrad$Survival=="Yes",1,0)
 
-SurvivalSum <- ddply(Conrad, c("Treatment"), summarise, 
+ConradTone <- Conrad[1:60,]
+
+SurvivalSum <- ddply(ConradTone, c("Treatment"), summarise, 
                   n = length(SurvivalBINY),
                   mean = mean(SurvivalBINY, na.rm=TRUE),
                   sd = sd(SurvivalBINY, na.rm = TRUE),
@@ -108,11 +110,13 @@ plot1 + theme_minimal(base_size = 17) + coord_cartesian(ylim = c(0, 1)) + scale_
 
 # chi square testing Survival
 
-chisq.test(x=Conrad$Treatment, y=Conrad$Survival)
+chisq.test(x=ConradTone$Treatment, y=ConradTone$Survival)
 # significant difference between treatments
 library("lme4")
 
 Fullmod4 <- glmer(data=Conrad, formula = SurvivalBINY~Treatment + (1|ID), family = binomial(link = "logit"))
+summary(Fullmod4)
+
 
 ###############################################################
 # Strength Figure
