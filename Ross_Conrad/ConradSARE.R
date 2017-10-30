@@ -33,8 +33,11 @@ View(Conrad)
 # Varroa Figure
 # repeated measures anova for varroa load
 
+# Subset the data to exclude Varroa sampling conducting "pre" quick strips
+ConradSub<- Conrad[-which(Conrad$PrePostTreatVarroa=="Pre"), ]
+
 # Summary of Varroa
-VarSum <- ddply(Conrad, c("Treatment", "SamplingEvent"), summarise, 
+VarSum <- ddply(ConradSub, c("Treatment", "SamplingEvent"), summarise, 
                 n = length(Varroa),
                 mean = mean(Varroa, na.rm=TRUE),
                 sd = sd(Varroa, na.rm = TRUE),
@@ -50,7 +53,7 @@ ggplot(data = VarSum,
 ) + geom_point(size=4) + labs(x = "Sampling Event", y = "Varroa (mites/300 bees)") + coord_cartesian(ylim = c(0, 40), xlim = c(1,4)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05)) + geom_line(size=1.5) + scale_fill_brewer(palette = "Paired") + theme_classic(base_size = 17) + theme(legend.position=c(.85, .85),legend.key.width=unit(5,"line"), panel.border = element_blank(), axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'), axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'), panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs(color="Treatment:") + scale_x_continuous(breaks=c(1,2,3,4)) + scale_color_manual(values=colors)
 
 
-mod <- lmer(data=Conrad, formula = Varroa~Treatment * SamplingEvent + (1|ID))
+mod <- lmer(data=ConradSub, formula = Varroa~Treatment * SamplingEvent + (1|ID))
 
 Anova(mod)
 

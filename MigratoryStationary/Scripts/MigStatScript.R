@@ -509,5 +509,7 @@ ggplot(data = FOB2,
            linetype= Treatment)
 ) + geom_point(size=4) + scale_colour_manual(values = c("black", "darkgrey", "black")) + scale_linetype_manual(values = c(1, 1, 2)) + labs(x = "Sampling Event", y = "Frames of Bees") + coord_cartesian(ylim = c(10, 30), xlim = c(2,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05), linetype=1, show.legend=FALSE) + geom_line(size=1.5) + theme_classic(base_size = 17) + theme(legend.position=c(.2, .85), legend.key.width=unit(5,"line"), panel.border = element_blank(), axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'), axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'), panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + scale_x_continuous(breaks=c(2,3)) 
 
-
+fit <- lm(DWVload~FOB, data=MigStat)
+summary(fit)
+plot(fit)
 
