@@ -74,6 +74,9 @@ MigStat <- VirusMerger2000(data1 = MigVirus, data2 = MigStat)
 # create average Nosema Load between chambers
 MigStat$NosemaLoad <- (MigStat$NosemaChamber1 + MigStat$NosemaChamber2)/2
 
+# create average Nosema Load between chambers for recounted
+MigStat$NosemaLoadRecount <- (MigStat$NosemaChamber1Recount + MigStat$NosemaChamber2Recount)/2
+
 # normalize varroa load by number of bees sampled
 MigStat$Varroa <- (MigStat$VarroaLoad / MigStat$TotBees) * 100
 
@@ -81,42 +84,21 @@ MigStat$Varroa <- (MigStat$VarroaLoad / MigStat$TotBees) * 100
 MigStat$logDWV <- log(MigStat$DWVload + 1)
 MigStat$logBQCV <- log(MigStat$BQCVload + 1)
 
-# write out the clean .csv file to directory 
-write.csv(MigStat, file = "MigStatClean.csv")
+
+
+
 
 # create binary variable for Nosema:
-MigStat$NosemaBinary <- ifelse(MigStat$NosemaLoad == 0, 0, 1)
+MigStat$NosemaBinary <- ifelse(MigStat$NosemaLoadRecount == 0, 0, 1)
 
 # create binary variable for Varroa:
 MigStat$VarroaBinary <- ifelse(MigStat$VarroaLoad == 0, 0, 1)
 
 # calculate how many pathogens are in each sample (pathgogen richness)
-PathRich <- rowSums(select(MigStat, ChalkBrood, AFB, EFB, PMS, SBV, Snot, BSB, DWV, WaxMoth, SmallBeetle, DWVbinary, IAPVbinary, BQCVbinary, NosemaBinary, VarroaBinary), na.rm = TRUE)
+# PathRich <- rowSums(select(MigStat, ChalkBrood, AFB, EFB, PMS, SBV, Snot, BSB, DWV, WaxMoth, # SmallBeetle, DWVbinary, IAPVbinary, BQCVbinary, NosemaBinary, VarroaBinary), na.rm = TRUE)
 
-# merge pathrich with MigStat
-MigStat <- cbind(MigStat, PathRich)
-
-
-# repeated measures anova for DWV
-aov.Path <- aov(PathRich~Treatment * SamplingEvent + Error(ID), data=MigStat)
-summary(aov.Path)
-
-# Summary of DWV prev. for experiment 1
-PathSum <- ddply(MigStat, c("Treatment", "SamplingEvent"), summarise, 
-                  n = length(PathRich),
-                  mean = mean(PathRich, na.rm=TRUE),
-                  sd = sd(PathRich, na.rm = TRUE),
-                  se = sd / sqrt(n))
-
-# plotting DWV prev. for experiment 1
-ggplot(data = PathSum, 
-       aes(x = SamplingEvent, 
-           y = mean, 
-           group = Treatment)
-) + geom_point(size=4) + labs(x = "Sampling Event", y = "Pathogen Richness") + coord_cartesian(ylim = c(0, 5), xlim = c(1,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05)) + geom_line(aes(linetype=Treatment), size=1.5) + scale_fill_brewer(palette = "Paired") + theme_classic(base_size = 17) + theme(legend.position=c(.2, .85),legend.key.width=unit(5,"line"), panel.border = element_blank(), axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'), axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'), panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs(linetype="Operation Type:") + scale_x_continuous(breaks=c(1,2,3))
-
-
-
+# write out the clean .csv file to directory 
+# write.csv(MigStat, file = "MigStatClean.csv")
 
 
 #################################################################################################
@@ -126,12 +108,20 @@ ggplot(data = PathSum,
 # Setting up dataframe without Exposed for Experiment 1 data (Mig vs Stationary)
 MigStatExp_1<-MigStat[!(MigStat$Treatment=="Exposed"),]
 
+# create data frame for running preliminary T1 tests
+MigStatExp_1_T1<-MigStatExp_1[(MigStatExp_1$SamplingEvent=="1"),]
+
+
 #-----------------------------------------------------------------------------------
 # DWV PREV:
 
-#DWV prevalence using glmer
-Fullmod <- glmer(data=MigStatExp_1, formula = DWVbinary~Treatment * SamplingEvent + (1|ID), family = binomial(link = "logit"))
+# Initial T1 test:
+x <- table(MigStatExp_1_T1$Treatment, MigStatExp_1_T1$DWVbinary)
+chisq.test(x)
 
+
+# DWV prevalence using glmer
+Fullmod <- glmer(data=MigStatExp_1, formula = DWVbinary~Treatment * SamplingEvent + (1|ID), family = binomial(link = "logit"))
 Anova(Fullmod)
 
 # Summary of DWV prev. for experiment 1
@@ -490,6 +480,10 @@ ggplot(data = BroodPat2,
 #-----------------------------------------------------------------------------------
 # Frames of Bees:
 
+
+MigStat
+
+
 # repeated measures anova for FOB
 aov.FOB2 <- aov(FOB~Treatment * SamplingEvent + Error(ID), data=MigStatExp_2_analysis)
 summary(aov.FOB2)
@@ -512,4 +506,51 @@ ggplot(data = FOB2,
 fit <- lm(DWVload~FOB, data=MigStat)
 summary(fit)
 plot(fit)
+
+
+##################
+
+NosMod <- lm(MigStat$NosemaLoadRecount~MigStat$NosemaLoad)
+summary(NosMod)
+
+plot(MigStat$NosemaLoad, MigStat$NosemaLoadRecount)
+
+mean(MigStat$NosemaLoad, na.rm=TRUE)
+
+mean(MigStat$NosemaLoadRecount, na.rm=TRUE)
+
+
+
+
+
+
+#-----------------------------------------------------------------------------------
+# DWV VL:
+
+
+MigStatT1<-MigStat[(MigStat$SamplingEvent=="1"),]
+MigStatT1 <- MigStatT1[!(MigStatT1$Treatment=="Exposed"),]
+
+T1anonva <- aov(NosemaLoadRecount~Treatment, data=MigStatT1)
+summary(T1anonva)
+
+# repeated measures anova for DWV
+aov.Nos <- aov(NosemaLoadRecount~Treatment * SamplingEvent + Error(ID), data=MigStat)
+summary(aov.Nos)
+
+# Summary of DWV prev. for experiment 1
+NosSum <- ddply(MigStat, c("Treatment", "SamplingEvent"), summarise, 
+                   n = length(NosemaLoadRecount),
+                   mean = mean(NosemaLoadRecount, na.rm=TRUE),
+                   sd = sd(NosemaLoadRecount, na.rm = TRUE),
+                   se = sd / sqrt(n))
+
+
+ggplot(data = NosSum, 
+       aes(x = SamplingEvent, 
+           y = mean, 
+           col = Treatment,
+           linetype= Treatment)
+) + geom_point(size=4) + scale_colour_manual(values = c("black", "darkgrey", "black")) + scale_linetype_manual(values = c(1, 1, 2)) + labs(x = "Sampling Event", y = "Nosema Load") + coord_cartesian(ylim = c(0, 20), xlim = c(1,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05), linetype=1, show.legend=FALSE) + geom_line(size=1.5) + theme_classic(base_size = 17) + theme(legend.position=c(.8, .85), legend.key.width=unit(5,"line"), panel.border = element_blank(), axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'), axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'), panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + scale_x_continuous(breaks=c(1,2,3)) 
+
 
