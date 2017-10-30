@@ -143,3 +143,49 @@ StrengthModel <- aov(data=Conrad, Strength~Treatment)
 summary(StrengthModel)
 
 #No significant difference in brood area between treatments
+
+
+
+
+
+
+
+
+
+
+
+
+#############################################################################
+#NEW code for survorship figure:
+
+
+# create fake dataset to test ggplot code on:
+ID <- c(1:24)
+survivorship <- c(1,1,0,1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,0,0,1,0,0,1)
+treatment <- c(rep("A",6), rep("B", 6), rep("C", 6), rep("D",6))
+season <- rep(c("S","S","S","W","W","W"),4)
+data <- data.frame(ID, survivorship, treatment, season)
+
+# find death binary 
+data$death <- ifelse(data$survivorship==1,0,1)
+
+
+
+# Summary of DWV prev. for experiment 1
+death <- ddply(data, c("treatment", "season"), summarise, 
+               n = length(death),
+               mean = mean(death, na.rm=TRUE),
+               sd = sd(death, na.rm = TRUE),
+               se = sd / sqrt(n))
+
+
+library(scales)
+
+ggplot(data = death, 
+       aes(x=treatment, y=mean, 
+           fill = season)
+) + geom_bar(stat = "identity") + labs(x = "Treatment", y = "Percent Losses") + coord_cartesian(ylim = c(0, 1)) + theme_minimal(base_size = 17) + theme(legend.position="top") + scale_y_continuous(labels = percent) + scale_fill_manual(values=c("goldenrod", "steelblue"))
+
+
+
+
