@@ -1,0 +1,134 @@
+---
+title: "Untitled"
+author: "P. Alexander Burnham & Samantha A. Alger"
+date: "October 27, 2017"
+output: html_document
+---
+
+
+## PCA anlysis:
+
+
+
+#### PCA for Time Point 2:
+```{r, echo=FALSE, message=FALSE}
+
+# create matrix for PCA and nMDA
+Mig2x <- na.omit(Mig2)
+x <- dplyr::select(Mig2x, Varroa, NosemaLoadRecount, logBQCV, logDWV, DWVbinary, BSB, FOB, BroodPattern, NosemaBinary, VarroaBinary)
+
+# run a PCA
+PCA3 <- prcomp(x, scale. = T)
+
+
+# prepare PCA data frame
+PC1 <- as.vector(PCA3$x[,1])
+PC2 <- as.vector(PCA3$x[,2])
+Treat <- Mig2x$Treatment
+dat1 <- data.frame(PC1, PC2, Treat)
+
+# graph for PCA
+PCA2 <- ggplot(dat1, aes(PC1,PC2, color=Treat))+geom_point() + theme_minimal(base_size = 17) + scale_colour_manual(values = c("slategrey", "red", "blue")) + theme(axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'), axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid')) + stat_ellipse(show.legend = FALSE, level=.7)
+PCA2
+
+
+```
+
+
+
+
+
+
+#### PCA for Time Point 3:
+```{r, echo=FALSE, message=FALSE}
+
+# create data matrix for PCA and nMDS
+Mig3x <- na.omit(Mig3)
+x1 <- dplyr::select(Mig3x,Varroa, NosemaLoadRecount, logBQCV, logDWV, DWVbinary, FOB, BroodPattern, NosemaBinary, VarroaBinary)
+
+# PCA analysis 
+PC <- prcomp(x1, scale. = T)
+
+# prepare PCA data frame
+PC1 <- as.vector(PC$x[,1])
+PC2 <- as.vector(PC$x[,2])
+Treat <- Mig3x$Treatment
+dat <- data.frame(PC1, PC2, Treat)
+
+# graph for PCA
+PCA1 <- ggplot(dat, aes(PC1,PC2, color=Treat))+geom_point() + theme_minimal(base_size = 17) + scale_colour_manual(values = c("slategrey", "red", "blue")) + theme(axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'), axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid')) + stat_ellipse(show.legend = FALSE, level=.7)
+PCA1
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Run NMDS and PERMANOVA
+
+
+
+
+#### nMDS for Time Point 2:
+```{r, echo=FALSE, message=FALSE}
+
+
+
+# run nMDS
+MDS1 <- metaMDS(envdist1, center=TRUE, autotransform = FALSE)
+
+#Using the scores function from vegan to extract the site scores and convert to a data.frame
+data.scores1 <- as.data.frame(scores(MDS1))  
+data.scores1$Treatment <- Mig2x$Treatment
+
+
+NMDS2 <- ggplot(data.scores1, aes(NMDS1,NMDS2, color=Treatment))+geom_point() + theme_minimal(base_size = 17) + scale_colour_manual(values = c("slategrey", "red", "blue")) + theme(axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'), axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid')) + stat_ellipse(show.legend = FALSE, level=.7)
+NMDS2
+
+
+
+```
+
+
+
+#### nMDS for Time Point 3:
+```{r, echo=FALSE, message=FALSE}
+
+# run PERMNAOVA
+envdist <- vegdist(x1, method= "euclidian")
+x <- adonis(envdist~Treatment, data=Mig3x)
+
+# run nMDS model:
+MDS <- metaMDS(envdist, center=TRUE, autotransform = FALSE)
+
+#Using the scores function from vegan to extract the site scores and convert to a data.frame
+data.scores <- as.data.frame(scores(MDS)) 
+data.scores$Treatment <- Mig3x$Treatment
+
+# graph for nMDA
+NMDS3 <- ggplot(data.scores, aes(NMDS1,NMDS2, color=Treatment))+geom_point() + theme_minimal(base_size = 17) + scale_colour_manual(values = c("slategrey", "red", "blue")) + theme(axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'), axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid')) + stat_ellipse(show.legend = FALSE, level=.7)
+NMDS3
+
+
+
+```
+
+
+
+
+
+
+
+

@@ -98,7 +98,7 @@ MigStat$VarroaBinary <- ifelse(MigStat$VarroaLoad == 0, 0, 1)
 # PathRich <- rowSums(select(MigStat, ChalkBrood, AFB, EFB, PMS, SBV, Snot, BSB, DWV, WaxMoth, # SmallBeetle, DWVbinary, IAPVbinary, BQCVbinary, NosemaBinary, VarroaBinary), na.rm = TRUE)
 
 # write out the clean .csv file to directory 
-#write.csv(MigStat, file = "MigStatClean.csv")
+# write.csv(MigStat, file = "MigStatClean.csv")
 
 
 #################################################################################################
@@ -108,12 +108,20 @@ MigStat$VarroaBinary <- ifelse(MigStat$VarroaLoad == 0, 0, 1)
 # Setting up dataframe without Exposed for Experiment 1 data (Mig vs Stationary)
 MigStatExp_1<-MigStat[!(MigStat$Treatment=="Exposed"),]
 
+# create data frame for running preliminary T1 tests
+MigStatExp_1_T1<-MigStatExp_1[(MigStatExp_1$SamplingEvent=="1"),]
+
+
 #-----------------------------------------------------------------------------------
 # DWV PREV:
 
-#DWV prevalence using glmer
-Fullmod <- glmer(data=MigStatExp_1, formula = DWVbinary~Treatment * SamplingEvent + (1|ID), family = binomial(link = "logit"))
+# Initial T1 test:
+x <- table(MigStatExp_1_T1$Treatment, MigStatExp_1_T1$DWVbinary)
+chisq.test(x)
 
+
+# DWV prevalence using glmer
+Fullmod <- glmer(data=MigStatExp_1, formula = DWVbinary~Treatment * SamplingEvent + (1|ID), family = binomial(link = "logit"))
 Anova(Fullmod)
 
 # Summary of DWV prev. for experiment 1
