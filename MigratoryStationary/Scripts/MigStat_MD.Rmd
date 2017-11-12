@@ -89,6 +89,8 @@ chisq.test(x)
 # DWV prevalence using glmer
 Fullmod <- glmer(data=MigStatExp_1, formula = DWVbinary~Treatment * SamplingEvent + (1|ID), family = binomial(link = "logit"))
 Anova(Fullmod)
+
+
 ```
 
 
