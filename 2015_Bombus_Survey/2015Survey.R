@@ -27,6 +27,17 @@ setwd("~/AlgerProjects/2015_Bombus_Survey/CSV_Files")
 # load in data
 BombSurv <- read.table("BombSurvNHBS.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
 
+# code to find negative bees and write out columns wanted
+NegList <- BombSurv[BombSurv$virusBINY==0,]
+NegList <- select(NegList, sample_name, target_name, Ct_mean, norm_genome_copbee)
+write.csv(NegList, file = "NegVirus_NegStrd_2015.csv")
+
+
+# code to find positive bees and write out columns wanted
+#PosList <- BombSurv[BombSurv$virusBINY==1,]
+#PosList <- select(PosList, sample_name, target_name, Ct_mean, norm_genome_copbee)
+#write.csv(PosList, file = "PosVirus_NegStrd_2015.csv")
+
 # plant virus prevalence data:
 Plants <- read.table("plants2015DF.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
 
