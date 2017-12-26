@@ -161,34 +161,53 @@ summary(StrengthModel)
 #############################################################################
 #NEW code for survorship figure:
 
+ls()
+rm(list=ls())
 
-# create fake dataset to test ggplot code on:
-ID <- c(1:24)
-survivorship <- c(1,1,0,1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,0,0,1,0,0,1)
-treatment <- c(rep("A",6), rep("B", 6), rep("C", 6), rep("D",6))
-season <- rep(c("S","S","S","W","W","W"),4)
-data <- data.frame(ID, survivorship, treatment, season)
+Conrad <- read.table("ConradSARE_Survivorship.csv",header=TRUE,sep=",",stringsAsFactors=FALSE,na.strings=c("","NA"))
 
 # find death binary 
-data$death <- ifelse(data$survivorship==1,0,1)
+Conrad$death <- ifelse(Conrad$survivorship==1,0,1)
+
+Conrad2016<- Conrad[(Conrad$year=="2016"),]
+Conrad2017<- Conrad[(Conrad$year=="2017"),]
 
 
 
-# Summary of DWV prev. for experiment 1
-death <- ddply(data, c("treatment", "season"), summarise, 
+# summary of death for 2016 conrad 
+death <- ddply(Conrad2016, c("treatment", "season"), summarise, 
                n = length(death),
-               mean = mean(death, na.rm=TRUE),
+               mean = n / 15,
                sd = sd(death, na.rm = TRUE),
                se = sd / sqrt(n))
 
+death <- death[! is.na(death$season=="NA"), ]
+
 
 library(scales)
+library(wesanderson)
+
+z <- (wes_palettes)
 
 ggplot(data = death, 
        aes(x=treatment, y=mean, 
            fill = season)
-) + geom_bar(stat = "identity") + labs(x = "Treatment", y = "Percent Losses") + coord_cartesian(ylim = c(0, 1)) + theme_minimal(base_size = 17) + theme(legend.position="top") + scale_y_continuous(labels = percent) + scale_fill_manual(values=c("goldenrod", "steelblue"))
+) + geom_bar(stat = "identity") + labs(x = "Treatment", y = "2016 Percent Losses") + coord_cartesian(ylim = c(0, 1)) + theme_minimal(base_size = 17) + theme(legend.position="top") + scale_y_continuous(labels = percent) + scale_fill_manual(values=c(wes_palettes$Moonrise2))
 
+# summary of death for 2017 conrad 
+death <- ddply(Conrad2017, c("treatment", "season"), summarise, 
+               n = length(death),
+               mean = n / 15,
+               sd = sd(death, na.rm = TRUE),
+               se = sd / sqrt(n))
+
+death <- death[! is.na(death$season=="NA"), ]
+
+
+ggplot(data = death, 
+       aes(x=treatment, y=mean, 
+           fill = season)
+) + geom_bar(stat = "identity") + labs(x = "Treatment", y = "2017 Percent Losses") + coord_cartesian(ylim = c(0, 1)) + theme_minimal(base_size = 17) + theme(legend.position="top") + scale_y_continuous(labels = percent) + scale_fill_manual(values=c(wes_palettes$Moonrise2))
 
 
 
