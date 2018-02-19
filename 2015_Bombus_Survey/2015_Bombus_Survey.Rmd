@@ -7,7 +7,6 @@ output:
     fig_height: 5.5
     fig_width: 7
   html_document: default
-  dal;fkajlkfadls;kj
 ---
 
 **Metadata**
@@ -48,9 +47,9 @@ library(plyr)
 setwd("~/AlgerProjects/2015_Bombus_Survey/CSV_Files")
 
 # read in data
-#BombSurv <- read.table("BombSurv.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
+BombSurv <- read.table("BombSurv.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
 
-BombSurv <- read.table("BombSurvNHBS.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
+#BombSurv <- read.table("BombSurvNHBS.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
 
 # remove unneeded columns from the DF
 #BombSurv <- select(BombSurv, -X, -Ct_mean, -Ct_sd, -quantity_mean, -quantity_sd, -run, -date_processed, -dil.factor, -genome_copbee, -Ct_mean_hb, -ID, -ACT_genome_copbee)
