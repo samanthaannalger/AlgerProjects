@@ -106,10 +106,11 @@ VARload1 <- ggplot(data = VarSum,
 ) + geom_point(size=4) + labs(x = "Sampling Event", y = "Varroa (mites/100 bees)") + coord_cartesian(ylim = c(0, 3), xlim = c(1,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05)) + geom_line(aes(linetype=Treatment), size=1.5) + scale_fill_brewer(palette = "Paired") + theme_classic(base_size = 17) + theme(legend.position="none") + labs(linetype="Operation Type:") + scale_x_continuous(breaks=c(1,2,3))
 VARload1
 
+nbVAR <- lmer(data=MigStatExp_1, formula = Varroa~Treatment * SamplingEvent + (1|ID))
+Anova(nbVAR)
 
 
-
-
+hist(log(MigStatExp_1$Varroa+1))
 
 # FOB
 #####################################################################################
@@ -174,7 +175,7 @@ BQCVload2 <- ggplot(data = VirusSum8,
                         y = mean, 
                         col = Treatment,
                         linetype= Treatment)
-) + geom_point(size=8) + scale_colour_manual(values = c("darkgrey","black", "black")) + scale_linetype_manual(values = c(1, 1, 2)) + labs(x = NULL, y = "BQCV log(genome copies/bee)") + coord_cartesian(ylim = c(10, 25), xlim = c(1,2,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05), linetype=1, show.legend=FALSE) + geom_line(size=3) + theme_classic(base_size = 30) + theme(legend.position=c(.2, .85), legend.key.width=unit(7,"line"), legend.key.height = unit(3, "line")) + scale_x_continuous(breaks=c(1,2,3))
+) + geom_point(size=8) + scale_colour_manual(values = c("darkgrey","black", "black")) + scale_linetype_manual(values = c(1, 1, 2)) + labs(x = NULL, y = "BQCV log(genome copies/bee)") + coord_cartesian(ylim = c(10, 25), xlim = c(1,2,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05), linetype=1, show.legend=FALSE) + geom_line(size=3) + theme_classic(base_size = 30) + theme(legend.position=c(.2, .85), legend.key.width=unit(10,"line"), legend.key.height = unit(3, "line")) + scale_x_continuous(breaks=c(1,2,3))
 BQCVload2
 
 # Varroa LOAD
@@ -322,26 +323,19 @@ plot_grid(LDAone, LDAtwo, labels = c("A", "B"), align="hv",  label_size = 30)
 
 # Summary of BP for experiment 2
 A <- ddply(MigStat, c("Treatment", "SamplingEvent"), summarise, 
-              n = length(BroodPattern),
-              mean = mean(BroodPattern, na.rm=TRUE),
-              sd = sd(BroodPattern, na.rm = TRUE),
-              se = sd / sqrt(n))
+             n = length(BroodPattern),
+             mean = mean(BroodPattern, na.rm=TRUE),
+             sd = sd(BroodPattern, na.rm = TRUE),
+             se = sd / sqrt(n))
 
 # plotting BP for experiment 2
-A1 <- ggplot(data = A, 
-               aes(x = SamplingEvent, 
-                   y = mean, 
-                   col = Treatment,
-                   linetype= Treatment)
-) + geom_point(size=4) + scale_colour_manual(values = c("darkgrey","black", "black")) + scale_linetype_manual(values = c(1, 1, 2)) + labs(x = NULL, y = "Brood Pattern") + coord_cartesian(ylim = c(3, 5), xlim = c(1,2,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05), linetype=1, show.legend=FALSE) + geom_line(size=1.5) + theme_classic(base_size = 17) + theme(legend.position="none") + scale_x_continuous(breaks=c(1,2,3)) 
-A1
-
-
-
-
-
-
-
+#A1 <- ggplot(data = A, 
+              # aes(x = SamplingEvent, 
+               #    y = mean, 
+                #   col = Treatment,
+                 #  linetype= Treatment)
+#) + geom_point(size=4) + scale_colour_manual(values = c("darkgrey","black", "black")) + scale_linetype_manual(values = c(1, 1, 2)) + labs(x = NULL, y = "Brood Pattern") + coord_cartesian(ylim = c(3, 5), xlim = c(1,2,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05), linetype=1, show.legend=FALSE) + geom_line(size=1.5) + theme_classic(base_size = 17) + theme(legend.position="none") + scale_x_continuous(breaks=c(1,2,3)) 
+#A1
 
 
 
@@ -469,12 +463,22 @@ F2 <- ddply(MigStat, c("Treatment", "SamplingEvent"), summarise,
            se = sd / sqrt(n))
 
 # plotting BP for experiment 2
-F1 <- ggplot(data = F2, 
+F15 <- ggplot(data = F2, 
              aes(x = SamplingEvent, 
                  y = mean, 
                  col = Treatment,
                  linetype= Treatment)
 ) + geom_point(size=4) + scale_colour_manual(values = c("darkgrey","black", "black")) + scale_linetype_manual(values = c(1, 1, 2)) + labs(x = NULL, y = "BQCV Prevalence") + coord_cartesian(ylim = c(0, 1), xlim = c(1,2,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05), linetype=1, show.legend=FALSE) + geom_line(size=1.5) + theme_classic(base_size = 17) + theme(legend.position=c(.6, .5), legend.key.width=unit(5,"line")) + scale_x_continuous(breaks=c(1,2,3)) 
+
+
+
+# plotting BP for experiment 2
+F1 <- ggplot(data = F2, 
+              aes(x = SamplingEvent, 
+                  y = mean, 
+                  col = Treatment,
+                  linetype= Treatment)
+) + geom_point(size=4) + scale_colour_manual(values = c("darkgrey","black", "black")) + scale_linetype_manual(values = c(1, 1, 2)) + labs(x = NULL, y = "BQCV Prevalence") + coord_cartesian(ylim = c(0, 1), xlim = c(1,2,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05), linetype=1, show.legend=FALSE) + geom_line(size=1.5) + theme_classic(base_size = 17) + theme(legend.position=c(3, 3), legend.key.width=unit(5,"line")) + scale_x_continuous(breaks=c(1,2,3)) 
 F1
 
 
@@ -483,6 +487,14 @@ F1
 
 
 
+legend <- get_legend(F15)
+
+
+A1 <- ggplot(A) + geom_blank()
+
+A1 <- (plot_grid(plot_grid(A1, ncol=1, align='v'),
+                 plot_grid(NULL, legend, ncol=1),
+                 rel_widths=c(.5, 20)))
 
 # experiment 2:
-plot_grid(F1,A1,B1,C1,D1,E1, labels = c("A", "B", "C", "D", "E", "F"), ncol = 2,  align="hv")
+plot_grid(A1,F1,B1,C1,D1,E1, labels = c(" ","A", "B", "C", "D", "E"), ncol = 2,  align="hv")

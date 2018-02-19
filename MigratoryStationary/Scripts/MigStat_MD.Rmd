@@ -23,8 +23,10 @@ MigStat <- read.table("Data/MigStatClean.csv",
                       stringsAsFactors = FALSE) 
 
 #MigStat$NosemaLoadRecount <- log(MigStat$NosemaLoadRecount+1)
-MigStat$Varroa <- 1/(MigStat$Varroa+1)
-MigStat$NosemaLoadRecount <- 1/(MigStat$NosemaLoadRecount+1)
+MigStat$Varroa <- log(MigStat$Varroa+1)
+#MigStat$Varroa[MigStat$Varroa=="Inf"] <- 0
+MigStat$NosemaLoadRecount <- log(MigStat$NosemaLoadRecount+1)
+#MigStat$NosemaLoadRecount[MigStat$NosemaLoadRecount=="Inf"] <- 0
 
 # required packages:
 library(plyr)
@@ -1388,8 +1390,10 @@ Mig3 <- MigStatSplit$`3`
 #### LDA for Time Point 2:
 ```{r, echo=FALSE}
 
+Mig2 <- Mig2[!Mig2$Treatment=="Exposed",]
+
 # run LDA
-time2 <- lda(Treatment~Varroa + NosemaLoadRecount + logBQCV + logDWV + DWVbinary + FOB + BroodPattern + NosemaBinary + VarroaBinary, data=Mig2, na.action="na.omit")
+time2 <- lda(Treatment~Varroa + NosemaLoadRecount + logBQCV + logDWV + DWVbinary + FOB + NosemaBinary + VarroaBinary, data=Mig2, na.action="na.omit")
 
 # LDA prep function 
 ggplotLDAPrep <- function(x){
@@ -1417,14 +1421,14 @@ LDAone
 time2
 ##################################
 # classification analysis:
-CA1 <- lda(Treatment~Varroa + NosemaLoadRecount + logBQCV + logDWV + DWVbinary + FOB + BroodPattern + NosemaBinary + VarroaBinary, data=Mig2, na.action="na.omit",prior=c(1,1,1)/3, CV=TRUE)
+CA1 <- lda(Treatment~Varroa + NosemaLoadRecount + logBQCV + logDWV + DWVbinary + FOB + NosemaBinary + VarroaBinary, data=Mig2, na.action="na.omit",prior=c(1,1)/2, CV=TRUE)
 
 # create confusion matrix
 cm1 <- data.frame(cbind(Mig2$Treatment, CA1$class))
 names(cm1) <- c("actual", "predicted")
 cm <- table(cm1)
-colnames(cm) = c('Exposed', 'Migratory', 'Stationary')
-rownames(cm) = c('Exposed', 'Migratory', 'Stationary')
+colnames(cm) = c('Migratory', 'Stationary')
+rownames(cm) = c('Migratory', 'Stationary')
 cm
 
 prop.table(cm,1)
@@ -1445,7 +1449,7 @@ prop.table(cm,1)
 
 # create matrix for PERM
 Mig2x <- na.omit(Mig2)
-x <- dplyr::select(Mig2x, Varroa, NosemaLoadRecount, logBQCV, logDWV, DWVbinary, BSB, FOB, BroodPattern, NosemaBinary, VarroaBinary)
+x <- dplyr::select(Mig2x, Varroa, NosemaLoadRecount, logBQCV, logDWV, DWVbinary, BSB, FOB, NosemaBinary, VarroaBinary)
 
 # run PERMANOVA
 envdist1 <- vegdist(x, method= "jaccard")
@@ -1461,7 +1465,7 @@ AD1
 ```{r, echo=FALSE}
 
 # run LDA
-time3 <- lda(Treatment~Varroa + NosemaLoadRecount + logBQCV + logDWV + DWVbinary + FOB + BroodPattern + NosemaBinary + VarroaBinary, data=Mig3, na.action="na.omit")
+time3 <- lda(Treatment~Varroa + NosemaLoadRecount + logBQCV + logDWV + DWVbinary + FOB + NosemaBinary + VarroaBinary, data=Mig3, na.action="na.omit")
 
 # graph for LDA
 fitGraph1 <- ggplotLDAPrep(time3)
@@ -1473,7 +1477,7 @@ time3
 
 
 # Classification Anlaysis 
-CA2 <- lda(Treatment~Varroa + NosemaLoadRecount + logBQCV + logDWV + DWVbinary + FOB + BroodPattern + NosemaBinary + VarroaBinary, data=Mig3, na.action="na.omit",prior=c(1,1,1)/3, CV=TRUE)
+CA2 <- lda(Treatment~Varroa + NosemaLoadRecount + logBQCV + logDWV + DWVbinary + FOB + NosemaBinary + VarroaBinary, data=Mig3, na.action="na.omit",prior=c(1,1,1)/3, CV=TRUE)
 
 
 # Confusion Matrix
@@ -1491,7 +1495,7 @@ prop.table(cm,1)
 
 # create data matrix for PCA and nMDS
 Mig3x <- na.omit(Mig3)
-x1 <- dplyr::select(Mig3x,Varroa, NosemaLoadRecount, logBQCV, logDWV, DWVbinary, FOB, BroodPattern, NosemaBinary, VarroaBinary)
+x1 <- dplyr::select(Mig3x,Varroa, NosemaLoadRecount, logBQCV, logDWV, DWVbinary, FOB, NosemaBinary, VarroaBinary)
 
 # run PERMNAOVA
 envdist <- vegdist(x1, method= "jaccard")
