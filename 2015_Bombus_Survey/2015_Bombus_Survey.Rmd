@@ -390,7 +390,7 @@ cbind(x$DWV$site, x$DWV$apiary_near_far, x$DWV$HBviralLoad, x$DWV$BombusViralLoa
 ```
 
 ```{r}
-Combining BombSurv with GIS data
+#Combining BombSurv with GIS data
 ```
 
 ## Working with mixed models:
