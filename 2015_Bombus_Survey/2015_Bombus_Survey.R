@@ -191,7 +191,7 @@ Sammy<-table(BombSurv$sample_name)
 sammyscounts <-data.frame(Sammy)
 head(sammyscounts)
 
-sammy_is_so_smart <- sammyscounts[which(sammyscounts$Freq!=4),]
+sammy_is_so_smart <- sammyscounts[which(sammyscounts$Freq!=3),]
 
 # rename column names! Never forget this one!
 colnames(sammy_is_so_smart)<- c("ID","Freq")
@@ -309,7 +309,7 @@ BombSurvNHBS <- merge(BombSurv, NHBS, by=c("site"), all.x=TRUE, all.y=FALSE)
 #adding spatial data to dataframe that includes the apiary number and colony number for each bumble bee collection site
 BombSurvNHBS <- merge(BombSurvNHBS, SpacDF, by="site")
 
-write.csv(BombSurvNHBS, file = "BombSurvNHBS.csv")
+#write.csv(BombSurvNHBS, file = "BombSurvNHBS.csv")
 
 
 #---------------------------------------------------------------------
@@ -317,4 +317,3 @@ write.csv(BombSurvNHBS, file = "BombSurvNHBS.csv")
 
 
 # THE END!!!
-

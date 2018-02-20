@@ -7,6 +7,8 @@ output:
     fig_height: 5.5
     fig_width: 7
   html_document: default
+editor_options: 
+  chunk_output_type: console
 ---
 
 **Metadata**
@@ -23,7 +25,7 @@ output:
 
 **Data Collection:** Bumble bees were netted from flowers at field sites. 
 
-**Columns:** (from left to right) Site ID, Target (Actin, DWV, IAPV, or BQCV), sample ID, From the qPCR results: Ctmean, Ctsd, quantity mean, quantitysd, Run # (QPCR), Date specimen was collected, Field ID, Bee species, plant the bee was caught on, date the specimen was processed in the lab, was pollen found on the leg and collected (0-no, 1- yes), dil.factor (RNA diluted), apiary present/not present at site (1, 0), genome copy for target (not normalized), ACTIN genome copy, normalized target genome copy (normalized using ACTIN), 6-10 Honey Bees were collected at each site, homogenized and assayed for viruses, 'norm_genome_copbeeHB' is the normalized genome copy for honey bee for the target specified, 'CTmeanhb' is the CT value for the honey bee for each target (from qpcr data), 'HB collected' is whether honeybees were collected and processed at that site, 1 or NA, virus 'BINYPreFilter' is whether the bumble bee was positive for the virus of interest, 'virusBINY' is whether the bumble bee was positive for the virus but takes into accont the limit of detection for each target, 'HB_Abun' is # of honey bees over total number bee observed- taken from bee abundance survey at each site. 'HBSiteBin' is for DWV data only. Honey Bee virus load results showed two distinct groups 'high' (VL) and 'low' (VL). 
+**Columns:** (from left to right) Site ID, Target (Actin, DWV, IAPV, or BQCV), sample ID, From the qPCR results: Ctmean, Ctsd, quantity mean, quantitysd, Run # (QPCR), Date specimen was collected, Field ID, Bee species, plant the bee was caught on, date the specimen was processed in the lab, was pollen found on the leg and collected (0-no, 1- yes), dil.factor (RNA diluted), apiary present/not present at site (1, 0), genome copy for target (not normalized), ACTIN genome copy, normalized target genome copy (normalized using ACTIN), 6-10 Honey Bees were collected at each site, homogenized and assayed for viruses, 'norm_genome_copbeeHB' is the normalized genome copy for honey bee for the target specified, 'CTmeanhb' is the CT value for the honey bee for each target (from qpcr data), 'HB collected' is whether honeybees were collected and processed at that site, 1 or NA, virus 'BINYPreFilter' is whether the bumble bee was positive for the virus of interest, 'virusBINY' is whether the bumble bee was positive for the virus but takes into accont the limit of detection for each target, 'HB_Abun' is # of honey bees over total number bee observed- taken from bee abundance survey at each site. 'HBSiteBin' is for DWV data only. Honey Bee virus load results showed two distinct groups 'high' (VL) and 'low' (VL); 'ShannonDIV', 'Simpson DIV', and 'FisherDIV' are three measurements of flowering plant diversity measured by counting and identifying flowering heads in a 1mx1m quadrat placed 10 times over 100 m transect; 'Density' is the density of flowering plants measured as above. 
 
 **Rows:** Bumble bee specimens
 
@@ -47,19 +49,20 @@ library(plyr)
 setwd("~/AlgerProjects/2015_Bombus_Survey/CSV_Files")
 
 # read in data
-BombSurv <- read.table("BombSurv.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
+#BombSurv <- read.table("BombSurv.csv", header=TRUE, sep=",", stringsAsFactors=FALSE)
 
-#BombSurv <- read.table("BombSurvNHBS.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
-
-# remove unneeded columns from the DF
-#BombSurv <- select(BombSurv, -X, -Ct_mean, -Ct_sd, -quantity_mean, -quantity_sd, -run, -date_processed, -dil.factor, -genome_copbee, -Ct_mean_hb, -ID, -ACT_genome_copbee)
+BombSurv <- read.csv("BombSurvNHBS.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
 
 # remove unneeded columns from the DF
-BombSurv <- dplyr::select(BombSurv, -City, -Name, -virusBINY_PreFilter)
+BombSurv <- select(BombSurv, -X, -Ct_mean, -Ct_sd, -quantity_mean, -quantity_sd, -run, -date_processed, -dil.factor, -genome_copbee, -Ct_mean_hb, -ID, -ACT_genome_copbee, -siteNotes, -virusBINY_PreFilter,-City, -Name)
+
+# remove unneeded columns from the DF
+#BombSurv <- dplyr::select(BombSurv, -City, -Name, -virusBINY_PreFilter)
 
 # remove unwanted sites and bombus species
 BombSurv<-BombSurv[!BombSurv$site==("PITH"),]
 BombSurv<-BombSurv[!BombSurv$site==("STOW"),]
+BombSurv<-BombSurv[!BombSurv$site==("EFAIR"),]
 
 BombSurv<-BombSurv[!BombSurv$species==("Griseocollis"),]
 BombSurv<-BombSurv[!BombSurv$species==("Sandersonii"),]
