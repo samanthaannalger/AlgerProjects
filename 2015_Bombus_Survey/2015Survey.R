@@ -743,26 +743,72 @@ TheExtractor(Full=BQCVloadModFull,
 ###############################################################################################
 # REGRESSION ANALYSIS #########################################################################
 ###############################################################################################
+# regressions run on sum colones excluding sites that do not have any colonies:
 
-# remove 0s to look at viral load of infected
+# DWV load by number of colonies 
 DWVno0just_HB <- DWVno0[!DWVno0$sumColonies1==0,]
+DWVloadModFullHB <- lmer(data=DWVno0just_HB, formula = logVirus ~ sumColonies1 + Density + species + (1|site) + (1|species) + (1|lat) + (1|long))
+DWVloadModNullHB <- lmer(data=DWVno0just_HB, formula = logVirus ~ Density + species + (1|site) + (1|species) + (1|lat) + (1|long))
+anova(DWVloadModFullHB, DWVloadModNullHB, test="LRT")
 
-# remove 0s to look at viral load of infected
+
+# BQCV load by number of colonies 
 BQCVno0just_HB <- BQCVno0[!BQCVno0$sumColonies1==0,]
+BQCVloadModFullHB <- lmer(data=BQCVno0just_HB, formula = logVirus ~ sumColonies1 + Density + species + (1|site) + (1|species) + (1|lat) + (1|long))
+BQCVloadModNullHB <- lmer(data=BQCVno0just_HB, formula = logVirus ~ Density + species + (1|site) + (1|species) + (1|lat) + (1|long))
+anova(BQCVloadModFullHB, BQCVloadModNullHB, test="LRT")
 
 
 
 
-# remove 0s to look at viral load of infected
+# DWV prev by number of colonies 
 DWVjust_HB <- DWV[!DWV$sumColonies1==0,]
+DWVprevModFullHB <- glmer(data=DWVjust_HB, formula = virusBINY~sumColonies1 + Density + species + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+DWVprevModNullHB <- glmer(data=DWVjust_HB, formula = virusBINY~ Density + species + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+anova(DWVprevModFullHB, DWVprevModNullHB, test="LRT")
 
-# remove 0s to look at viral load of infected
+# BQCV prev by number of colonies 
 BQCVjust_HB <- BQCV[!BQCV$sumColonies1==0,]
+BQCVprevModFullHB <- glmer(data=BQCVjust_HB, formula = virusBINY~sumColonies1 + Density + species + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+BQCVprevModNullHB <- glmer(data=BQCVjust_HB, formula = virusBINY~ Density + species + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+anova(BQCVprevModFullHB, BQCVprevModNullHB, test="LRT")
 
 
 
 
 
+###############################################################################################
+# SCATTER PLOTS FOR SUM COLS VS PATHOGENS #####################################################
+###############################################################################################
+
+# load in data
+spatDat <- read.csv("spatialMerge.csv", header=TRUE, stringsAsFactors=FALSE)
+spatDat$logViralLoad <- log(spatDat$BombusViralLoad + 1) 
+
+# split up my data frame:
+splitSpat <- split(spatDat, spatDat$target_name)
+spatDWV <- splitSpat$DWV
+spatBQCV <- splitSpat$BQCV
+
+# looking at floral density by presence or absence of apiaries (NOT SIG)
+x <- aov(data=spatDat, Density~apiary_near_far)
+summary(x)
+
+# DWV load:
+ggplot(spatDWV, aes(x=sumColonies1, y=logViralLoad)) +
+  geom_point(size=4) + theme_bw(base_size = 17) + labs(x="# colonies in 1km", y = "DWV Bombus Viral Load") + coord_cartesian(ylim = c(0, 17))
+
+# BQCV load:
+ggplot(spatBQCV, aes(x=sumColonies1, y=logViralLoad)) +
+  geom_point(size=4) + theme_bw(base_size = 17) + labs(x="# colonies in 1km", y = "BQCV Bombus Viral Load") + coord_cartesian(ylim = c(10, 20))
+
+# DWV prev:
+ggplot(spatDWV, aes(x=sumColonies1, y=BombPrev)) +
+  geom_point(size=4) + theme_bw(base_size = 17) + labs(x="# colonies in 1km", y = "DWV Bombus Viral Prevalence") + coord_cartesian(ylim = c(0, 1))
+
+# BQCV prev:
+ggplot(spatBQCV, aes(x=sumColonies1, y=BombPrev)) +
+  geom_point(size=4) + theme_bw(base_size = 17) + labs(x="# colonies in 1km", y = "BQCV Bombus Viral Prevalence") + coord_cartesian(ylim = c(0, 1))
 
 
 
