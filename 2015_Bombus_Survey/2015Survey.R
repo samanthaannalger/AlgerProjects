@@ -313,23 +313,7 @@ Moran.I(HBdwvResid$residual, DWV.dists.inv) # NO SPACIAL-AUTO COR
 ###################################################################################################
 # FULL BOMBUS VIRUS MODELS TAKE 2 (2-20-18): P. Alexander Burnham
 ###################################################################################################
-# remove 0s to look at viral load of infected
-BQCVno0 <- BQCV[!BQCV$virusBINY==0,]
 
-# remove 0s to look at viral load of infected
-DWVno0 <- DWV[!DWV$virusBINY==0,]
-
-# rename NAs "no apis caught"
-DWV$HBSiteBin[is.na(DWV$HBSiteBin)] <- "No Apis Caught"
-
-# Remove erant sites from plants data
-Plants <- Plants[!Plants$site==("SIND"),]
-Plants <- Plants[!Plants$site==("BOST"),]
-
-# create a binary varaible for apiary or no apiary 
-Plants$apiary <- ifelse(Plants$sumColonies1 <= 0, "no apiary","apiary")
-
-Plants$HBlowHigh <- ifelse(Plants$apis <= 4, "Low HB","High HB")
 
 
 
@@ -356,33 +340,6 @@ Anova(BQCVprevModFull)
 # BQCV load model:
 BQCVloadModFull <- lmer(data=BQCVno0, formula = logVirus ~ apiary_near_far + Density + species + (1|site) + (1|lat) + (1|long))
 Anova(BQCVloadModFull)
-
-
-
-
-
-
-
-
-
-
-PlantsFull <- glmer(data=Plants, formula = BINYprefilter ~ apis + target_name + (1|apiary/site), family = binomial(link = "logit"))
-Anova(PlantsFull)
-
-
-
-
-
-
-ApisFull <- glmer(data=DWV, formula = virusBINY ~ HBSiteBin + Density + apis + (1|site), family = binomial(link = "logit"))
-
-Anova(ApisFull)
-
-
-
-
-
-
 
 
 
@@ -781,6 +738,26 @@ TheExtractor(Full=BQCVloadModFull,
 
 
 
+
+
+###############################################################################################
+# REGRESSION ANALYSIS #########################################################################
+###############################################################################################
+
+# remove 0s to look at viral load of infected
+DWVno0just_HB <- DWVno0[!DWVno0$sumColonies1==0,]
+
+# remove 0s to look at viral load of infected
+BQCVno0just_HB <- BQCVno0[!BQCVno0$sumColonies1==0,]
+
+
+
+
+# remove 0s to look at viral load of infected
+DWVjust_HB <- DWV[!DWV$sumColonies1==0,]
+
+# remove 0s to look at viral load of infected
+BQCVjust_HB <- BQCV[!BQCV$sumColonies1==0,]
 
 
 
