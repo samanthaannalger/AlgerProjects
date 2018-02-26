@@ -25,7 +25,7 @@ setwd("~/AlgerProjects/2015_Bombus_Survey/CSV_Files")
 
 # load in data
 BombSurv <- read.csv("BombSurvNHBS.csv", header=TRUE, stringsAsFactors=FALSE)
-table(BombSurv$sample_name)
+
 
 # code to find negative bees and write out columns wanted
 #NegList <- BombSurv[BombSurv$virusBINY==0,]
@@ -127,6 +127,7 @@ BombSurv$logVirus <- log(1+BombSurv$norm_genome_copbee)
 BombSurv$logHB <- log(1+BombSurv$norm_genome_copbeeHB)
 
 BombSurv <- merge(BombSurv, BeeAbund, by = "site")
+BombSurv$HBdensRatio <-  BombSurv$Density/((BombSurv$apis+0.0000000000000001)/10)
 
 # two data frames for DWV and BQCV for Morans I
 BQCV <- subset(BombSurv, target_name=="BQCV")
@@ -135,6 +136,7 @@ DWV <- subset(BombSurv, target_name=="DWV")
 # create Plants dataframe:
 Plants <- merge(Plants, BeeAbund, all.x=TRUE, all.y=FALSE)
 Plants <- merge(Plants, SpatialDat, by=c("site","target_name"), all.x=TRUE, all.y=FALSE)
+
 
 ###############################################################################################
 # function to pull out AIC and pval for DWV (prev) and BQCV (prev)
@@ -396,6 +398,27 @@ plot1 <- ggplot(data = VirusSum,
 plot1 + theme_bw(base_size = 17) + scale_shape_manual(values=c(19, 1)) + annotate(geom = "text", x = 1, y = .11, label = "n=205",cex = 4) + annotate(geom = "text", x = 2, y = .18, label = "n=71",cex = 4) + annotate(geom = "text", x = 3, y = .3, label = "n=92",cex = 4) + annotate(geom = "text", x = 1, y = .72, label = "n=188",cex = 4) + annotate(geom = "text", x = 2, y = 1, label = "n=62",cex = 4) + annotate(geom = "text", x = 3, y = .98, label = "n=88",cex = 4) 
 
 
+
+
+
+
+VirusSum1 <- ddply(BombSurvNoAIPV, c("target_name", "apiary_near_far"), summarise, 
+                  n = length(virusBINY),
+                  mean = mean(virusBINY),
+                  sd = sqrt(((mean(virusBINY))*(1-mean(virusBINY)))/n))
+
+VirusSum1$apiary_near_far <- as.character(VirusSum1$apiary_near_far)
+
+
+colors <- c("white", "grey25")
+
+#Create a bar graph for viruses by bombus species (aes= aesthetics):
+plot1 <- ggplot(VirusSum1, aes(x=target_name, y=mean, fill=apiary_near_far)) + 
+  geom_bar(stat="identity", color="black", 
+           position=position_dodge()) + labs(x="Virus", y = "% Prevalence") + geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd, width = 0.2),position=position_dodge(.9))
+
+plot1 + theme_bw(base_size = 23) + scale_fill_manual(values=colors, name="Site Type:", labels=c("Apiary Absent", "Apiary Present")) + theme(legend.position=c(.8, .85),  panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + coord_cartesian(ylim = c(0, 1)) + scale_y_continuous(labels = scales::percent) + annotate(geom = "text", x = 1, y = .98, label = "*",cex = 10) + annotate(geom = "text", x = 2, y = .25, label = "*",cex = 9) 
+
 ###################################################################################################
 # CREATING FULL MODELS FOR PLANT PREV:
 ###################################################################################################
@@ -453,7 +476,7 @@ plot1 <- ggplot(fieldPlantsSum, aes(x=apiary, y=mean, fill=target_name)) +
   geom_bar(stat="identity", color="black",
            position=position_dodge()) + labs(y="% plants with virus detected", x="Site Type") + geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd, width = 0.2),position=position_dodge(.9))
 
-plot1 + theme_bw(base_size = 17) + scale_fill_manual(values=colors, name="Virus", labels=c("BQCV", "DWV")) + theme(legend.position=c(.86, .8),legend.background = element_rect(color = "black", fill = "white", size = .4, linetype = "solid")) + coord_cartesian(ylim = c(0, .5)) + scale_y_continuous(labels = scales::percent) 
+plot1 + theme_bw(base_size = 23) + scale_fill_manual(values=colors, name="Virus", labels=c("BQCV", "DWV")) + theme(legend.position=c(.86, .8),legend.background = element_rect(color = "black", fill = "white", size = .4, linetype = "solid")) + coord_cartesian(ylim = c(0, .5)) + scale_y_continuous(labels = scales::percent) 
 
 
 
@@ -527,7 +550,7 @@ colors <- c("grey30", "white", "white")
 plot1 <- ggplot(HBSiteSum, aes(x=HBSiteBin, y=mean, fill=colors)) + 
   geom_bar(stat="identity", color = "black") + labs(x="Level of DWV in Apis", y = "% Prevalence in Bombus")
 
-plot1 + theme_bw(base_size = 17) + scale_fill_manual(values=colors) + coord_cartesian(ylim = c(0, 0.2)) + scale_y_continuous(labels = scales::percent) + theme(legend.position=c(3, 3)) + geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd, width = 0.2),position=position_dodge(.9))
+plot1 + theme_bw(base_size = 23) + scale_fill_manual(values=colors) + coord_cartesian(ylim = c(0, 0.2)) + scale_y_continuous(labels = scales::percent) + theme(legend.position=c(3, 3)) + geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd, width = 0.2),position=position_dodge(.9))
 
 
 
