@@ -30,6 +30,7 @@ write.csv(PosList, file = "PosVirus_NegStrd_withSites.csv")
 PosVirus <- read.csv("PosVirus_NegStrd_withSites.csv", header=TRUE, stringsAsFactors=FALSE)
 
 table(PosVirus$site, PosVirus$apiary_near_far)
+table(PosVirus$target_name)
 
 DWVOnly<- PosVirus[PosVirus$target_name == "DWV", ]
 

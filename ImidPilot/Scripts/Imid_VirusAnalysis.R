@@ -81,7 +81,7 @@ ImidVirus$logBQCV <- log(ImidVirus$BQCVload + 1)
 #Select only DWV positive samples
 ImidDWV <- ImidVirus[ which(ImidVirus$DWVbinary=="1"), ]
 
-#Checking out by plant species
+#Checking out by treatment
 Imid <- ddply(ImidDWV, c("Treatment"), summarise, 
                   n = length(logDWV),
                   mean = mean(logDWV, na.rm=TRUE),
@@ -95,15 +95,18 @@ colors <- c("goldenrod", "violetred4", "snow1", "black")
 #Create a bar graph for viruses by bombus species (aes= aesthetics):
 plot1 <- ggplot(Imid, aes(x=Treatment, y=mean, fill=Treatment)) + 
   geom_bar(stat="identity", color="black",
-           position=position_dodge()) + labs(x="Virus", y = "% of Flowers with Virus Detected")
+           position=position_dodge()) + labs(x="Treatment", y = "log(Virus load) ")
 
-plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Plant Species:", labels=c("Birdsfoot Trefoil", "Red Clover", "White Clover")) + theme(legend.position="none") + coord_cartesian(ylim = c(0, 20))
+plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Plant Species:", labels=c("Birdsfoot Trefoil", "Red Clover", "White Clover")) + theme(legend.position="none") + coord_cartesian(ylim = c(0, 15))
 
+x <- aov(data=ImidDWV, logDWV~Treatment)
+summary(x)
+table(ImidDWV$Treatment, ImidDWV$DWVbinary)
 
 ##############################################################
 #figure for DWV load:
 #Select only DWV positive samples
-ImidBQCV <- ImidVirus[ which(ImidVirus$BQCVbinary=="1"), 
+ImidBQCV <- ImidVirus[ which(ImidVirus$BQCVbinary=="1"), ] 
 
 #Checking out by plant species
 Imid <- ddply(ImidBQCV, c("Treatment"), summarise, 
@@ -119,9 +122,12 @@ colors <- c("goldenrod", "violetred4", "snow1", "black")
 #Create a bar graph for viruses by bombus species (aes= aesthetics):
 plot1 <- ggplot(Imid, aes(x=Treatment, y=mean, fill=Treatment)) + 
   geom_bar(stat="identity", color="black",
-           position=position_dodge()) + labs(x="Virus", y = "% of Flowers with Virus Detected")
+           position=position_dodge()) + labs(x="Treatment", y = "log(virus load)")
 
-plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Plant Species:", labels=c("Birdsfoot Trefoil", "Red Clover", "White Clover")) + theme(legend.position="none") + coord_cartesian(ylim = c(0, 15))
+plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Plant Species:", labels=c("Birdsfoot Trefoil", "Red Clover", "White Clover")) + theme(legend.position="none") + coord_cartesian(ylim = c(0, 20))
+
+x <- aov(data=ImidBQCV, logBQCV~Treatment)
+summary(x)
 
 ###############################################################
 #Figure for Virus Prevalence
