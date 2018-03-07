@@ -530,7 +530,7 @@ ggplot(data=CopDist, aes(log(1 + mean))) +
   geom_histogram(breaks=seq(5, 25, by = 1), 
                  col="black", 
                  fill="grey30") +
-  labs(x="Apis DWV log(viral load)", y="Frequency") + theme_bw(base_size=17)
+  labs(x="Apis DWV log(viral load)", y="Frequency") + theme_bw(base_size=23)
 
 ################################################################################################
 
@@ -819,19 +819,19 @@ summary(x)
 
 # DWV load:
 ggplot(spatDWV, aes(x=sumColonies1, y=logViralLoad)) +
-  geom_point(size=4) + theme_bw(base_size = 17) + labs(x="# colonies in 1km", y = "DWV Bombus Viral Load") + coord_cartesian(ylim = c(0, 17))
+  geom_point(size=4) + theme_bw(base_size = 23) + labs(x="# colonies in 1km", y = "DWV Bombus Viral Load") + coord_cartesian(ylim = c(0, 17))
 
 # BQCV load:
 ggplot(spatBQCV, aes(x=sumColonies1, y=logViralLoad)) +
-  geom_point(size=4) + theme_bw(base_size = 17) + labs(x="# colonies in 1km", y = "BQCV Bombus Viral Load") + coord_cartesian(ylim = c(10, 20))
+  geom_point(size=4) + theme_bw(base_size = 23) + labs(x="# colonies in 1km", y = "BQCV Bombus Viral Load") + coord_cartesian(ylim = c(10, 20))
 
 # DWV prev:
 ggplot(spatDWV, aes(x=sumColonies1, y=BombPrev)) +
-  geom_point(size=4) + theme_bw(base_size = 17) + labs(x="# colonies in 1km", y = "DWV Bombus Viral Prevalence") + coord_cartesian(ylim = c(0, 1))
+  geom_point(size=4) + theme_bw(base_size = 23) + labs(x="# colonies in 1km", y = "DWV Bombus Viral Prevalence") + coord_cartesian(ylim = c(0, 1))
 
 # BQCV prev:
 ggplot(spatBQCV, aes(x=sumColonies1, y=BombPrev)) +
-  geom_point(size=4) + theme_bw(base_size = 17) + labs(x="# colonies in 1km", y = "BQCV Bombus Viral Prevalence") + coord_cartesian(ylim = c(0, 1))
+  geom_point(size=4) + theme_bw(base_size = 23) + labs(x="# colonies in 1km", y = "BQCV Bombus Viral Prevalence") + coord_cartesian(ylim = c(0, 1))
 
 
 
