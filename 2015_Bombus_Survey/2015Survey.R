@@ -33,16 +33,16 @@ BombSurv <- read.csv("BombSurvNHBS.csv", header=TRUE, stringsAsFactors=FALSE)
 #write.csv(NegList, file = "NegVirus_NegStrd_2015.csv")
 
 # code to find positive bees and write out columns wanted
-# PosList <- BombSurv[BombSurv$virusBINY==1,]
-# PosList <- select(PosList, sample_name, target_name, Ct_mean, norm_genome_copbee)
+ PosList <- BombSurv[BombSurv$virusBINY==1,]
+ PosList <- select(PosList, sample_name, target_name, norm_genome_copbee)
 
 # change the name of sample_name to ID
-# colnames(PosList)[1] <- "ID" 
+ colnames(PosList)[1] <- "ID" 
 
 #write.csv(PosList, file = "PosVirus_NegStrd_2015.csv")
 
 # just the samples that are postive
-# x <- PosList$ID[!duplicated(PosList$ID)]
+x <- PosList$ID[!duplicated(PosList$ID)]
 
 # read nanodrop data:
 #drop <- read.table("BombSurv_RNANanodropResults.csv",
@@ -84,8 +84,23 @@ BombSurv <- read.csv("BombSurvNHBS.csv", header=TRUE, stringsAsFactors=FALSE)
 #z <- complete$ng.ul>150
 #length(which(z==TRUE))
 
+BQCVrun <- read.csv("NegStrandSamplesRan.csv", header=TRUE, stringsAsFactors=FALSE)
+
 # which are postive for DWV
-#posDWV <- PosList[PosList$target_name=="DWV",]
+posDWV <- PosList[PosList$target_name=="DWV",]
+
+posBQCV <- PosList[PosList$target_name=="BQCV",]
+
+
+
+# samples that need to be run BQCV:
+needtoRun <- posBQCV[!(posBQCV$ID %in% BQCVrun$ID),]
+
+(BQCVrun$ID %in% needtoRun$ID)
+
+
+
+write.csv(needtoRun, "DWVneedtoRun.csv")
 
 ##########################################################################################
 # plant virus prevalence data:
