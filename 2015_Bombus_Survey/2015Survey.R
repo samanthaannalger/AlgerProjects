@@ -434,9 +434,11 @@ Plants$HBlowHigh <- ifelse(Plants$apis <= 4, "Low HB","High HB")
 
 PlantsFull <- glmer(data=Plants, formula = BINYprefilter ~ apis + bombus + target_name + (1|apiary/site), family = binomial(link = "logit"))
 
-PlantsNoApis <- glmer(data=Plants, formula = BINYprefilter ~ target_name + (1|apiary/site), family = binomial(link = "logit"))
+PlantsNoApis <- glmer(data=Plants, formula = BINYprefilter ~ bombus + target_name + (1|apiary/site), family = binomial(link = "logit"))
 
-PlantsNoTarg <- glmer(data=Plants, formula = BINYprefilter ~ apis + (1|apiary/site), family = binomial(link = "logit"))
+PlantsNoTarg <- glmer(data=Plants, formula = BINYprefilter ~ bombus + apis + (1|apiary/site), family = binomial(link = "logit"))
+
+PlantsNoBombus <- glmer(data=Plants, formula = BINYprefilter ~ apis + target_name + (1|apiary/site), family = binomial(link = "logit"))
 
 PlantsNull <- glmer(data=Plants, formula = BINYprefilter ~ 1 + (1|apiary/site), family = binomial(link = "logit"))
 
@@ -449,6 +451,11 @@ anova(PlantsFull, PlantsNull, test="LRT")
 anova(PlantsFull, PlantsNoApis, test="LRT")
 
 anova(PlantsFull,PlantsNoTarg, test="LRT")
+
+anova(PlantsFull, PlantsNoBombus, test="LRT")
+
+# To view effects and std. errors of each variable:
+summary(PlantsFull)
 
 
 
@@ -770,18 +777,21 @@ TheExtractor(Full=BQCVloadModFull,
 
 # DWV load by number of colonies 
 DWVno0just_HB <- DWVno0[!DWVno0$sumColonies1==0,]
+
 DWVloadModFullHB <- lmer(data=DWVno0just_HB, formula = logVirus ~ sumColonies1 + Density + species + (1|site) + (1|species) + (1|lat) + (1|long))
+
 DWVloadModNullHB <- lmer(data=DWVno0just_HB, formula = logVirus ~ Density + species + (1|site) + (1|species) + (1|lat) + (1|long))
+
 anova(DWVloadModFullHB, DWVloadModNullHB, test="LRT")
 
 
 # BQCV load by number of colonies 
 BQCVno0just_HB <- BQCVno0[!BQCVno0$sumColonies1==0,]
 BQCVloadModFullHB <- lmer(data=BQCVno0just_HB, formula = logVirus ~ sumColonies1 + Density + species + (1|site) + (1|species) + (1|lat) + (1|long))
+
 BQCVloadModNullHB <- lmer(data=BQCVno0just_HB, formula = logVirus ~ Density + species + (1|site) + (1|species) + (1|lat) + (1|long))
+
 anova(BQCVloadModFullHB, BQCVloadModNullHB, test="LRT")
-
-
 
 
 # DWV prev by number of colonies 

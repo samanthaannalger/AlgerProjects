@@ -41,6 +41,7 @@ BQCVOnly<- PosVirus[PosVirus$target_name == "BQCV", ]
 
 View(BQCVOnly)
 table(BQCVOnly$site, BQCVOnly$species)
+table(BQCVOnly$site)
 
 # just the samples that are postive
 x <- PosList$ID[!duplicated(PosList$ID)]
