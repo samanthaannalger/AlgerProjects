@@ -10,7 +10,7 @@ ls()
 rm(list=ls())
 
 #Set Working Directory: 
-setwd("~/AlgerProjects/2015_Bombus_Survey/CSV_Files")
+setwd("~/AlgerProjects/PlantTransExp/CSV_Files")
 
 # read in data:
 plantTrans <- read.csv("plantTransPlantsDF.csv", header=TRUE, sep = ",", stringsAsFactors=FALSE) 

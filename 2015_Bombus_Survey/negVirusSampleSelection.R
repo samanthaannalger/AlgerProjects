@@ -30,6 +30,7 @@ write.csv(PosList, file = "PosVirus_NegStrd_withSites.csv")
 PosVirus <- read.csv("PosVirus_NegStrd_withSites.csv", header=TRUE, stringsAsFactors=FALSE)
 
 table(PosVirus$site, PosVirus$apiary_near_far)
+table(PosVirus$target_name)
 
 DWVOnly<- PosVirus[PosVirus$target_name == "DWV", ]
 
@@ -40,6 +41,7 @@ BQCVOnly<- PosVirus[PosVirus$target_name == "BQCV", ]
 
 View(BQCVOnly)
 table(BQCVOnly$site, BQCVOnly$species)
+table(BQCVOnly$site)
 
 # just the samples that are postive
 x <- PosList$ID[!duplicated(PosList$ID)]
