@@ -439,21 +439,21 @@ plot1 + theme_bw(base_size = 23) + scale_fill_manual(values=colors, name="Site T
 ###################################################################################################
 
 # Remove erant sites from plants data
-Plants <- Plants[!Plants$site==("SIND"),]
-Plants <- Plants[!Plants$site==("BOST"),]
+#Plants <- Plants[!Plants$site==("SIND"),]
+#Plants <- Plants[!Plants$site==("BOST"),]
 
 # create a binary varaible for apiary or no apiary 
 Plants$apiary <- ifelse(Plants$sumColonies1 <= 0, "no apiary","apiary")
 
 Plants$HBlowHigh <- ifelse(Plants$apis <= 4, "Low HB","High HB")
 
-PlantsFull <- glmer(data=Plants, formula = BINYprefilter ~ apis + bombus + target_name + (1|apiary/site), family = binomial(link = "logit"))
+PlantsFull <- glmer(data=Plants, formula = BINYprefilter ~ apis + target_name + (1|apiary/site), family = binomial(link = "logit"))
 
-PlantsNoApis <- glmer(data=Plants, formula = BINYprefilter ~ bombus + target_name + (1|apiary/site), family = binomial(link = "logit"))
+PlantsApis <- glmer(data=Plants, formula = BINYprefilter ~ target_name + (1|apiary/site), family = binomial(link = "logit"))
 
-PlantsNoTarg <- glmer(data=Plants, formula = BINYprefilter ~ bombus + apis + (1|apiary/site), family = binomial(link = "logit"))
+PlantsTarg <- glmer(data=Plants, formula = BINYprefilter ~ apis + (1|apiary/site), family = binomial(link = "logit"))
 
-PlantsNoBombus <- glmer(data=Plants, formula = BINYprefilter ~ apis + target_name + (1|apiary/site), family = binomial(link = "logit"))
+PlantsBombus <- glmer(data=Plants, formula = BINYprefilter ~ apis + target_name + (1|apiary/site), family = binomial(link = "logit"))
 
 PlantsNull <- glmer(data=Plants, formula = BINYprefilter ~ 1 + (1|apiary/site), family = binomial(link = "logit"))
 
@@ -463,11 +463,11 @@ summary(PlantsFull)
 
 anova(PlantsFull, PlantsNull, test="LRT")
 
-anova(PlantsFull, PlantsNoApis, test="LRT")
+anova(PlantsFull, PlantsApis, test="LRT")
 
-anova(PlantsFull,PlantsNoTarg, test="LRT")
+anova(PlantsFull,PlantsTarg, test="LRT")
 
-anova(PlantsFull, PlantsNoBombus, test="LRT")
+anova(PlantsFull, PlantsBombus, test="LRT")
 
 # To view effects and std. errors of each variable:
 summary(PlantsFull)
@@ -798,7 +798,7 @@ DWVloadModFullHB <- lmer(data=DWVno0just_HB, formula = logVirus ~ sumColonies1 +
 DWVloadModNullHB <- lmer(data=DWVno0just_HB, formula = logVirus ~ Density + species + (1|site) + (1|species) + (1|lat) + (1|long))
 
 anova(DWVloadModFullHB, DWVloadModNullHB, test="LRT")
-
+summary(DWVloadModFullHB)
 
 # BQCV load by number of colonies 
 BQCVno0just_HB <- BQCVno0[!BQCVno0$sumColonies1==0,]
@@ -807,13 +807,14 @@ BQCVloadModFullHB <- lmer(data=BQCVno0just_HB, formula = logVirus ~ sumColonies1
 BQCVloadModNullHB <- lmer(data=BQCVno0just_HB, formula = logVirus ~ Density + species + (1|site) + (1|species) + (1|lat) + (1|long))
 
 anova(BQCVloadModFullHB, BQCVloadModNullHB, test="LRT")
-
+summary(BQCVloadModFullHB)
 
 # DWV prev by number of colonies 
 DWVjust_HB <- DWV[!DWV$sumColonies1==0,]
-DWVprevModFullHB <- glmer(data=DWVjust_HB, formula = virusBINY~sumColonies1 + Density + species + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+DWVprevModFullHB <- glmer(data=DWVjust_HB, formula = virusBINY~ Density + species + sumColonies1 + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
 DWVprevModNullHB <- glmer(data=DWVjust_HB, formula = virusBINY~ Density + species + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
 anova(DWVprevModFullHB, DWVprevModNullHB, test="LRT")
+summary(DWVprevModFullHB)
 
 # BQCV prev by number of colonies 
 BQCVjust_HB <- BQCV[!BQCV$sumColonies1==0,]
