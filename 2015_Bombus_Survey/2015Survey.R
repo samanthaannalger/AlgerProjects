@@ -438,24 +438,22 @@ plot1 + theme_bw(base_size = 23) + scale_fill_manual(values=colors, name="Site T
 # CREATING FULL MODELS FOR PLANT PREV:
 ###################################################################################################
 
-# Remove erant sites from plants data
-#Plants <- Plants[!Plants$site==("SIND"),]
-#Plants <- Plants[!Plants$site==("BOST"),]
-
 # create a binary varaible for apiary or no apiary 
 Plants$apiary <- ifelse(Plants$sumColonies1 <= 0, "no apiary","apiary")
 
 Plants$HBlowHigh <- ifelse(Plants$apis <= 4, "Low HB","High HB")
 
-PlantsFull <- glmer(data=Plants, formula = BINYprefilter ~ apis + target_name + (1|apiary/site), family = binomial(link = "logit"))
+PlantsFull <- glmer(data=Plants, formula = BINYprefilter ~ bombus + apis + target_name + Density + (1|apiary_near_far/site), family = binomial(link = "logit"))
 
-PlantsApis <- glmer(data=Plants, formula = BINYprefilter ~ target_name + (1|apiary/site), family = binomial(link = "logit"))
+PlantsApis <- glmer(data=Plants, formula = BINYprefilter ~ bombus + target_name + Density + (1|apiary_near_far/site), family = binomial(link = "logit"))
 
-PlantsTarg <- glmer(data=Plants, formula = BINYprefilter ~ apis + (1|apiary/site), family = binomial(link = "logit"))
+PlantsTarg <- glmer(data=Plants, formula = BINYprefilter ~ bombus + apis + Density + (1|apiary_near_far/site), family = binomial(link = "logit"))
 
-PlantsBombus <- glmer(data=Plants, formula = BINYprefilter ~ apis + target_name + (1|apiary/site), family = binomial(link = "logit"))
+PlantsBombus <- glmer(data=Plants, formula = BINYprefilter ~ apis + target_name + Density + (1|apiary_near_far/site), family = binomial(link = "logit"))
 
-PlantsNull <- glmer(data=Plants, formula = BINYprefilter ~ 1 + (1|apiary/site), family = binomial(link = "logit"))
+PlantsDensity <- glmer(data=Plants, formula = BINYprefilter ~ bombus + apis + target_name + (1|apiary_near_far/site), family = binomial(link = "logit"))
+
+PlantsNull <- glmer(data=Plants, formula = BINYprefilter ~ 1 + (1|apiary_near_far/site), family = binomial(link = "logit"))
 
 
 
@@ -468,6 +466,8 @@ anova(PlantsFull, PlantsApis, test="LRT")
 anova(PlantsFull,PlantsTarg, test="LRT")
 
 anova(PlantsFull, PlantsBombus, test="LRT")
+
+anova(PlantsFull, PlantsDensity, test="LRT")
 
 # To view effects and std. errors of each variable:
 summary(PlantsFull)
