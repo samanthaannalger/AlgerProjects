@@ -447,13 +447,13 @@ Plants$apiary <- ifelse(Plants$sumColonies1 <= 0, "no apiary","apiary")
 
 Plants$HBlowHigh <- ifelse(Plants$apis <= 4, "Low HB","High HB")
 
-PlantsFull <- glmer(data=Plants, formula = BINYprefilter ~ apis + target_name + (1|apiary/site), family = binomial(link = "logit"))
+PlantsFull <- glmer(data=Plants, formula = BINYprefilter ~ apis + bombus + target_name + (1|apiary/site), family = binomial(link = "logit"))
 
-PlantsApis <- glmer(data=Plants, formula = BINYprefilter ~ target_name + (1|apiary/site), family = binomial(link = "logit"))
+PlantsApis <- glmer(data=Plants, formula = BINYprefilter ~ target_name + bombus + (1|apiary/site), family = binomial(link = "logit"))
 
-PlantsTarg <- glmer(data=Plants, formula = BINYprefilter ~ apis + (1|apiary/site), family = binomial(link = "logit"))
+PlantsTarg <- glmer(data=Plants, formula = BINYprefilter ~ apis + bombus + (1|apiary/site), family = binomial(link = "logit"))
 
-PlantsBombus <- glmer(data=Plants, formula = BINYprefilter ~ apis + target_name + (1|apiary/site), family = binomial(link = "logit"))
+PlantsBombus <- glmer(data=Plants, formula = BINYprefilter ~ apis + bombus + target_name + (1|apiary/site), family = binomial(link = "logit"))
 
 PlantsNull <- glmer(data=Plants, formula = BINYprefilter ~ 1 + (1|apiary/site), family = binomial(link = "logit"))
 
