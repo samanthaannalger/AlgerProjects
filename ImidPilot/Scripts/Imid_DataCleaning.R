@@ -170,127 +170,25 @@ ImidVirus <- merge(x = ImidVirus, y = KopBQCVlogmeans, by = "colony", all.x=TRUE
 ImidVirus <- merge(x = ImidVirus, y = KopBQCVloadmeans, by = "colony", all.x=TRUE)
 
 # select only columns that I want from the consump df
-Consump <- select(Consump, sample_name, Consumption_g, Consumption_mL, Imid_Consump, TimeStep)
+Consump <- select(Consump, sample_name, Consumption_g, Consumption_mL, Imid_Consump, TimeStep, Treatment, Colony)
 
 # merge consumption df to virus df
-ImidVirus <- merge(x = ImidVirus, y = Consump, by = "sample_name", all.x = TRUE)
+#ImidVirus <- merge(x = ImidVirus, y = Consump, by = "sample_name", all.x = TRUE)
 
 # determine the TOTAL amount of imidacloprid consumed by each bee (aggregate by ID) and merge this to the Imid df
 
-ImidConsumpTotal <-aggregate(Imid_Consump ~ sample_name, ImidVirus, sum)
+ImidConsumpTotal <-aggregate(Imid_Consump ~ sample_name, Consump, sum)
 
 colnames(ImidConsumpTotal)[2] <-"ImidConsumpTotal"
+
 #Add new column and merge average total imid consumed
-ImidVirus <- merge(x = ImidVirus, y = ImidConsumpTotal, by = "sample_name", all.x=TRUE)
+Consump <- merge(x = Consump, y = ImidConsumpTotal, by = "sample_name", all.x=TRUE)
 
-write.csv(ImidVirus, "ImidDF.csv")
+#ImidVirus <- merge(x = ImidVirus, y = ImidConsumpTotal, by = "sample_name", all.x=TRUE)
 
-ImidDF <- read.csv("csv_files/ImidDF.csv", 
-                    header=TRUE, 
-                    sep = ",", 
-                    stringsAsFactors = FALSE)
+# Write out data frames
+#Sucrose/imid consumption data:
+write.csv(Consump, "csv_files/ConsumpDF.csv")
 
-
-# DATA ANALYSIS and Figures##########################
-ImidDWV <- ImidDF[ which(ImidDF$DWVbinary=="1"), ]
-ImidBQCV <- ImidDF[ which(ImidDF$BQCVbinary=="1"), ]
-
-ImidBQCV$BQCVloadDif <- (ImidBQCV$BQCVload-ImidBQCV$PreBQCVLoad)
-ImidBQCV$LogBQCVDif <- (ImidBQCV$logBQCV-ImidBQCV$PreLogBQCV)
-
-ImidDWV$DWVloadDif <- (ImidDWV$DWVload-ImidDWV$PreDWVLoad)
-ImidDWV$LogDWVDif <- (ImidDWV$logDWV-ImidDWV$PreLogDWV)
-
-##############################################################
-# figure for BQCV
-
-BQCVPlot <- ggplot(ImidBQCV, aes(x=Treatment, y=BQCVloadDif)) +
-  labs(x="Treatment", y = "BQCV Load Difference")+
-  theme_classic() +  
-  geom_dotplot(binaxis='y', stackdir='center',
-stackratio=1, dotsize=1) + stat_summary(fun.data=mean_sdl, fun.args = list(mult=1), geom="pointrange", color="red") + geom_hline(yintercept=0, linetype="solid", color = "blue", size=1.5)
-
-BQCVPlot
-
-# figure for DWV
-
-DWVPlot <- ggplot(ImidDWV, aes(x=Treatment, y=DWVloadDif)) +
-  labs(x="Treatment", y = "DWV Load Difference")+
-  theme_classic() +  
-  geom_dotplot(binaxis='y', stackdir='center',
-               stackratio=1, dotsize=1) + stat_summary(fun.data=mean_sdl, fun.args = list(mult=1), geom="pointrange", color="red") + geom_hline(yintercept=0, linetype="solid", color = "blue", size=1.5)
-
-##############################################################
-#figure for DWV load:
-#Select only DWV positive samples
-ImidDWV <- ImidVirus[ which(ImidVirus$DWVbinary=="1"), ]
-
-
-#Checking out by treatment
-Imid <- ddply(ImidDWV, c("Treatment"), summarise, 
-                  n = length(logDWV),
-                  mean = mean(logDWV, na.rm=TRUE),
-                  sd = sd(logDWV, na.rm=TRUE),
-                  se = sd / sqrt(n))
-
-
-#choosing color pallet
-colors <- c("goldenrod", "violetred4", "snow1", "black")
-
-#Create a bar graph for viruses by bombus species (aes= aesthetics):
-plot1 <- ggplot(Imid, aes(x=Treatment, y=mean, fill=Treatment)) + 
-  geom_bar(stat="identity", color="black",
-           position=position_dodge()) + labs(x="Treatment", y = "log(Virus load) ")
-
-plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Plant Species:", labels=c("Birdsfoot Trefoil", "Red Clover", "White Clover")) + theme(legend.position="none") + coord_cartesian(ylim = c(0, 15))
-
-x <- aov(data=ImidDWV, logDWV~Treatment)
-summary(x)
-table(ImidDWV$Treatment, ImidDWV$DWVbinary)
-
-##############################################################
-#figure for BQCV load:
-#Select only BQCV positive samples
-ImidBQCV <- ImidVirus[ which(ImidVirus$BQCVbinary=="1"), ] 
-
-#Checking out by plant species
-Imid <- ddply(ImidBQCV, c("Treatment"), summarise, 
-              n = length(logBQCV),
-              mean = mean(logBQCV, na.rm=TRUE),
-              sd = sd(logBQCV, na.rm=TRUE),
-              se = sd / sqrt(n))
-
-
-#choosing color pallet
-colors <- c("goldenrod", "violetred4", "snow1", "black")
-
-#Create a bar graph for viruses by bombus species (aes= aesthetics):
-plot1 <- ggplot(Imid, aes(x=Treatment, y=mean, fill=Treatment)) + 
-  geom_bar(stat="identity", color="black",
-           position=position_dodge()) + labs(x="Treatment", y = "log(virus load)")
-
-plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Plant Species:", labels=c("Birdsfoot Trefoil", "Red Clover", "White Clover")) + theme(legend.position="none") + coord_cartesian(ylim = c(0, 20))
-
-x <- aov(data=ImidBQCV, logBQCV~Treatment)
-summary(x)
-
-###############################################################
-#Figure for Virus Prevalence
-
-#Checking out by plant species
-DWVPrev <- ddply(ImidVirus, c("Treatment"), summarise, 
-                  n = length(DWVbinary),
-                  mean = mean(DWVbinary, na.rm=TRUE),
-                  sd = sd(DWVbinary, na.rm=TRUE),
-                  se = sd / sqrt(n))
-
-
-#choosing color pallet
-colors <- c("goldenrod", "violetred4", "snow1", "black")
-
-#Create a bar graph for viruses by bombus species (aes= aesthetics):
-plot1 <- ggplot(DWVPrev, aes(x=Treatment, y=mean, fill=Treatment)) + 
-  geom_bar(stat="identity", color="black",
-           position=position_dodge()) + labs(x="Virus", y = "% of Flowers with Virus Detected")
-
-plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Plant Species:", labels=c("Birdsfoot Trefoil", "Red Clover", "White Clover")) + theme(legend.position= "none") + coord_cartesian(ylim = c(0, .50)) + scale_y_continuous(labels = scales::percent)
+#Virus data:
+write.csv(ImidVirus, "csv_files/ImidDF.csv")
