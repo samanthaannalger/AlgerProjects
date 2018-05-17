@@ -453,9 +453,15 @@ PlantsBombus <- glmer(data=Plants, formula = BINYprefilter ~ apis + bombus + tar
 PlantsFull <- glmer(data=Plants, formula = BINYprefilter ~ bombus + apis + target_name + Density + (1|apiary_near_far/site), family = binomial(link = "logit"))
 
 PlantsApis <- glmer(data=Plants, formula = BINYprefilter ~ bombus + target_name + Density + (1|apiary_near_far/site), family = binomial(link = "logit"))
+<<<<<<< HEAD
 
 PlantsTarg <- glmer(data=Plants, formula = BINYprefilter ~ bombus + apis + Density + (1|apiary_near_far/site), family = binomial(link = "logit"))
 
+=======
+
+PlantsTarg <- glmer(data=Plants, formula = BINYprefilter ~ bombus + apis + Density + (1|apiary_near_far/site), family = binomial(link = "logit"))
+
+>>>>>>> b3f427daeee7a75c815a093ce2a6daee9a10296d
 PlantsBombus <- glmer(data=Plants, formula = BINYprefilter ~ apis + target_name + Density + (1|apiary_near_far/site), family = binomial(link = "logit"))
 
 PlantsDensity <- glmer(data=Plants, formula = BINYprefilter ~ bombus + apis + target_name + (1|apiary_near_far/site), family = binomial(link = "logit"))
