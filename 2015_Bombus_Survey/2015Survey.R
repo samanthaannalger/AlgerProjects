@@ -342,8 +342,6 @@ DWVprevModFull <- glmer(data=DWV, formula = virusBINY~apiary_near_far + Density 
 Anova(DWVprevModFull)
 
 
-
-
 # DWV load model:
 DWVloadModFull <- lmer(data=DWVno0, formula = logVirus ~ apiary_near_far + Density + species + (1|site) + (1|species) + (1|lat) + (1|long))
 Anova(DWVloadModFull)
@@ -793,35 +791,76 @@ TheExtractor(Full=BQCVloadModFull,
 # DWV load by number of colonies 
 DWVno0just_HB <- DWVno0[!DWVno0$sumColonies1==0,]
 
-DWVloadModFullHB <- lmer(data=DWVno0just_HB, formula = logVirus ~ sumColonies1 + Density + species + (1|site) + (1|species) + (1|lat) + (1|long))
+DWVloadModFullHB <- lmer(data=DWVno0just_HB, formula = logVirus ~ sumColonies1 + Density + species + (1|site) + (1|lat) + (1|long))
 
-DWVloadModNullHB <- lmer(data=DWVno0just_HB, formula = logVirus ~ Density + species + (1|site) + (1|species) + (1|lat) + (1|long))
+DWVloadSumColonies <- lmer(data=DWVno0just_HB, formula = logVirus ~ Density + species + (1|site) + (1|lat) + (1|long))
+
+DWVloadDensity <- lmer(data=DWVno0just_HB, formula = logVirus ~ sumColonies1 + species + (1|site) + (1|lat) + (1|long))
+
+DWVloadSpecies <- lmer(data=DWVno0just_HB, formula = logVirus ~ sumColonies1 + Density + (1|site) + (1|lat) + (1|long))
+
+DWVloadModNullHB <- lmer(data=DWVno0just_HB, formula = logVirus ~ 1 + (1|site) + (1|lat) + (1|long))
 
 anova(DWVloadModFullHB, DWVloadModNullHB, test="LRT")
+anova(DWVloadModFullHB, DWVloadSumColonies, test="LRT")
+anova(DWVloadModFullHB, DWVloadDensity, test="LRT")
+anova(DWVloadModFullHB, DWVloadSpecies, test="LRT")
+
+
 summary(DWVloadModFullHB)
 
 # BQCV load by number of colonies 
 BQCVno0just_HB <- BQCVno0[!BQCVno0$sumColonies1==0,]
-BQCVloadModFullHB <- lmer(data=BQCVno0just_HB, formula = logVirus ~ sumColonies1 + Density + species + (1|site) + (1|species) + (1|lat) + (1|long))
 
-BQCVloadModNullHB <- lmer(data=BQCVno0just_HB, formula = logVirus ~ Density + species + (1|site) + (1|species) + (1|lat) + (1|long))
+BQCVloadModFullHB <- lmer(data=BQCVno0just_HB, formula = logVirus ~ sumColonies1 + Density + species + (1|site) + (1|lat) + (1|long))
+
+BQCVloadSumColonies <- lmer(data=BQCVno0just_HB, formula = logVirus ~ Density + species + (1|site) + (1|lat) + (1|long))
+
+BQCVloadDensity <- lmer(data=BQCVno0just_HB, formula = logVirus ~ sumColonies1 + species + (1|site) + (1|lat) + (1|long))
+
+BQCVloadSpecies <- lmer(data=BQCVno0just_HB, formula = logVirus ~ sumColonies1 + Density + (1|site) + (1|lat) + (1|long))
+
+BQCVloadModNullHB <- lmer(data=BQCVno0just_HB, formula = logVirus ~ 1 + (1|site) + (1|lat) + (1|long))
 
 anova(BQCVloadModFullHB, BQCVloadModNullHB, test="LRT")
+anova(BQCVloadModFullHB, BQCVloadSumColonies, test="LRT")
+anova(BQCVloadModFullHB, BQCVloadDensity, test="LRT")
+anova(BQCVloadModFullHB, BQCVloadSpecies, test="LRT")
+
+
 summary(BQCVloadModFullHB)
 
 # DWV prev by number of colonies 
 DWVjust_HB <- DWV[!DWV$sumColonies1==0,]
+
 DWVprevModFullHB <- glmer(data=DWVjust_HB, formula = virusBINY~ Density + species + sumColonies1 + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
-DWVprevModNullHB <- glmer(data=DWVjust_HB, formula = virusBINY~ Density + species + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+
+DWVprevSumColonies <- glmer(data=DWVjust_HB, formula = virusBINY~ Density + species + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+
+DWVprevDensity <- glmer(data=DWVjust_HB, formula = virusBINY~ species + sumColonies1 + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+
+DWVprevSpecies <- glmer(data=DWVjust_HB, formula = virusBINY~ Density + sumColonies1 + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+
+DWVprevModNullHB <- glmer(data=DWVjust_HB, formula = virusBINY~ 1 + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+
 anova(DWVprevModFullHB, DWVprevModNullHB, test="LRT")
+anova(DWVprevModFullHB, DWVprevSumColonies, test="LRT")
+anova(DWVprevModFullHB, DWVprevDensity, test="LRT")
+anova(DWVprevModFullHB, DWVprevSpecies, test="LRT")
 summary(DWVprevModFullHB)
 
 # BQCV prev by number of colonies 
 BQCVjust_HB <- BQCV[!BQCV$sumColonies1==0,]
-BQCVprevModFullHB <- glmer(data=BQCVjust_HB, formula = virusBINY~sumColonies1 + Density + species + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
-BQCVprevModNullHB <- glmer(data=BQCVjust_HB, formula = virusBINY~ Density + species + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
-anova(BQCVprevModFullHB, BQCVprevModNullHB, test="LRT")
 
+BQCVprevModFullHB <- glmer(data=BQCVjust_HB, formula = virusBINY~sumColonies1 + Density + species + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+
+BQCVprevModNullHB <- glmer(data=BQCVjust_HB, formula = virusBINY~ Density + species + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+
+anova(BQCVprevModFullHB, BQCVprevModNullHB, test="LRT")
+anova(BQCVprevModFullHB, BQCVprevSumColonies, test="LRT")
+anova(BQCVprevModFullHB, BQCVprevDensity, test="LRT")
+anova(BQCVprevModFullHB, BQCVprevSpecies, test="LRT")
+summary(BQCVprevModFullHB)
 
 
 
