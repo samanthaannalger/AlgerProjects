@@ -157,9 +157,10 @@ summary(Evap)
 #############################################
 # Time Series for Sucrose Consumption FIGURE:
 
-#Remove single outlier- measuring error- value is more than the sucrose and vial can possibly weigh (1.907g): sample_name: I-33, Treatment:20, time step 3:
+#Remove two outliers- measuring error- values are more than the sucrose and vial can possibly weigh: sample_name: I-33, Treatment:20, time step 3: & sample I-4, Treatment: C, time step 2
 
 ConsumpDF<-ConsumpDF[!(ConsumpDF$sample_name=="I-33" & ConsumpDF$TimeStep==3),]
+ConsumpDF<-ConsumpDF[!(ConsumpDF$sample_name=="I-4" & ConsumpDF$TimeStep==2),]
 
 # summary stats for plotting purposes:
 ConsumpSummary <- ddply(ConsumpDF, c("Treatment", "TimeStep"), summarise, 
@@ -175,19 +176,40 @@ plot <- ggplot(data = ConsumpSummary,
                    y = mean, 
                    group = Treatment, 
                    colour = Treatment) 
-) + geom_line(size=1) + geom_point(size=3) + scale_colour_manual(values = c("dodgerblue4", "black", "darkgreen", "purple", "brown")) + labs(x = "Time (days)", y = "Consumption (grams)") + coord_cartesian(ylim = c(0, 0.5)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.1)) 
-
+) + geom_line(size=1) + geom_point(size=3) + scale_colour_manual(values = c("dodgerblue4", "black", "darkgreen", "purple", "brown")) + labs(x = "Time (days)", y = "Consumption (mL)") + coord_cartesian(ylim = c(0, 0.5)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.1)) 
+plot
 # add a theme and add asterix for significance 
-plot + scale_fill_brewer(palette = "Paired") + theme_minimal(base_size = 17) + annotate(geom = "text", x = 1, y = 0.37, label = "**",cex = 6) + annotate(geom = "text", x = 2, y = 0.5, label = "***",cex = 6) + annotate(geom = "text", x = 3, y = 0.41, label = "***",cex = 6) + annotate(geom = "text", x = 4, y = 0.45, label = "***",cex = 6) + annotate(geom = "text", x = 5, y = 0.4, label = "***",cex = 6) 
+#plot + scale_fill_brewer(palette = "Paired") + theme_minimal(base_size = 17) + annotate(geom = "text", x = 1, y = 0.37, label = "**",cex = 6) + annotate(geom = "text", x = 2, y = 0.5, label = "***",cex = 6) + annotate(geom = "text", x = 3, y = 0.41, label = "***",cex = 6) + annotate(geom = "text", x = 4, y = 0.45, label = "***",cex = 6) + annotate(geom = "text", x = 5, y = 0.4, label = "***",cex = 6) 
 
 
 
+# Repeated Measures ANOVA to look for differences between treatment groups:
+
+ConsumpDF$TimeStep <- as.factor(ConsumpDF$TimeStep)
+ConsumpDF$Treatment <- as.factor(ConsumpDF$Treatment)
+
+mod <- glm(data=ConsumpDF, Consumption_mL~Treatment*TimeStep, family=Gamma)
+
+summary(mod)
+
+library("multcomp")
+summary(glht(mod, mcp(Treatment="Tukey")))
+
+# Results:
+# ONLY the 20 ppb is significantly different from the control 
+# p < 0.001
+#------------------------------------------------------------------------
+# Figure showing the total amount of Imid consumed by treatment group
+# determine the TOTAL amount of imidacloprid consumed by each bee (aggregate by ID) and merge this to the Imid df
 
 
-plot(ImidDF$TreatmentNum, 
-     ImidDF$Consumption,
-     ylim=c(0,0.8)
-     )
+## NEED TO FIX IMID TOTALS in the DF, Right now, if there isn't a sample_name (lab ID), then the IMID totals given are incorrect- so all 10 ppb group is wrong, and any other bees that died part way through the experiemnt. Need to finish lab work for the 10 ppb and remove all rows for bees that died part way through the experiment.
+ImidConsumpTotal <-aggregate(Imid_Consump ~ sample_name, ConsumpDF, sum)
+
+colnames(ImidConsumpTotal)[2] <-"ImidConsumpTotal"
+
+ImidConsumpTotal<-ConsumpDF[!(ConsumpDF$sample_name=="")]
+
 
 
 #------------------------------------------------------------------------
