@@ -205,3 +205,4 @@ write.csv(Consump, "csv_files/ConsumpDF.csv")
 
 #Virus data:
 write.csv(ImidVirus, "csv_files/ImidDF.csv")
+

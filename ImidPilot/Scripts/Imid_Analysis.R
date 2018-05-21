@@ -40,37 +40,55 @@ ImidDWV <- ImidDF[ which(ImidDF$DWVbinary=="1"), ]
 ImidBQCV <- ImidDF[ which(ImidDF$BQCVbinary=="1"), ]
 
 ImidBQCV$BQCVloadDif <- (ImidBQCV$BQCVload-ImidBQCV$PreBQCVLoad)
-ImidBQCV$LogBQCVDif <- (ImidBQCV$logBQCV-ImidBQCV$PreLogBQCV)
+ImidBQCV$LogBQCVDif <- log(ImidBQCV$BQCVload/ImidBQCV$PreBQCVLoad)
+#ImidBQCV$LogBQCVDif <- (ImidBQCV$logBQCV-ImidBQCV$PreLogBQCV)
 
 ImidDWV$DWVloadDif <- (ImidDWV$DWVload-ImidDWV$PreDWVLoad)
-ImidDWV$LogDWVDif <- (ImidDWV$logDWV-ImidDWV$PreLogDWV)
+ImidDWV$LogDWVDif <- log(ImidDWV$DWVload/ImidDWV$PreDWVLoad)
+#ImidDWV$LogDWVDif <- (ImidDWV$logDWV-ImidDWV$PreLogDWV)
 
 ##############################################################
 # figure for BQCV
 
 BQCVPlot <- ggplot(ImidBQCV, aes(x=Treatment, y=LogBQCVDif)) +
-  labs(x="Treatment", y = "BQCV Load Difference")+
+  labs(x="Treatment", y = "Log BQCV change")+
   theme_classic() +  
   geom_dotplot(binaxis='y', stackdir='center',
                stackratio=1, dotsize=1) + stat_summary(fun.data=mean_sdl, fun.args = list(mult=1), geom="pointrange", color="red") + geom_hline(yintercept=0, linetype="solid", color = "blue", size=1.5)
 
 BQCVPlot
 
+#checking for normality:
+hist(ImidBQCV$BQCVload, data = ImidBQCV)
+hist(ImidBQCV$logBQCV, data = ImidBQCV)
+
+# ANOVA Using log transformed data to improve normality:
 mod1 <- aov(logBQCV~Treatment, data = ImidBQCV)
 summary(mod1)
+TukeyHSD(mod1)
 
 
 # figure for DWV load:
 
+# remove 0.1 and 1 treatment groups
+ImidDWV <- ImidDWV[!(ImidDWV$Treatment=="0.1"), ]
+ImidDWV <- ImidDWV[!(ImidDWV$Treatment=="1"), ]
+
+
+ConsumpDF<-ConsumpDF[!(ConsumpDF$sample_name=="I-4" & ConsumpDF$TimeStep==2),]
+
 DWVPlot <- ggplot(ImidDWV, aes(x=Treatment, y=LogDWVDif)) +
-  labs(x="Treatment", y = "DWV Load Difference")+
+  labs(x="Treatment", y = "Log DWV change")+
   theme_classic() +  
   geom_dotplot(binaxis='y', stackdir='center',
                stackratio=1, dotsize=1) + stat_summary(fun.data=mean_sdl, fun.args = list(mult=1), geom="pointrange", color="red") + geom_hline(yintercept=0, linetype="solid", color = "blue", size=1.5)
 DWVPlot
 
+#ANOVA testing for difference, using log transformed value to improve normality
 mod1 <- aov(logDWV~Treatment, data = ImidDWV)
 summary(mod1)
+
+TukeyHSD(mod1)
 
 
 ##############################################################
@@ -86,7 +104,7 @@ DWVPrev <- ddply(ImidDF, c("Treatment"), summarise,
 
 
 #choosing color pallet
-colors <- c("goldenrod", "violetred4", "snow1", "black")
+colors <- c("goldenrod", "violetred4", "snow1", "black", "green")
 
 #Create a bar graph for viruses by bombus species (aes= aesthetics):
 plot1 <- ggplot(DWVPrev, aes(x=Treatment, y=mean, fill=Treatment)) + 
