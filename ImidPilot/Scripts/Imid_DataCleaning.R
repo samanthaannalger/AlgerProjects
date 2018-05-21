@@ -65,12 +65,25 @@ ImidVirus <- PrelimClean(data=ImidVirus)
 KoppertVirus <- PrelimClean(data=KoppertVirus)
 
 # take only columns that we want:
-data <- select(ImidVirus, sample_name, Treatment, dil.factor)
-dataPRE <- select(KoppertVirus, sample_name, Treatment, dil.factor)
+data <- dplyr::select(ImidVirus, sample_name, Treatment, dil.factor)
+dataPRE <- dplyr::select(KoppertVirus, sample_name, Treatment, dil.factor)
+
+# Separate I1-I10 and use OLDPrelimClean function
+# Use PrelimClean funciton on the rest of the data
+# append two datasets
+
+OLDImidVirus<-ImidVirus[(ImidVirus$run=="117"),]
+ImidVirus<-ImidVirus[!(ImidVirus$run=="117"),]
 
 # use dilution factors to calculate normalized virus load
+OLDImidVirus <- OLDVirusNorm(data=OLDImidVirus, number_bees = 1)
 ImidVirus <- VirusNorm(data=ImidVirus, number_bees = 1)
-KoppertVirus <- VirusNorm(data=KoppertVirus, number_bees = 1)
+KoppertVirus <- OLDVirusNorm(data=KoppertVirus, number_bees = 1)
+
+# Append OldImidVirus and ImidVirus as "ImidVirus"...
+ImidVirus <- rbind(ImidVirus, OLDImidVirus)
+
+
 # use actin to normalize normalized viral load
 ImidVirus <- actinNormal(data=ImidVirus)
 KoppertVirus <- actinNormal(data=KoppertVirus)
@@ -146,7 +159,7 @@ summary(x)
 #KoppertDWV$colony <- is.factor(KoppertDWV$colony)
 is.finite(KoppertDWV$logDWV)
 
-y <- kruskal.test(logDWV~colony, data = KoppertDWV)
+#y <- kruskal.test(logDWV~colony, data = KoppertDWV)
 
 ##############################################################
 # Get Average DWV load for each Koppert colony
@@ -170,7 +183,7 @@ ImidVirus <- merge(x = ImidVirus, y = KopBQCVlogmeans, by = "colony", all.x=TRUE
 ImidVirus <- merge(x = ImidVirus, y = KopBQCVloadmeans, by = "colony", all.x=TRUE)
 
 # select only columns that I want from the consump df
-Consump <- select(Consump, sample_name, Consumption_g, Consumption_mL, Imid_Consump, TimeStep, Treatment, Colony)
+Consump <- dplyr::select(Consump, sample_name, Consumption_g, Consumption_mL, Imid_Consump, TimeStep, Treatment, Colony)
 
 # merge consumption df to virus df
 #ImidVirus <- merge(x = ImidVirus, y = Consump, by = "sample_name", all.x = TRUE)

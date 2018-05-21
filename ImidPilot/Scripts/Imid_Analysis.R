@@ -48,7 +48,7 @@ ImidDWV$LogDWVDif <- (ImidDWV$logDWV-ImidDWV$PreLogDWV)
 ##############################################################
 # figure for BQCV
 
-BQCVPlot <- ggplot(ImidBQCV, aes(x=Treatment, y=BQCVloadDif)) +
+BQCVPlot <- ggplot(ImidBQCV, aes(x=Treatment, y=LogBQCVDif)) +
   labs(x="Treatment", y = "BQCV Load Difference")+
   theme_classic() +  
   geom_dotplot(binaxis='y', stackdir='center',
@@ -56,77 +56,29 @@ BQCVPlot <- ggplot(ImidBQCV, aes(x=Treatment, y=BQCVloadDif)) +
 
 BQCVPlot
 
+mod1 <- aov(logBQCV~Treatment, data = ImidBQCV)
+summary(mod1)
+
+
 # figure for DWV load:
 
-DWVPlot <- ggplot(ImidDWV, aes(x=Treatment, y=DWVloadDif)) +
+DWVPlot <- ggplot(ImidDWV, aes(x=Treatment, y=LogDWVDif)) +
   labs(x="Treatment", y = "DWV Load Difference")+
   theme_classic() +  
   geom_dotplot(binaxis='y', stackdir='center',
                stackratio=1, dotsize=1) + stat_summary(fun.data=mean_sdl, fun.args = list(mult=1), geom="pointrange", color="red") + geom_hline(yintercept=0, linetype="solid", color = "blue", size=1.5)
 DWVPlot
 
+mod1 <- aov(logDWV~Treatment, data = ImidDWV)
+summary(mod1)
+
 
 ##############################################################
-# BAR GRAPHS (OLD FIGURE) 
-# DWV load:
-
-#Select only DWV positive samples
-ImidDWV <- ImidVirus[ which(ImidVirus$DWVbinary=="1"), ]
-
-
-#Checking out by treatment
-Imid <- ddply(ImidDWV, c("Treatment"), summarise, 
-              n = length(logDWV),
-              mean = mean(logDWV, na.rm=TRUE),
-              sd = sd(logDWV, na.rm=TRUE),
-              se = sd / sqrt(n))
-
-
-#choosing color pallet
-colors <- c("goldenrod", "violetred4", "snow1", "black")
-
-#Create a bar graph for viruses by bombus species (aes= aesthetics):
-plot1 <- ggplot(Imid, aes(x=Treatment, y=mean, fill=Treatment)) + 
-  geom_bar(stat="identity", color="black",
-           position=position_dodge()) + labs(x="Treatment", y = "log(Virus load) ")
-
-plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Plant Species:", labels=c("Birdsfoot Trefoil", "Red Clover", "White Clover")) + theme(legend.position="none") + coord_cartesian(ylim = c(0, 15))
-
-x <- aov(data=ImidDWV, logDWV~Treatment)
-summary(x)
-table(ImidDWV$Treatment, ImidDWV$DWVbinary)
-
-#BQCV load:
-
-#Select only BQCV positive samples
-ImidBQCV <- ImidVirus[ which(ImidVirus$BQCVbinary=="1"), ] 
-
-#Checking out by plant species
-Imid <- ddply(ImidBQCV, c("Treatment"), summarise, 
-              n = length(logBQCV),
-              mean = mean(logBQCV, na.rm=TRUE),
-              sd = sd(logBQCV, na.rm=TRUE),
-              se = sd / sqrt(n))
-
-
-#choosing color pallet
-colors <- c("goldenrod", "violetred4", "snow1", "black")
-
-#Create a bar graph for viruses by bombus species (aes= aesthetics):
-plot1 <- ggplot(Imid, aes(x=Treatment, y=mean, fill=Treatment)) + 
-  geom_bar(stat="identity", color="black",
-           position=position_dodge()) + labs(x="Treatment", y = "log(virus load)")
-
-plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Plant Species:", labels=c("Birdsfoot Trefoil", "Red Clover", "White Clover")) + theme(legend.position="none") + coord_cartesian(ylim = c(0, 20))
-
-x <- aov(data=ImidBQCV, logBQCV~Treatment)
-summary(x)
-
 ###############################################################
 #Figure for Virus Prevalence
 
-#Checking out by plant species
-DWVPrev <- ddply(ImidVirus, c("Treatment"), summarise, 
+# DWV prevalece:
+DWVPrev <- ddply(ImidDF, c("Treatment"), summarise, 
                  n = length(DWVbinary),
                  mean = mean(DWVbinary, na.rm=TRUE),
                  sd = sd(DWVbinary, na.rm=TRUE),
@@ -139,10 +91,29 @@ colors <- c("goldenrod", "violetred4", "snow1", "black")
 #Create a bar graph for viruses by bombus species (aes= aesthetics):
 plot1 <- ggplot(DWVPrev, aes(x=Treatment, y=mean, fill=Treatment)) + 
   geom_bar(stat="identity", color="black",
-           position=position_dodge()) + labs(x="Virus", y = "% of Flowers with Virus Detected")
+           position=position_dodge()) + labs(x="Treatment", y = "DWV prevalence")
 
 plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Plant Species:", labels=c("Birdsfoot Trefoil", "Red Clover", "White Clover")) + theme(legend.position= "none") + coord_cartesian(ylim = c(0, .50)) + scale_y_continuous(labels = scales::percent)
 
+##################################################################
+# BQCV Prev, 100% of all treatments are infected.
+
+BQCVPrev <- ddply(ImidDF, c("Treatment"), summarise, 
+                 n = length(BQCVbinary),
+               mean = mean(BQCVbinary, na.rm=TRUE),
+                 sd = sd(BQCVbinary, na.rm=TRUE),
+                 se = sd / sqrt(n))
+
+
+#choosing color pallet
+colors <- c("goldenrod", "violetred4", "snow1", "black")
+
+#Create a bar graph for viruses by bombus species (aes= aesthetics):
+plot1 <- ggplot(BQCVPrev, aes(x=Treatment, y=mean, fill=Treatment)) + 
+  geom_bar(stat="identity", color="black",
+           position=position_dodge()) + labs(x="Treatment", y = "BQCV prevalence")
+
+plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Plant Species:", labels=c("Birdsfoot Trefoil", "Red Clover", "White Clover")) + theme(legend.position= "none") + coord_cartesian(ylim = c(0, 1)) + scale_y_continuous(labels = scales::percent)
 
 ##############################################################
 ##############################################################
@@ -157,10 +128,15 @@ summary(Evap)
 #############################################
 # Time Series for Sucrose Consumption FIGURE:
 
+# I manually made blank sample_names "NA", these are bees that died and were not part of the experiment 
+
 #Remove two outliers- measuring error- values are more than the sucrose and vial can possibly weigh: sample_name: I-33, Treatment:20, time step 3: & sample I-4, Treatment: C, time step 2
 
 ConsumpDF<-ConsumpDF[!(ConsumpDF$sample_name=="I-33" & ConsumpDF$TimeStep==3),]
 ConsumpDF<-ConsumpDF[!(ConsumpDF$sample_name=="I-4" & ConsumpDF$TimeStep==2),]
+ConsumpDF<-ConsumpDF[!is.na(ConsumpDF$sample_name),]
+ConsumpDF<-ConsumpDF[!is.na(ConsumpDF$Consumption_g),]
+
 
 # summary stats for plotting purposes:
 ConsumpSummary <- ddply(ConsumpDF, c("Treatment", "TimeStep"), summarise, 
@@ -203,7 +179,7 @@ summary(glht(mod, mcp(Treatment="Tukey")))
 # determine the TOTAL amount of imidacloprid consumed by each bee (aggregate by ID) and merge this to the Imid df
 
 
-## NEED TO FIX IMID TOTALS in the DF, Right now, if there isn't a sample_name (lab ID), then the IMID totals given are incorrect- so all 10 ppb group is wrong, and any other bees that died part way through the experiemnt. Need to finish lab work for the 10 ppb and remove all rows for bees that died part way through the experiment.
+## NEED TO FIX IMID TOTALS in the DF, Right now, if there isn't a sample_name (lab ID), then the IMID totals given are incorrect- so all 10 ppb group is wrong, and any other bees that died part way through the experiement. Need to finish lab work for the 10 ppb and remove all rows for bees that died part way through the experiment.
 ImidConsumpTotal <-aggregate(Imid_Consump ~ sample_name, ConsumpDF, sum)
 
 colnames(ImidConsumpTotal)[2] <-"ImidConsumpTotal"
