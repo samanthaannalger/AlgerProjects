@@ -34,6 +34,8 @@ library(ggplot2)
 library(grid)
 library(dplyr)
 library(scales)
+library(lme4)
+library(car)
 
 # DATA ANALYSIS and Figures##########################
 ImidDWV <- ImidDF[ which(ImidDF$DWVbinary=="1"), ]
@@ -50,11 +52,23 @@ ImidDWV$LogDWVDif <- log(ImidDWV$DWVload/ImidDWV$PreDWVLoad)
 ##############################################################
 # figure for BQCV
 
+#Change order of factors
+ImidBQCV$Treatment <- factor(ImidBQCV$Treatment, levels = c("C", "0.1", "1", "10", "20"))
+
 BQCVPlot <- ggplot(ImidBQCV, aes(x=Treatment, y=LogBQCVDif)) +
   labs(x="Treatment", y = "Log BQCV change")+
   theme_classic() +  
   geom_dotplot(binaxis='y', stackdir='center',
                stackratio=1, dotsize=1) + stat_summary(fun.data=mean_sdl, fun.args = list(mult=1), geom="pointrange", color="red") + geom_hline(yintercept=0, linetype="solid", color = "blue", size=1.5)
+
+BQCVPlot
+
+# Figure of the log virus genome copies 
+BQCVPlot <- ggplot(ImidBQCV, aes(x=Treatment, y=logBQCV, fill=Treatment)) +
+  labs(x="Dose (ppb)", y = "Log(BQCV load)")+
+  theme_classic() +  
+  geom_boxplot(outlier.colour="black", outlier.shape=16,
+               outlier.size=2, notch=FALSE) + geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5) + scale_x_discrete(labels=c("Control", "0.1","1","10","20")) + scale_fill_grey(start = 1, end = .4, guide=FALSE)
 
 BQCVPlot
 
@@ -67,15 +81,22 @@ mod1 <- aov(logBQCV~Treatment, data = ImidBQCV)
 summary(mod1)
 TukeyHSD(mod1)
 
+# Mixed Model for BQCV load:
+BQCVMod <- lmer(logBQCV~Treatment + (1|colony), data=ImidBQCV)
+
+summary(BQCVMod)
+Anova(BQCVMod)
+
+library("multcomp")
+summary(glht(BQCVMod, mcp(Treatment="Tukey")))
 
 # figure for DWV load:
+#Change order of factors
+ImidDWV$Treatment <- factor(ImidDWV$Treatment, levels = c("C", "0.1", "1", "10", "20"))
 
 # remove 0.1 and 1 treatment groups
 ImidDWV <- ImidDWV[!(ImidDWV$Treatment=="0.1"), ]
 ImidDWV <- ImidDWV[!(ImidDWV$Treatment=="1"), ]
-
-
-ConsumpDF<-ConsumpDF[!(ConsumpDF$sample_name=="I-4" & ConsumpDF$TimeStep==2),]
 
 DWVPlot <- ggplot(ImidDWV, aes(x=Treatment, y=LogDWVDif)) +
   labs(x="Treatment", y = "Log DWV change")+
@@ -84,11 +105,29 @@ DWVPlot <- ggplot(ImidDWV, aes(x=Treatment, y=LogDWVDif)) +
                stackratio=1, dotsize=1) + stat_summary(fun.data=mean_sdl, fun.args = list(mult=1), geom="pointrange", color="red") + geom_hline(yintercept=0, linetype="solid", color = "blue", size=1.5)
 DWVPlot
 
+# Figure of the log virus genome copies 
+DWVPlot <- ggplot(ImidDWV, aes(x=Treatment, y=logDWV, fill=Treatment)) +
+  labs(x="Dose (ppb)", y = "Log(DWV load)")+
+  theme_classic() +  
+  geom_boxplot(outlier.colour="black", outlier.shape=16,
+               outlier.size=2, notch=FALSE) + geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5) + scale_x_discrete(labels=c("Control","10","20")) + scale_fill_grey(start = 1, end = .4, guide=FALSE)
+
+DWVPlot
+
 #ANOVA testing for difference, using log transformed value to improve normality
 mod1 <- aov(logDWV~Treatment, data = ImidDWV)
 summary(mod1)
 
 TukeyHSD(mod1)
+
+# Mixed model for DWV load:
+DWVMod <- lmer(logDWV~Treatment + (1|colony), data=ImidDWV)
+
+summary(DWVMod)
+Anova(DWVMod)
+
+library("multcomp")
+summary(glht(DWVMod, mcp(Treatment="Tukey")))
 
 
 ##############################################################
@@ -155,6 +194,8 @@ ConsumpDF<-ConsumpDF[!(ConsumpDF$sample_name=="I-4" & ConsumpDF$TimeStep==2),]
 ConsumpDF<-ConsumpDF[!is.na(ConsumpDF$sample_name),]
 ConsumpDF<-ConsumpDF[!is.na(ConsumpDF$Consumption_g),]
 
+# reorder factors for plotting
+ConsumpDF$Treatment <- factor(ConsumpDF$Treatment, levels = c("C", "0.1", "1", "10", "20"))
 
 # summary stats for plotting purposes:
 ConsumpSummary <- ddply(ConsumpDF, c("Treatment", "TimeStep"), summarise, 
@@ -170,8 +211,10 @@ plot <- ggplot(data = ConsumpSummary,
                    y = mean, 
                    group = Treatment, 
                    colour = Treatment) 
-) + geom_line(size=1) + geom_point(size=3) + scale_colour_manual(values = c("dodgerblue4", "black", "darkgreen", "purple", "brown")) + labs(x = "Time (days)", y = "Consumption (mL)") + coord_cartesian(ylim = c(0, 0.5)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.1)) 
+) + geom_line(size=1) + geom_point(size=3) + scale_colour_manual(values = c("dodgerblue4", "black", "darkgreen", "purple", "brown"), name = "Dose(ppb)", labels=c("Control","0.1", "1", "10","20")) + labs(x = "Time (days)", y = "Consumption (mL)") + coord_cartesian(ylim = c(0, 0.5)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.1))
+
 plot
+
 # add a theme and add asterix for significance 
 #plot + scale_fill_brewer(palette = "Paired") + theme_minimal(base_size = 17) + annotate(geom = "text", x = 1, y = 0.37, label = "**",cex = 6) + annotate(geom = "text", x = 2, y = 0.5, label = "***",cex = 6) + annotate(geom = "text", x = 3, y = 0.41, label = "***",cex = 6) + annotate(geom = "text", x = 4, y = 0.45, label = "***",cex = 6) + annotate(geom = "text", x = 5, y = 0.4, label = "***",cex = 6) 
 
@@ -193,16 +236,53 @@ summary(glht(mod, mcp(Treatment="Tukey")))
 # ONLY the 20 ppb is significantly different from the control 
 # p < 0.001
 #------------------------------------------------------------------------
-# Figure showing the total amount of Imid consumed by treatment group
-# determine the TOTAL amount of imidacloprid consumed by each bee (aggregate by ID) and merge this to the Imid df
+# Figure showing the total amount of Imid consumed by treatment group, Did bees consume different amounts of Imid?
+
+#Only take one timestep bee to plot
+ConsumpDF<-ConsumpDF[(ConsumpDF$TimeStep=="1"),]
+
+#Remove Control group from dataset
+ConsumpDF<-ConsumpDF[!(ConsumpDF$Treatment=="C"),]
+ConsumpDF$Treatment <- as.character(ConsumpDF$Treatment)
+ConsumpDF$Treatment <- as.factor(ConsumpDF$Treatment)
 
 
-## NEED TO FIX IMID TOTALS in the DF, Right now, if there isn't a sample_name (lab ID), then the IMID totals given are incorrect- so all 10 ppb group is wrong, and any other bees that died part way through the experiement. Need to finish lab work for the 10 ppb and remove all rows for bees that died part way through the experiment.
-ImidConsumpTotal <-aggregate(Imid_Consump ~ sample_name, ConsumpDF, sum)
+# Check distribution, data are gamma distribution
+hist(ConsumpDF$ImidConsumpTotal)
 
-colnames(ImidConsumpTotal)[2] <-"ImidConsumpTotal"
 
-ImidConsumpTotal<-ConsumpDF[!(ConsumpDF$sample_name=="")]
+plot(ImidConsumpTotal~Treatment, data = ConsumpDF)
+mod3 <- aov(ImidConsumpTotal~Treatment, data = ConsumpDF)
+summary(mod3)
+TukeyHSD(mod3)
+
+# Mixed model for Imid Consumption, colony as a random effect:
+ConsumpFull <- glmer(ImidConsumpTotal~Treatment + (1|Colony), data=ConsumpDF, family = Gamma)
+
+Mod <- glm(ImidConsumpTotal~Treatment, data=ConsumpDF, family = Gamma)
+
+summary(Mod)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -268,6 +348,6 @@ plot2 <- ggplot(MassSummary, aes(x=TimeStep, y=mean, fill=Treatment)) +
                 width=.4,
                 position=position_dodge(.9)) + labs(x="Time (days)", y = "Consumption (grams)")
 
-plot2 + theme_minimal(base_size = 17) + coord_cartesian(ylim = c(0.1, 0.5)) + scale_fill_manual(values=colors) + annotate(geom = "text", x = 0.6, y = 0.34, label = "A",cex = 4) 
+plot2 + theme_minimal(base_size = 17) + coord_cartesian(ylim = c(0.1, 0.5)) + scale_fill_manual(values=colors) + annotate(geom = "text", x = 0.6, y = 0.34, label = "A",cex = 4)
 
 
