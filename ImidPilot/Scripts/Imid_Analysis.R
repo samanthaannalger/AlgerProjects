@@ -303,6 +303,20 @@ plot1 <- ggplot(DWVPrev, aes(x=Treatment, y=mean, fill=Treatment)) +
 
 plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Plant Species:", labels=c("Birdsfoot Trefoil", "Red Clover", "White Clover")) + theme(legend.position= "none") + coord_cartesian(ylim = c(0, .50)) + scale_y_continuous(labels = scales::percent)
 
+Summary()
+
+x<- glmer(data = ImidDF, DWVbinary~Treatment + (1|colony), family = binomial(link = "logit"))
+
+Anova(x)
+
+#           Chisq Df Pr(>Chisq)
+#Treatment 3.836  4     0.4287
+
+# Number of bees infected in each group:
+# C 0.1   1  10  20 
+# 5   2   1   4   7 
+
+
 ##################################################################
 # BQCV Prev, 100% of all treatments are infected.
 

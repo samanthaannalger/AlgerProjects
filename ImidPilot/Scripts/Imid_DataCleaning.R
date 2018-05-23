@@ -126,9 +126,9 @@ KoppertVirus$logBQCV <- log(KoppertVirus$BQCVload + 1)
 colnames(KoppertStat)[2] <-"colony"
 colnames(KoppertVirus)[2] <-"colony"
 
-# Subset to include only colonies 6-9
-KoppertVirus <- KoppertVirus[ which(KoppertVirus$colony > 5), ]
-KoppertStat <- KoppertStat[ which(KoppertStat$colony > 5), ]
+# Subset to include only colonies 6-8
+KoppertVirus <- KoppertVirus[ which(KoppertVirus$colony > 5 & KoppertVirus$colony < 9), ]
+KoppertStat <- KoppertStat[ which(KoppertStat$colony > 5 & KoppertStat$colony < 9), ]
 
 # change colony # to a categorical variable
 KoppertStat$colony <- as.character(KoppertStat$colony)
@@ -147,7 +147,7 @@ KopDWV <- ddply(KoppertDWV, c("colony"), summarise,
 #choosing color pallet
 colors <- c("goldenrod", "violetred4", "snow1", "black", "green")
 
-#Create a bar graph for viruses by bombus species (aes= aesthetics):
+#Create a bar graph for viruses loads per Koppert colony:
 plot1 <- ggplot(KopDWV, aes(x=colony, y=mean, fill=colony)) + 
   geom_bar(stat="identity", color="black",
            position=position_dodge()) + labs(x="colony", y = "log(Virus load) ")
@@ -155,6 +155,11 @@ plot1 <- ggplot(KopDWV, aes(x=colony, y=mean, fill=colony)) +
 plot1
 x <- aov(data=KoppertDWV, logDWV~colony)
 summary(x)
+
+x <- aov(data=KoppertBQCV, logBQCV~colony)
+summary(x)
+#Prevalence is 100% for both viruses in Koppert colonies
+
 
 #KoppertDWV$colony <- is.factor(KoppertDWV$colony)
 is.finite(KoppertDWV$logDWV)
