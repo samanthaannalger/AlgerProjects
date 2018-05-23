@@ -200,7 +200,6 @@ ConsumpDF$Treatment <- as.factor(ConsumpDF$Treatment)
 hist(ConsumpDF$ImidConsumpTotal)
 
 # Plot figure showing the total amount of Imid consumed by group (ng)
-plot(ImidConsumpTotal~Treatment, data = ConsumpDF)
 
 ConsumpDF$logImidConsumpTotal <- log(ConsumpDF$ImidConsumpTotal)
 
@@ -239,7 +238,7 @@ BeeMort <- read.csv("csv_files/SurvivDF.csv",
 library("survival")
 
 #Fitting the survival model
-mod <- survdiff(Surv(time, status) ~ Treatment, data=BeeMort)
+mod <- survdiff(Surv(time, status) ~ Treatment, data=BeeMort, rho = 0)
 mod
 # NO difference in mortality (df = 4, chisq = 4.3, p = 0.4), "Kaplan-Meier estimate of survival, Tests if there is a difference between two or more survival curves using the Gρ family of tests, or for a single curve against a known alternative." Using 'survival' package, function = "survdiff"
 
