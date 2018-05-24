@@ -58,7 +58,7 @@ ImidBQCV$Treatment <- factor(ImidBQCV$Treatment, levels = c("C", "0.1", "1", "10
 
 # Figure of the log virus genome copies 
 BQCVPlot <- ggplot(ImidBQCV, aes(x=Treatment, y=logBQCV, fill=Treatment)) +
-  labs(x="Dose (ppb)", y = "Log(BQCV load)")+
+  labs(x="Dose (ppb)", y = "Log(BQCV titer)")+
   theme_classic() +  
   geom_boxplot(outlier.colour="black", outlier.shape=16,
                outlier.size=2, notch=FALSE) + geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5) + scale_x_discrete(labels=c("Control", "0.1","1","10","20")) + scale_fill_grey(start = 1, end = .4, guide=FALSE)
@@ -96,7 +96,7 @@ ImidDWV <- ImidDWV[!(ImidDWV$Treatment=="1"), ]
 
 # Figure of the log virus genome copies 
 DWVPlot <- ggplot(ImidDWV, aes(x=Treatment, y=logDWV, fill=Treatment)) +
-  labs(x="Dose (ppb)", y = "Log(DWV load)")+
+  labs(x="Dose (ppb)", y = "Log(DWV titer)")+
   theme_classic() +  
   geom_boxplot(outlier.colour="black", outlier.shape=16,
                outlier.size=2, notch=FALSE) + geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5) + scale_x_discrete(labels=c("Control","10","20")) + scale_fill_grey(start = 1, end = .4, guide=FALSE)
@@ -204,7 +204,7 @@ hist(ConsumpDF$ImidConsumpTotal)
 ConsumpDF$logImidConsumpTotal <- log(ConsumpDF$ImidConsumpTotal)
 
 TotalImid <- ggplot(ConsumpDF, aes(x=Treatment, y=ImidConsumpTotal, fill=Treatment)) +
-  labs(x="Treatment", y = "Total Imidacloprid Consumed (ng)")+
+  labs(x="Dose (ppb)", y = "Total Imidacloprid Consumed (ng)")+
   theme_classic() +  
   geom_boxplot(outlier.colour="black", outlier.shape=16,
                outlier.size=2, notch=FALSE) + scale_x_discrete(labels=c("0.1","1", "10","20")) + scale_fill_grey(start = 1, end = .4, guide=FALSE)
@@ -246,7 +246,7 @@ mod
 survival_func=survfit(Surv(BeeMort$time,BeeMort$status)~BeeMort$Treatment)
 
 plot(survival_func, ylab="Survival", xlab="Days", col=c("red", "blue", "green", "black", "purple"))
-legend(.6, .5, legend=c("0.1", "1", "10","20","C"),
+legend(.6, .6, legend=c("0.1", "1", "10","20","Control"), title = "Dose (ppb)",
        col=c("red", "blue", "green", "black", "purple"), lty=1, cex=0.8)
 
 
