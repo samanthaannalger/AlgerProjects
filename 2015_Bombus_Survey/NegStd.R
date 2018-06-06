@@ -28,7 +28,7 @@ BombSurv<-BombSurv[!BombSurv$species==("Griseocollis"),]
 BombSurv<-BombSurv[!BombSurv$species==("Sandersonii"),]
 
 # subset BombSurv:
-Bomb <- select(BombSurv, site, Ct_mean, sample_name, species, apiary_near_far, Density, genome_copbee, norm_genome_copbeeHB, target_name)
+Bomb <- dplyr::select(BombSurv, site, Ct_mean, sample_name, species, apiary_near_far, Density, genome_copbee, norm_genome_copbeeHB, target_name)
 names(Bomb)[3] <- "Sample"
 Bomb <- Bomb[Bomb$target_name=="BQCV",]
 
