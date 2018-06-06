@@ -155,7 +155,6 @@ plot1 <- ggplot(KopDWV, aes(x=colony, y=mean, fill=colony)) +
 plot1
 x <- aov(data=KoppertDWV, logDWV~colony)
 summary(x)
-x
 
 x <- aov(data=KoppertBQCV, logBQCV~colony)
 summary(x)

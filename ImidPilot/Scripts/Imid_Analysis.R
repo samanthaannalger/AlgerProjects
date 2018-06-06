@@ -183,34 +183,13 @@ summary(glht(mod, mcp(Treatment="Tukey")))
 # the 20 ppb is significantly different from the control, 1, 0.1 (p < 0.001) ; and 10 ppb is different from 0.1 (p=0.006)
 
 
-################################################################ TOTAL Sucrose CONSUMED:
-
-# Figure showing the total amount of sucrose consumed by treatment group, Did bees consume different amounts total?
-
-#Only take one timestep bee to plot
-ConsumpDF<-ConsumpDF[(ConsumpDF$TimeStep=="1"),]
-
-# Plot figure showing the total amount of sucrose consumed by group (ng)
-
-ConsumpDF$logImidConsumpTotal <- log(ConsumpDF$ImidConsumpTotal)
-
-TotalImid <- ggplot(ConsumpDF, aes(x=Treatment, y=ImidConsumpTotal, fill=Treatment)) +
-  labs(x="Dose (ppb)", y = "Total Imidacloprid Consumed (ng)")+
-  theme_classic() +  
-  geom_boxplot(outlier.colour="black", outlier.shape=16,
-               outlier.size=2, notch=FALSE) + scale_x_discrete(labels=c("0.1","1", "10","20")) + scale_fill_grey(start = 1, end = .4, guide=FALSE)
-
-TotalImid
-
-
-
-
 ################################################################ TOTAL IMID CONSUMED:
 
 # Figure showing the total amount of Imid consumed by treatment group, Did bees consume different amounts of Imid?
 
 #Only take one timestep bee to plot
 ConsumpDF<-ConsumpDF[(ConsumpDF$TimeStep=="1"),]
+
 #Remove Control group from dataset
 ConsumpDF<-ConsumpDF[!(ConsumpDF$Treatment=="C"),]
 ConsumpDF$Treatment <- as.character(ConsumpDF$Treatment)
