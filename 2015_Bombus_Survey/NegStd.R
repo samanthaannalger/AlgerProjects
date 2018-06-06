@@ -28,7 +28,7 @@ BombSurv<-BombSurv[!BombSurv$species==("Griseocollis"),]
 BombSurv<-BombSurv[!BombSurv$species==("Sandersonii"),]
 
 # subset BombSurv:
-Bomb <- dplyr::select(BombSurv, site, Ct_mean, sample_name, species, apiary_near_far, Density, genome_copbee, norm_genome_copbeeHB, target_name)
+Bomb <- dplyr::select(BombSurv, site, Ct_mean, sample_name, species, apiary_near_far, Density, genome_copbee, norm_genome_copbeeHB, target_name, virusBINY_PreFilter)
 names(Bomb)[3] <- "Sample"
 
 # merge data:
@@ -54,6 +54,8 @@ BQ <- DatClean[DatClean$target_name=="BQCV",]
 # For DWV:
 DW <- DatClean[DatClean$target_name=="DWV",]
 
+# Fig and stats for BQCV:
+BQ <- BQ[ which(BQ$virusBINY_PreFilter=="1"), ]
 
 #ddply summarize:
 plotdat <- ddply(BQ, c("target_name", "apiary_near_far"), summarise, 
@@ -69,7 +71,7 @@ label.df <- data.frame(Group = c("S1", "S2"),
 plot1 <- ggplot(plotdat, aes(x=apiary_near_far, y=mean, fill=target_name)) +
   geom_bar(stat="identity", color="black", 
            fill =   "white",
-           position=position_dodge()) + labs(y="Prevalence", x="Site Type") + geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd, width = 0.2),position=position_dodge(.9))
+           position=position_dodge()) + labs(y="BQCV Replication", x="Site Type") + geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd, width = 0.2),position=position_dodge(.9))
 
 plot1 + theme_minimal(base_size = 18) + coord_cartesian(ylim = c(0, .5)) + scale_y_continuous(labels = scales::percent) + guides(fill=FALSE)
 
@@ -93,13 +95,16 @@ summary(xFull)
 
 xNullSP
 
+#Calculate percentage of replicating infections:
+mean(BQ$BinaryNeg)
+# Overall 20% of BQCV positive bumble bees had replicating infections.
+
+
 #ddply summarize for species:
 plotdat <- ddply(BQ, c("target_name", "species"), summarise, 
                  n = length(BinaryNeg),
                  mean = mean(BinaryNeg, na.rm=TRUE),
                  sd = sqrt(((mean(BinaryNeg))*(1-mean(BinaryNeg)))/n))
-
-#plotdat <- plotdat[-3,]
 
 
 plot1 <- ggplot(plotdat, aes(x=species, y=mean, fill=target_name)) + 
@@ -107,14 +112,20 @@ plot1 <- ggplot(plotdat, aes(x=species, y=mean, fill=target_name)) +
            position=position_dodge()) + labs(y="Prevalence", x="Species") + geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd, width = 0.2),position=position_dodge(.9))
 
 plot1 + theme_minimal(base_size = 18) + coord_cartesian(ylim = c(0, 1)) + scale_y_continuous(labels = scales::percent) + guides(fill=FALSE)
+
+#Percentage of replication by species:
 plotdat
 
+# 28% of bimacs, 11% of Vagans
 
 
 #For DWV:
 
+# subset for virus positive bees
+DW <- DW[ which(DW$virusBINY_PreFilter=="1"), ]
 
 #ddply summarize:
+
 plotdat <- ddply(DW, c("target_name", "apiary_near_far"), summarise, 
                  n = length(BinaryNeg),
                  mean = mean(BinaryNeg, na.rm=TRUE),
@@ -128,7 +139,7 @@ label.df <- data.frame(Group = c("S1", "S2"),
 plot1 <- ggplot(plotdat, aes(x=apiary_near_far, y=mean, fill=target_name)) +
   geom_bar(stat="identity", color="black", 
            fill =   "white",
-           position=position_dodge()) + labs(y="Prevalence", x="Site Type") + geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd, width = 0.2),position=position_dodge(.9))
+           position=position_dodge()) + labs(y="DWV Replication", x="Site Type") + geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd, width = 0.2),position=position_dodge(.9))
 
 plot1 + theme_minimal(base_size = 18) + coord_cartesian(ylim = c(0, .5)) + scale_y_continuous(labels = scales::percent) + guides(fill=FALSE)
 
@@ -152,14 +163,19 @@ summary(xFull)
 
 xNullSP
 
+#Calculate % of replicating infections
+mean(DW$BinaryNeg)
+# 16% of DWV positive bees had replicating infections.
+
 #ddply summarize for species:
 plotdat <- ddply(DW, c("target_name", "species"), summarise, 
                  n = length(BinaryNeg),
                  mean = mean(BinaryNeg, na.rm=TRUE),
                  sd = sqrt(((mean(BinaryNeg))*(1-mean(BinaryNeg)))/n))
 
-#plotdat <- plotdat[-3,]
-
+#Replication by species
+plotdat
+# bimacs 22%; Vagans 12%
 
 plot1 <- ggplot(plotdat, aes(x=species, y=mean, fill=target_name)) + 
   geom_bar(stat="identity", color="black",fill = "white",
