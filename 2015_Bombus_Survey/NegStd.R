@@ -126,17 +126,17 @@ DW <- DW[ which(DW$virusBINY_PreFilter=="1"), ]
 
 #ddply summarize:
 
-plotdat <- ddply(DW, c("target_name", "apiary_near_far"), summarise, 
+plotdat2 <- ddply(DW, c("target_name", "apiary_near_far"), summarise, 
                  n = length(BinaryNeg),
                  mean = mean(BinaryNeg, na.rm=TRUE),
                  sd = sqrt(((mean(BinaryNeg))*(1-mean(BinaryNeg)))/n))
 
-plotdat$apiary_near_far <- ifelse(plotdat$apiary_near_far==0, "No Apiary", "Apiary")
+plotdat2$apiary_near_far <- ifelse(plotdat2$apiary_near_far==0, "No Apiary", "Apiary")
 
 label.df <- data.frame(Group = c("S1", "S2"),
                        Value = c(6, 9))
 
-plot1 <- ggplot(plotdat, aes(x=apiary_near_far, y=mean, fill=target_name)) +
+plot1 <- ggplot(plotdat2, aes(x=apiary_near_far, y=mean, fill=target_name)) +
   geom_bar(stat="identity", color="black", 
            fill =   "white",
            position=position_dodge()) + labs(y="DWV Replication", x="Site Type") + geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd, width = 0.2),position=position_dodge(.9))
@@ -147,21 +147,21 @@ DatCleanNeg <- DatClean[DatClean$target_name=="DWV",]
 
 chisq.test(DatCleanNeg$BinaryNeg, DatCleanNeg$apiary_near_far)
 
-xFull <- glmer(data=DatCleanNeg,BinaryNeg~apiary_near_far + species + (1|Sample), family = binomial(link = "logit"))
+xFull2 <- glmer(data=DatCleanNeg,BinaryNeg~apiary_near_far + species + (1|Sample), family = binomial(link = "logit"))
 
 #for apiary near/far
-xNull <- glmer(data=DatCleanNeg,BinaryNeg ~ species + (1|Sample), family = binomial(link = "logit"))
+xNull2 <- glmer(data=DatCleanNeg,BinaryNeg ~ species + (1|Sample), family = binomial(link = "logit"))
 
 #for species
-xNullSP <- glmer(data=DatCleanNeg,BinaryNeg ~ apiary_near_far + (1|Sample), family = binomial(link = "logit"))
+xNullSP2 <- glmer(data=DatCleanNeg,BinaryNeg ~ apiary_near_far + (1|Sample), family = binomial(link = "logit"))
 
-anova(xFull, xNull, type="LRT")
+anova(xFull2, xNull2, type="LRT")
 
-anova(xFull,xNullSP, type = "LRT")
+anova(xFull2,xNullSP2, type = "LRT")
 
-summary(xFull)
+summary(xFull2)
 
-xNullSP
+xNullSP2
 
 #Calculate % of replicating infections
 mean(DW$BinaryNeg)
