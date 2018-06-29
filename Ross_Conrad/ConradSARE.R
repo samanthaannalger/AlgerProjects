@@ -27,7 +27,7 @@ setwd("~/AlgerProjects/Ross_Conrad/")
 
 # load in data
 Conrad <- read.table("ConradSARE.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
-View(Conrad)
+#View(Conrad)
 
 ###############################################################
 # Varroa Figure

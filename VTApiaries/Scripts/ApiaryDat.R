@@ -41,12 +41,126 @@ states <- read.csv("CSV_files/USstates.csv",
                    sep = ",", 
                    stringsAsFactors = FALSE)
 
+RegData <- read.csv("CSV_files/RegActiveAndDelinquent.csv", 
+                   header=TRUE, 
+                   sep = ",", 
+                   stringsAsFactors = FALSE)
+ApiaryRegs2017 <- read.csv("CSV_files/2017ApiaryRegs.csv", 
+                    header=TRUE, 
+                    sep = ",", 
+                    stringsAsFactors = FALSE)
+
+
 #Remove duplicate data so that there is only a single row for each beekeeper (to be used in all analyses except apiary-level analyses and vendor information)
 
 Singles <- FullApiaryDat[!duplicated(FullApiaryDat$BeekeeperID), ]
-table(Singles$BeekeeperID)
 
-write.csv(Singles, file = "singles.csv")
+#write.csv(Singles, file = "singles.csv")
+
+##################################################
+#########################################################
+#########################################################
+# Basic Statistics:
+#########################################################
+#########################################################
+
+
+# Calculating state level losses:
+AnnLoss<- RegData[! is.na(RegData$PerTotLoss), ]
+mean(AnnLoss$PerTotLoss)
+# 38.8%: Total Annual
+
+WinterLoss<- RegData[! is.na(RegData$PerWinLoss), ]
+mean(WinterLoss$PerWinLoss)
+# 35.8% Winter Loss
+# Summer loss??
+
+#Calculating apiary and colony totals:
+
+# Subset to only include status="Active" beekeepers (remove NAs too)
+ActiveOnly<- RegData[! is.na(RegData$BeeKeeperStatus), ]
+ActiveOnly<- ActiveOnly[ which(ActiveOnly$BeeKeeperStatus == "Active"), ]
+nrow(ActiveOnly)
+# 1091 Registered Apiaries
+
+#How many apiaries are delinquent?
+DelOnly<- RegData[ which(RegData$BeeKeeperStatus == "Delinquent"), ]
+nrow(DelOnly)
+# 465 delinquent apiaries
+
+#How many registered Colonies?
+ActiveOnly<- ActiveOnly[! is.na(ActiveOnly$ColonyCount), ]
+sum(ActiveOnly$ColonyCount)
+# 8,450 registered colonies
+
+#Calculate the number of registered beekeepers:
+ActiveBeeks <- ActiveOnly[!duplicated(ActiveOnly$BeekeeperID), ]
+nrow(ActiveBeeks)
+# 743 Active registered beekeepers
+DelBeeks <- DelOnly[!duplicated(DelOnly$BeekeeperID), ]
+nrow(DelBeeks)
+#254 Delinquent beekeepers
+
+
+#Determine the number of apiaries each beekeeper has registered and create a histogram....
+
+#For registered beekeepers:
+library(data.table)
+histDat = data.table(ActiveOnly)
+histDat[, `n` := .N, by = BeekeeperID]
+#histDat <-  histDat[!duplicated(histDat$BeekeeperID),]
+# Histogram showing the number of apiaries belonging to beekeepers with 1 yard, two yards...etc...
+hist(histDat$n, freq=TRUE, breaks=25)
+
+###############################################
+
+#Code apiaries as owned by either hobbists, sideliners, or commericial apiaries
+
+histDat$Beektype <- ifelse(histDat$n == 1,"Hobbyist", ifelse(histDat$n <=5, "Sideliner", "Commercial"))
+
+BeekTypeStats <- ddply(histDat, c("Beektype"), summarise, 
+                     apiaries = length(n),
+                     colonies = sum(ColonyCount),
+                     loss = mean(PerTotLoss, na.rm = TRUE),
+                     sd = sd(PerTotLoss, na.rm=TRUE),
+                     se = sd / sqrt(apiaries))
+
+BeekTypeStats$perApiaries <- BeekTypeStats$apiaries/sum(BeekTypeStats$apiaries)
+
+BeekTypeStats$perColonies <- BeekTypeStats$colonies/sum(BeekTypeStats$colonies)
+
+BeekTypeStats
+
+BeekTypeDF <- rbind(BeekTypeStats, BeekTypeStats)
+MeasureType <- c(rep("Apiary", 3), rep("Colony", 3))
+BeekTypeDF <- cbind(BeekTypeDF, MeasureType)
+BeekTypeDF$Percent <- c(BeekTypeDF$perApiaries[1:3], BeekTypeDF$perColonies[4:6])
+
+BeekTypeDF
+#Are there significant differences in hive losses among beekeeper types?
+#Currenlty no significant differences! p = 0.09
+BeekTypeLoss <- aov(histDat$PerTotLoss~histDat$Beektype)
+summary(BeekTypeLoss)
+
+# Check to see which beekeepers told us about hive losses... #MISSING LOTS OF COLONY LOSS DATA FROM COMMERICIAL BEEKEEPERS!!
+NAcheck<-histDat[is.na(histDat$PerTotLoss),]
+table(NAcheck$Beektype)
+
+
+#Create figure showing number of colonies and number of apiaries as BeekType.
+#Create labels.....
+
+#Reorder factors:
+BeekTypeDF$Beektype <- factor(BeekTypeDF$Beektype, levels = c("Sideliner", "Hobbyist", "Commercial"))
+
+BeekTypeDF <- ddply(BeekTypeDF, .(MeasureType), transform, pos = cumsum(Percent) - (0.5 * Percent))
+
+BeekTypeFig <- ggplot(BeekTypeDF, aes(y = Percent, x = MeasureType , fill = Beektype)) + geom_bar(stat="identity") + theme_classic() + labs(x=NULL, y = "Percent of total in Vermont")+ scale_y_continuous(labels = scales::percent) + 
+scale_fill_brewer() +
+  scale_x_discrete(labels=c("Apiary" = "Apiaries", "Colony" = "Colonies")) + guides(fill=guide_legend(title="Beekeeper Type")) + geom_text(data=BeekTypeDF, aes(x = MeasureType, y = pos ,label = paste0(round(Percent*100, digits = 1),"%")), size=4)
+
+BeekTypeFig
+
 
 #########################################################
 #########################################################
@@ -99,17 +213,16 @@ wordcloud(words = d$word, freq = d$freq, min.freq = 5,
 # Percentage of beekeepers that count mites:
 
 #Create a Pie chart for mite counts, (yes/no)
-table(ApiaryDat$MiteCounts)
 
 mitedf <- data.frame(
-  group = c("Counted mites", "Did not count mites"),
-  value = c(232, 403)
+  group = c("Did not count mites", "Counted mites"),
+  value = c(table(ApiaryDat$MiteCounts))
 )
 head(mitedf)
 
 #     group value
-# 1 Counted   232....36.5%
-# 2 Did not   403...63.5%
+# 1 Counted   221....34.8%
+# 2 Did not   414...65.2%
 
 library(ggplot2)
 library(scales)
@@ -171,8 +284,8 @@ MiteMon <- ddply(MonMethods, c("question"), summarise,
 plot1 <- ggplot(MiteMon, aes(x=question, y=mean, fill=question)) + 
   geom_bar(stat="identity", color="black",
            position=position_dodge()) + 
-  labs(x="Mite Monitoring Method", y = "Frequency") + 
-  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), legend.position="none") + 
+  labs(x="Mite Monitoring Method", y = "% Reported Use") + 
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), legend.position="none", axis.text=element_text(size=15), axis.title=element_text(size=18,face="bold")) + 
   scale_y_continuous(labels = scales::percent) + 
   geom_errorbar(aes(ymin = mean - se, ymax = mean + 
                       se, width = 0.2)) + scale_fill_brewer() +
@@ -230,22 +343,64 @@ VendorPlot <- ggplot(data=Vendor, aes(x=BeePurchaseVendorName, y=n, fill = abb))
            position=position_dodge()) + labs(x="Medications", y = "Colony Loss")
 
 
-VendorPlot
-#+ scale_x_discrete(labels=c("Formic acid (Mite Away Quick Strips)" = "MAQS", "Amitraz, Formic acid (Mite Away Quick Strips)" = "Amitraz, MAQS", "Apiguard, Formic acid (Mite Away Quick Strips)" = "Apiguard, MAQS", "Formic acid (Mite Away Quick Strips), Oxalic acid" = "Oxalic acid, MAQS", "Formic acid (Mite Away Quick Strips), Honey B Healthy" = "Honey B Healthy, MAQS")) + scale_y_continuous(labels = scales::percent) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.2)) + scale_fill_brewer()
 ####################################################################
 # MEDICATIONS:
 
 
 ###########################################################
+# What 'meds' do beekeepers use in their hives?
+MedUse <- Singles[! is.na(Singles$TreatmentsForColonyHealthMitigation), ]
+
+# What 'meds' do beekeepers use in their hives?
+MedUse <- Singles[! is.na(Singles$TreatmentsForColonyHealthMitigation), ]
+
+vec <- c("None","Fluvalinate","Coumaphos","Amitraz","Apiguard","Api-life VAR","Sucrocide","Powdered sugar","Oxalic acid","Formic acid (Mite Away Quick Strips)","Menthol","Hopguard","Honey B Healthy","Fumagillin-B","Tylosin (Tylan, Tylosin, Tylovet)","Lincomycin (Lincomix)","Oxytetracycline (TM, OXTC, Pennox, Terramycin)","Herbal antibiotics")
+
+
+mat <- matrix(nrow = length(MedUse$TreatmentsForColonyHealthMitigation), ncol = length(vec))
+
+for (i in 1:length(vec)){
+  
+  mat[,i] <- grepl(vec[i], MedUse$TreatmentsForColonyHealthMitigation, fixed = TRUE)
+  
+}
+
+# turn mat into a data frame, give it column names and merge with MedUse
+mat <- data.frame(mat)
+names(mat) <- vec
+MedUse <- cbind(MedUse, mat)
+
+TreatPercents <- colMeans(mat, na.rm=TRUE)
+Treatments <- vec
+
+MedUse <- data.frame(Treatments, TreatPercents)
+
+
+#Reorder for plotting:
+MedUse$Treatments <- factor(MedUse$Treatments, levels = c("None", "Powdered sugar", "Honey B Healthy", "Apiguard", "Api-life VAR", "Menthol","Sucrocide","Hopguard", "Formic acid (Mite Away Quick Strips)", "Oxalic acid", "Amitraz","Fluvalinate","Coumaphos","Tylosin (Tylan, Tylosin, Tylovet)","Lincomycin (Lincomix)","Oxytetracycline (TM, OXTC, Pennox, Terramycin)","Herbal antibiotics", "Fumagillin-B"))
+
+
+plot2 <- ggplot(MedUse, aes(x=Treatments, y=TreatPercents)) + 
+  geom_bar(stat="identity", color="black",
+           position=position_dodge()) + labs(x=NULL, y = "% Reported Use") + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), legend.position="none")  + scale_x_discrete(labels=c("None","Fluvalinate"="Fluvalinate (Apistan)","Coumaphos","Amitraz"="Amitraz(Apivar)","Apiguard","Api-life VAR","Sucrocide","Powdered sugar","Oxalic acid","Formic acid (Mite Away Quick Strips)"="Formic acid (MAQS)","Menthol","Hopguard","Honey B Healthy","Fumagillin-B","Tylosin (Tylan, Tylosin, Tylovet)"= "Tylosin","Lincomycin (Lincomix)"= "Lincomycin","Oxytetracycline (TM, OXTC, Pennox, Terramycin)"="Oxytetracycline","Herbal antibiotics")) + scale_fill_brewer() + scale_y_continuous(labels = scales::percent) + theme(axis.text=element_text(size=20), axis.title=element_text(size=18,face="bold"))
+
+plot2
+
+
+################################################
+# How Does med use correlate with colony losses....
+
+
 
 #Remove rows with NA in percent loss:
-FullApiaryDat <- FullApiaryDat[! is.na(FullApiaryDat$PerWintLoss), ]
+MedData <- FullApiaryDat[! is.na(FullApiaryDat$PerTotLoss), ]
 
 
 # reorder factors for plotting
-FullApiaryDat$TreatmentsForColonyHealthMitigation <- factor(FullApiaryDat$TreatmentsForColonyHealthMitigation, levels = c("None", "Powdered sugar", "Honey B Healthy", "Apiguard", "Api-life VAR", "Formic acid (Mite Away Quick Strips)", "Oxalic acid", "Formic acid (Mite Away Quick Strips) Honey B Healthy", "Apiguard, Formic acid (Mite Away Quick Strips)", "Formic acid (Mite Away Quick Strips), Oxalic acid", "Amitraz, Formic acid (Mite Away Quick Strips)"))
+MedData$TreatmentsForColonyHealthMitigation <- factor(MedData$TreatmentsForColonyHealthMitigation, levels = c("None", "Powdered sugar", "Honey B Healthy", "Apiguard", "Api-life VAR", "Formic acid (Mite Away Quick Strips)", "Oxalic acid", "Formic acid (Mite Away Quick Strips) Honey B Healthy", "Apiguard, Formic acid (Mite Away Quick Strips)", "Formic acid (Mite Away Quick Strips), Oxalic acid", "Amitraz, Formic acid (Mite Away Quick Strips)"))
 
-Medications <- ddply(FullApiaryDat, c("TreatmentsForColonyHealthMitigation"), summarise, 
+
+Medications <- ddply(MedData, c("TreatmentsForColonyHealthMitigation"), summarise, 
                 n = length(PerTotLoss),
                 mean = mean(PerTotLoss, na.rm=TRUE),
                 sd = sd(PerTotLoss, na.rm=TRUE),
@@ -258,11 +413,8 @@ Medications <- ddply(FullApiaryDat, c("TreatmentsForColonyHealthMitigation"), su
 Medications <- Medications[ which(Medications$n > 9), ]
 Medications <- Medications[! is.na(Medications$TreatmentsForColonyHealthMitigation), ]
 
-#choosing color pallet
-#colors <- c("goldenrod", "violetred4", "snow1", "black", "green")
 
-
-#Create a bar graph for viruses loads per Koppert colony:
+#Create a bar graph
 plot1 <- ggplot(Medications, aes(x=TreatmentsForColonyHealthMitigation, y=mean, fill=TreatmentsForColonyHealthMitigation)) + 
   geom_bar(stat="identity", color="black",
            position=position_dodge()) + labs(x="Medications", y = "Colony Loss") + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), legend.position="none") + scale_x_discrete(labels=c("Formic acid (Mite Away Quick Strips)" = "MAQS", "Amitraz, Formic acid (Mite Away Quick Strips)" = "Amitraz, MAQS", "Apiguard, Formic acid (Mite Away Quick Strips)" = "Apiguard, MAQS", "Formic acid (Mite Away Quick Strips), Oxalic acid" = "Oxalic acid, MAQS", "Formic acid (Mite Away Quick Strips), Honey B Healthy" = "Honey B Healthy, MAQS")) + scale_y_continuous(labels = scales::percent) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.2)) + scale_fill_brewer()
@@ -282,6 +434,7 @@ MedANOVA <- MedANOVA[! is.na(MedANOVA$PerTotLoss), ]
 Meds <- aov(MedANOVA$PerTotLoss~MedANOVA$TreatmentsForColonyHealthMitigation)
 summary(Meds)
 TukeyHSD(Meds)
+
 ########################################################
 # Reasons for Colony Losses:
 
@@ -320,8 +473,8 @@ LossCause <- ddply(ReasonLoss, c("question"), summarise,
 plot1 <- ggplot(LossCause, aes(x=question, y=mean, fill=question)) + 
   geom_bar(stat="identity", color="black",
            position=position_dodge()) + 
-    labs(x="Causes", y = "Colony Loss") + 
-    theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), legend.position="none") + 
+    labs(x="Causes", y = "% Reported Causes") + 
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), legend.position="none", axis.text=element_text(size=15), axis.title=element_text(size=18,face="bold")) + 
   scale_y_continuous(labels = scales::percent) + 
   geom_errorbar(aes(ymin = mean - se, ymax = mean + 
                       se, width = 0.2)) + scale_fill_brewer() +
@@ -382,3 +535,43 @@ table(AntibxFull$AntibioticTreatments)
 SumAntibx <- AntibxFull[which(AntibxFull$AntibioticTreatments == "TRUE"),]
 sum(SumAntibx$ColonyCount)
 # 356 hives
+
+
+#######################################################
+# How do you make up for colony losses?
+#######################################################
+
+ColLoss <- Singles[! is.na(Singles$ColonyLossMakeup), ]
+
+vec <- c("Make Splits or Divides","Purchase Colonies in Hives","Purchase Packages","Purchase Nucleus Colonies")
+
+
+mat <- matrix(nrow = length(ColLoss$ColonyLossMakeup), ncol = length(vec))
+
+for (i in 1:length(vec)){
+  
+  mat[,i] <- grepl(vec[i], ColLoss$ColonyLossMakeup, fixed = TRUE)
+  
+}
+
+# turn mat into a data frame, give it column names and merge with MedUse
+mat <- data.frame(mat)
+names(mat) <- vec
+ColLoss <- cbind(ColLoss, mat)
+
+Percents <- colMeans(mat, na.rm=TRUE)
+Treatments <- vec
+
+ColLoss <- data.frame(Treatments, Percents)
+
+
+#Reorder for plotting:
+ColLoss$Treatments <- factor(ColLoss$Treatments, levels = c("Make Splits or Divides","Purchase Colonies in Hives","Purchase Packages","Purchase Nucleus Colonies"))
+
+
+plot3 <- ggplot(ColLoss, aes(x=Treatments, y=Percents)) + 
+  geom_bar(stat="identity", color="black",
+           position=position_dodge()) + labs(x=NULL, y = "% Responses") + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), legend.position="none")  + scale_x_discrete(labels=c("Splits/Divides","Purchase Full Hives","Purchase Packages","Purchase Nucs")) + scale_fill_brewer() + scale_y_continuous(labels = scales::percent) + theme(axis.text=element_text(size=20), axis.title=element_text(size=18,face="bold"))
+
+plot3
+
