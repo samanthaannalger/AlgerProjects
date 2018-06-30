@@ -86,11 +86,11 @@ RepANOVA <- function(data, column, key=10){
 # returns a DF that is partially cleaned
 ###########################################################################
 
-PrelimClean <- function(data=ImidVirus){
+PrelimClean <- function(data=data){
   
   # take only columns that we want:
   library(dplyr)
-  data <- select(data, Treatment, ID, dil.factor, sample_name, target_name, Ct_mean, Ct_sd, quantity_mean, quantity_sd, run)
+  data <- dplyr::select(data, Treatment, ID, dil.factor, sample_name, target_name, Ct_mean, Ct_sd, quantity_mean, quantity_sd, run)
   
   # remove duplicate rows
   data<-data[!duplicated(data), ]
@@ -112,13 +112,13 @@ PrelimClean <- function(data=ImidVirus){
 
 
 ###########################################################################
-# function name: VirusNorm
-# description: normalizes virus data with dilutions and constants 
+# function name: OLDVirusNorm
+# description: normalizes virus data with dilutions and constants, using old protocols for RNA extraction (2015 Survey methods) 
 # parameters: number of bees and a data frame 
 # returns a dataframe with normalized virus values 
 ###########################################################################
 
-VirusNorm <- function(number_bees = 1, data=data){
+OLDVirusNorm <- function(number_bees = 1, data=data){
   
   # set constant values for genome copies per bee calculations:
   crude_extr <- 100
@@ -140,10 +140,44 @@ VirusNorm <- function(number_bees = 1, data=data){
   
 }
 
+
 ###########################################################################
 # END OF FUNCITON
 ###########################################################################
 
+###########################################################################
+# function name: VirusNorm
+# description: normalizes virus data with dilutions and constants, abdomen only RNA extraction protocols
+# parameters: number of bees and a data frame 
+# returns a dataframe with normalized virus values 
+###########################################################################
+
+VirusNorm <- function(number_bees = 1, data=data){
+  
+  # set constant values for genome copies per bee calculations:
+  crude_extr <- 350
+  eluteRNA <- 50
+  GITCperbee <- 600
+  cDNA_eff <- 0.1
+  rxn_vol <- 3
+  
+  #create column for total_extr_vol
+  total_extr_vol <- (GITCperbee * number_bees)
+  
+  # create column for genome copies per bee:
+  data$genomeCopy <- ((((((data$quantity_mean / cDNA_eff) / rxn_vol) * data$dil.factor) * eluteRNA) / crude_extr) * total_extr_vol) / number_bees
+  
+  # norm_genomeCopy is 0 if NA
+  data$genomeCopy[is.na(data$genomeCopy)] <- 0
+  
+  return(data)
+  
+}
+
+
+###########################################################################
+# END OF FUNCITON
+###########################################################################
 
 
 
@@ -233,8 +267,8 @@ VirusMerger2000 <- function(data1=DF2, data2=DF2){
   
   MigVirusSplit <- split(data1, data1$target_name)
   
-  BQCV <- select(MigVirusSplit$BQCV, sample_name, NormGenomeCopy, virusBINY)
-  DWV <- select(MigVirusSplit$DWV, sample_name, NormGenomeCopy, virusBINY)
+  BQCV <- dplyr::select(MigVirusSplit$BQCV, sample_name, NormGenomeCopy, virusBINY)
+  DWV <- dplyr::select(MigVirusSplit$DWV, sample_name, NormGenomeCopy, virusBINY)
   
   sample_name <- BQCV$sample_name
   BQCVload <- BQCV$NormGenomeCopy
