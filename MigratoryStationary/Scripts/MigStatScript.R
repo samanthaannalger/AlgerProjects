@@ -37,6 +37,8 @@ library(ggplot2)
 library(dplyr)
 library(lme4)
 library(car)
+library(lmerTest)
+library(lsmeans)
 
 #--------------------------------------------------------------------------
 # data cleaning
@@ -121,7 +123,7 @@ chisq.test(x)
 
 
 # DWV prevalence using glmer
-Fullmod <- glmer(data=MigStatExp_1, formula = DWVbinary~Treatment * SamplingEvent + (1|ID), family = binomial(link = "logit"))
+Fullmod <- glmer(data=MigStatExp_1, formula = DWVbinary~Treatment * SamplingEvent + (1+SamplingEvent|ID), family = binomial(link = "logit"))
 Anova(Fullmod)
 
 # Summary of DWV prev. for experiment 1
@@ -184,7 +186,7 @@ ggplot(data = VirusSum1,
 # BQCV PREV:
 
 #BQCV prevalence using glmer
-Fullmod2 <- glmer(data=MigStatExp_1, formula = BQCVbinary~Treatment * SamplingEvent + (1|ID), family = binomial(link = "logit"))
+Fullmod2 <- glmer(data=MigStatExp_1, formula = BQCVbinary~Treatment * SamplingEvent + (1+SamplingEvent|ID), family = binomial(link = "logit"))
 
 Anova(Fullmod2)
 
@@ -307,7 +309,7 @@ MigStatExp_2_analysis<-MigStatExp_2_plot[!(MigStatExp_2_plot$Treatment=="Migrato
 # DWV PREV:
 
 #DWV prevalence using glmer
-Fullmod3 <- glmer(data=MigStatExp_2_analysis, formula = DWVbinary~Treatment * SamplingEvent + (1|ID), family = binomial(link = "logit"))
+Fullmod3 <- glmer(data=MigStatExp_2_analysis, formula = DWVbinary~Treatment * SamplingEvent + (1+SamplingEvent|ID), family = binomial(link = "logit"))
 
 Anova(Fullmod3)
 
@@ -553,4 +555,52 @@ ggplot(data = NosSum,
            linetype= Treatment)
 ) + geom_point(size=4) + scale_colour_manual(values = c("black", "darkgrey", "black")) + scale_linetype_manual(values = c(1, 1, 2)) + labs(x = "Sampling Event", y = "Nosema Load") + coord_cartesian(ylim = c(0, 20), xlim = c(1,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05), linetype=1, show.legend=FALSE) + geom_line(size=1.5) + theme_classic(base_size = 17) + theme(legend.position=c(.8, .85), legend.key.width=unit(5,"line"), panel.border = element_blank(), axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'), axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'), panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + scale_x_continuous(breaks=c(1,2,3)) 
 
+
+########################################################################################################
+#### ANALYSIS OF MITES VS FOB ##########################################################################
+########################################################################################################
+
+# clean data set for analysis, take varroa from time point three and merge with data set from 
+# time step 2 for only migratory and stationary:
+MiteFob <- MigStat[!MigStat$SamplingEvent==1, ]
+MiteFob <- MiteFob[!MiteFob$Treatment=="Exposed", ]
+MiteFob <- split(MiteFob, MiteFob$SamplingEvent)
+MiteFob2 <- MiteFob$`2`
+MiteFob3 <- MiteFob$`3`
+MiteFob2$Varroa3 <- MiteFob3$Varroa
+
+# main plot parameters
+p <- ggplot(MiteFob3, aes(Varroa, FOB)) + geom_point(aes(color=Treatment), size = 3.5) + coord_cartesian(xlim = c(0,10), ylim=c(0,25))  
+
+# aestetic parameters 
+p + theme_classic(base_size = 17) + theme(legend.position=c(.85, .8), legend.background = element_rect(color = "black", size = .5)) + labs(color="Treatment", y="Varroa at Time Point 3", x="Frames of Bees at Time Point 2") + scale_color_manual(values = c("slategrey", "black")) + geom_smooth(aes(color=Treatment), method  = lm, se = FALSE)
+
+x <- split(MiteFob3, MiteFob3$Treatment)
+Mig <- x$Migratory
+Stat<- x$Stationary
+
+modMig <- lm(data=Mig, Varroa~FOB)
+summary(modMig)
+
+modStat <- lm(data=Stat, Varroa~FOB)
+summary(modStat)
+
+
+
+MiteFobFull <- MigStat[!MigStat$Treatment=="Exposed", ]
+
+
+mod <- lmer(data = MiteFobFull, formula = Varroa ~  SamplingEvent * (FOB * Treatment) + (1|ID) + (1|Yard))
+
+
+
+
+
+Anova(mod)
+summary(mod)
+coef(summary(mod))
+
+lsmeans(mod, list(pairwise ~ Treatment), adjust = "tukey")
+
+plot(MiteFobFull$FOB, MiteFobFull$Varroa)
 

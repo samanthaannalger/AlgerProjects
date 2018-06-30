@@ -498,3 +498,9 @@ A1 <- (plot_grid(plot_grid(A1, ncol=1, align='v'),
 
 # experiment 2:
 plot_grid(A1,F1,B1,C1,D1,E1, labels = c(" ","A", "B", "C", "D", "E"), ncol = 2,  align="hv")
+
+
+
+plot_grid(DWVload1, BQCVload1, labels = c("A", "B"), ncol = 2,  align="hv")
+
+
