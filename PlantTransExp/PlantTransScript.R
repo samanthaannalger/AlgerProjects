@@ -131,25 +131,26 @@ plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="P
 
 #Full Model:
 #remove NAs:
-ModDat <- plantTreat[complete.cases(plantTreat), ]
+#ModDat <- plantTreat[complete.cases(plantTreat), ]
+ModDat <- plantTreat
+
+#ModDatSplit <- split(ModDat, ModDat$target_name)
 
 
-Fullmod3 <- glmer(data=ModDat, BINYprefilter~ target_name * spp * visits + (1|experiment), family = binomial(link="logit"))
+#Fullmod3 <- glmer(data=ModDat, BINYprefilter~ spp * target_name * visits + (1|exp), REML = TRUE, family = binomial(link="logit"))
+
+#summary(Fullmod3)
+#Anova(Fullmod3)
 
 
 
-Fullmod3 <- glm(data=ModDat, BINYprefilter ~ target_name * spp * visits, family = binomial(link="logit"))
-Anova(Fullmod3)
-summary(Fullmod3)
 
 
-# better than null
-Null <- glmer(data=ModDat, BINYprefilter ~ 1 + (1|exp), family = binomial(link="logit"))
-anova(Fullmod3, Null, test = "LRT")
+##### MODEL WORKS!!!! and is legal!!!!
+Fullmod3 <- glm(data=ModDat, BINYprefilter ~ target_name * spp + visits, family = binomial(link="logit"))
+anova(Fullmod3, test="Chisq")
 
-Anova(Fullmod3)
 
-summary(Fullmod3)
 
 ?convergence
 #stats for % prevalence, species differences
