@@ -12,7 +12,15 @@ setwd("~/AlgerProjects/PlantTransExp/CSV_Files")
 # read in data:
 plantTrans <- read.csv("plantTransPlantsDF.csv", header=TRUE, sep = ",", stringsAsFactors=FALSE) 
 
-head(plantTrans)
+# read in data, (skip over meta data in csv file: skip = 9) :
+VideoData <- read.csv("PlantTransVideoData.csv", header=TRUE, sep = ",", stringsAsFactors=FALSE, skip = 9)
+
+PlantDF <- read.csv("plantTransPlantsDF.csv", header=TRUE, sep = ",", stringsAsFactors=FALSE)
+
+VirusDetect <- read.csv("VirusDetectionPlants.csv", header=TRUE, sep = ",", stringsAsFactors=FALSE)
+
+#Merge video data with the detection data:
+VideoDataMerge <- merge(VideoData, VirusDetect, by=c("expID"), all.x=TRUE, all.y=TRUE)
 
 library(plyr)
 library(dplyr)
@@ -25,6 +33,16 @@ plantTrans$group[plantTrans$group == "T"] <- "HB + Bombus"
 plantTrans$group[plantTrans$group == "PRE"] <- "Pre Experiment"
 
 # P12 is negative for DWV- bad meltcurve--- I manually deleted that row from the dataframe***
+
+# Create a table for visitation data
+Visits <- table(VideoDataMerge$expID)
+expID <- as.vector(names(Visits))
+visits <- as.vector(Visits)
+
+VidDat <- data.frame(expID, visits)
+
+#merge new visitation data with the virus DF:
+plantTrans <- merge(VidDat,plantTrans,by=c("expID"),all.y=TRUE) 
 
 # Plant Trans Exp_____________________
 # using ddply to summarize data for treatment groups: 
@@ -84,7 +102,7 @@ plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="V
 #Checking out virus detected on all treatment plants by plant species (for all experiments)
 
 #subset to only include plants part of the HB+Bombus group
-plantTreat <- plantTrans[ which(plantTrans$group=="T"), ]
+plantTreat <- plantTrans[ which(plantTrans$group=="HB + Bombus"), ]
 
 
 #Checking out by plant species
@@ -103,13 +121,37 @@ plantSpp$spp[plantSpp$spp == "WC"] <- "White Clover"
 #choosing color pallet
 colors <- c("goldenrod", "violetred4", "snow1")
 
-#Create a bar graph for viruses by bombus species (aes= aesthetics):
+#Create a bar graph for viruses by plant species (aes= aesthetics):
 plot1 <- ggplot(plantSpp, aes(x=target_name, y=mean, fill=spp)) + 
   geom_bar(stat="identity", color="black",
            position=position_dodge()) + labs(x="Virus", y = "% of Flowers with Virus Detected")
 
 plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Plant Species:", labels=c("Birdsfoot Trefoil", "Red Clover", "White Clover")) + theme(legend.position=c(.8, .85)) + coord_cartesian(ylim = c(0, 1)) + scale_y_continuous(labels = scales::percent)
 
+
+#Full Model:
+#remove NAs:
+ModDat <- plantTreat[complete.cases(plantTreat), ]
+
+
+Fullmod3 <- glmer(data=ModDat, BINYprefilter~ target_name * spp * visits + (1|experiment), family = binomial(link="logit"))
+
+
+
+Fullmod3 <- glm(data=ModDat, BINYprefilter ~ target_name * spp * visits, family = binomial(link="logit"))
+Anova(Fullmod3)
+summary(Fullmod3)
+
+
+# better than null
+Null <- glmer(data=ModDat, BINYprefilter ~ 1 + (1|exp), family = binomial(link="logit"))
+anova(Fullmod3, Null, test = "LRT")
+
+Anova(Fullmod3)
+
+summary(Fullmod3)
+
+?convergence
 #stats for % prevalence, species differences
 statsplit <- split(plantTreat, plantTreat$target_name)
 
@@ -124,15 +166,66 @@ chisq.test(statsplit$DWV$BINYprefilter, statsplit$DWV$spp)
 fisher.test(statsplit$DWV$BINYprefilter, statsplit$DWV$spp)
 
 
-#Remove Diversity and comingle experiment plants and check out data again.
+#Parse out each experiment and check out data
 
 plantTreat <- plantTrans[ which(plantTrans$group=="HB + Bombus"), ]
-plantTreat <- plantTreat[ -which(plantTreat$exp=="diversity"), ]
-plantTreat <- plantTreat[ -which(plantTreat$exp=="comingle"), ]
+plantComingle <- plantTreat[which(plantTreat$exp=="comingle"),]
+plantDiversity <- plantTreat[which(plantTreat$exp=="diversity"),]
+plantAcute <- plantTreat[ which(plantTreat$exp=="chronic-1" | plantTreat$exp =="acute" | plantTreat$exp=="chronic-2"| plantTreat$exp=="chronic-3"), ]
+
+#Checking out by plant species, ACUTE
+plantSpp <- ddply(plantAcute, c("target_name", "spp"), summarise, 
+                  n = length(BINYprefilter),
+                  mean = mean(BINYprefilter, na.rm=TRUE),
+                  sd = sd(BINYprefilter, na.rm=TRUE),
+                  se = sd / sqrt(n))
 
 
-#Checking out by plant species
-plantSpp <- ddply(plantTreat, c("target_name", "spp"), summarise, 
+
+plantSpp$spp[plantSpp$spp == "RC"] <- "Red Clover"
+plantSpp$spp[plantSpp$spp == "BFT"] <- "BirdsFoot Trefoil"
+plantSpp$spp[plantSpp$spp == "WC"] <- "White Clover"
+
+
+#choosing color pallet
+colors <- c("goldenrod", "violetred4", "snow1")
+
+#Create a bar graph for viruses by plant species (aes= aesthetics):
+plot1 <- ggplot(plantSpp, aes(x=target_name, y=mean, fill=spp)) + 
+  geom_bar(stat="identity", color="black",
+           position=position_dodge()) + labs(x="Virus", y = "% of Flowers with Virus Detected")
+
+plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Plant Species:", labels=c("Birdsfoot Trefoil", "Red Clover", "White Clover")) + theme(legend.position=c(.8, .85)) + coord_cartesian(ylim = c(0, 1)) + scale_y_continuous(labels = scales::percent)
+
+# Stats for each experiment:
+#stats for % prevalence, species differences
+statsplit <- split(plantAcute, plantAcute$target_name)
+
+# chi.sq test for BQCV detected on flowers by plant spp.
+chisq.test(statsplit$BQCV$BINYprefilter, statsplit$BQCV$spp)
+
+fisher.test(statsplit$BQCV$BINYprefilter, statsplit$BQCV$spp)
+
+# chi.sq test for DWV detected on flowers by plant spp.
+chisq.test(statsplit$DWV$BINYprefilter, statsplit$DWV$spp)
+
+fisher.test(statsplit$DWV$BINYprefilter, statsplit$DWV$spp)
+
+
+# What's the percent detection for each plant species for each virus?
+plantAcuteDWV <- plantAcute[ which(plantAcute$target_name=="DWV"), ]
+plantAcuteBQCV <- plantAcute[ which(plantAcute$target_name=="BQCV"), ]
+
+tapply(plantAcuteDWV$BINYprefilter, plantAcuteDWV$spp, mean)
+#BFT        RC        WC 
+#0.0000000 0.3333333 0.2307692 
+tapply(plantAcuteBQCV$BINYprefilter, plantAcuteBQCV$spp, mean)
+#BFT         RC         WC 
+#1.00000000 0.00000000 0.08333333 
+
+
+# For Diversity:
+plantSpp <- ddply(plantDiversity, c("target_name", "spp"), summarise, 
                   n = length(BINYprefilter),
                   mean = mean(BINYprefilter, na.rm=TRUE),
                   sd = sd(BINYprefilter, na.rm=TRUE),
@@ -144,15 +237,42 @@ plantSpp$spp[plantSpp$spp == "BFT"] <- "BirdsFoot Trefoil"
 plantSpp$spp[plantSpp$spp == "WC"] <- "White Clover"
 
 # What's the percent detection for each plant species for each virus?
-plantAcuteDWV <- plantTreat[ which(plantTreat$target_name=="DWV"), ]
-plantAcuteBQCV <- plantTreat[ which(plantTreat$target_name=="BQCV"), ]
+plantDiversityDWV <- plantDiversity[ which(plantDiversity$target_name=="DWV"), ]
+plantDiversityBQCV <- plantDiversity[ which(plantDiversity$target_name=="BQCV"), ]
 
-tapply(plantAcuteDWV$BINYprefilter, plantAcuteDWV$spp, mean)
+tapply(plantDiversityDWV$BINYprefilter, plantDiversityDWV$spp, mean)
 #BFT        RC        WC 
-#0.0000000 0.3333333 0.2307692 
-tapply(plantAcuteBQCV$BINYprefilter, plantAcuteBQCV$spp, mean)
+#0            1       0 
+tapply(plantDiversityBQCV$BINYprefilter, plantDiversityBQCV$spp, mean)
 #BFT         RC         WC 
-#1.00000000 0.00000000 0.08333333 
+#0.00       0.75       0.00  
+
+
+# For Comingle:
+plantSpp <- ddply(plantComingle, c("target_name", "spp"), summarise, 
+                  n = length(BINYprefilter),
+                  mean = mean(BINYprefilter, na.rm=TRUE),
+                  sd = sd(BINYprefilter, na.rm=TRUE),
+                  se = sd / sqrt(n))
+
+
+plantSpp$spp[plantSpp$spp == "RC"] <- "Red Clover"
+plantSpp$spp[plantSpp$spp == "BFT"] <- "BirdsFoot Trefoil"
+plantSpp$spp[plantSpp$spp == "WC"] <- "White Clover"
+
+# What's the percent detection for each plant species for each virus?
+plantComingleDWV <- plantComingle[ which(plantComingle$target_name=="DWV"), ]
+plantComingleBQCV <- plantComingle[ which(plantComingle$target_name=="BQCV"), ]
+
+tapply(plantComingleDWV$BINYprefilter, plantComingleDWV$spp, mean)
+# WC 
+# 0.2 
+tapply(plantComingleBQCV$BINYprefilter, plantComingleBQCV$spp, mean)
+# WC 
+# 0
+
+
+
 
 #choosing color pallet
 colors <- c("goldenrod", "violetred4", "snow1")
@@ -220,7 +340,7 @@ plantTransDiv$spp[plantTransDiv$spp == "WC"] <- "White Clover"
 #choosing color pallet
 colors <- c("goldenrod", "violetred4", "snow1")
 
-#Create a bar graph for viruses by bombus species (aes= aesthetics):
+#Create a bar graph for viruses for diversity
 plot1 <- ggplot(plantTransDiv, aes(x=target_name, y=mean, fill=spp)) + 
   geom_bar(stat="identity", color="black",
            position=position_dodge()) + labs(x="Virus", y = "% of Flowers with Virus Detected")
