@@ -26,9 +26,9 @@ VideoDataMerge <- merge(VideoData, VirusDetect, by=c("expID"), all.x=TRUE, all.y
 # Create a table for visitation data
 Visits <- table(VideoDataMerge$expID)
 expID <- as.vector(names(Visits))
-vis <- as.vector(Visits)
+visits <- as.vector(Visits)
 
-as.data.frame(expID, vis)
+VidDat <- data.frame(expID, visits)
 
 #Check out visitation data
 visitations <- table(VideoData$expID)
