@@ -6,7 +6,7 @@
 # Preliminaries:
 # Clear memory of characters:
 rm(list=ls())
-setwd("~/AlgerProjects/VTApiaries/shinyappApiaries/")
+#setwd("~/AlgerProjects/VTApiaries/shinyappApiaries/")
 
 library(shiny)
 library(data.table)
@@ -83,6 +83,7 @@ LossDat <- Shinydf
 
 #rename TRUE and FALSE as YEs and NO, ** need to fix so it's not 'hard coded' for future analyses.
 LossDat$MiteCounts <- factor(LossDat$MiteCounts, labels = c("No", "Yes"))
+LossDat$SupplementalFeed <- factor(LossDat$SupplementalFeed, labels = c("No", "Yes"))
 
 # Remove all rows without vendor listed:
 LossDat <- LossDat[! is.na(LossDat$Beektype), ]
@@ -117,3 +118,4 @@ server <- function(input, output) {
 }
 
 shinyApp(ui, server)
+
