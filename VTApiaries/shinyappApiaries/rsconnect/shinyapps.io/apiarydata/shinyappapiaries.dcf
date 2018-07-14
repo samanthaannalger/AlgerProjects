@@ -1,0 +1,12 @@
+name: shinyappapiaries
+title: shinyappApiaries
+username:
+account: apiarydata
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 381051
+bundleId: 1480689
+url: https://apiarydata.shinyapps.io/shinyappApiaries/
+when: 1531592152.06688
+asMultiple: FALSE
+asStatic: FALSE

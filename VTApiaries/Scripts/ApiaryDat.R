@@ -31,6 +31,11 @@ FullApiaryDat <- read.csv("CSV_files/VTApiaries.csv",
                         sep = ",", 
                         stringsAsFactors = FALSE)
 
+HistDat <- read.csv("CSV_files/histDat.csv", 
+                    header=TRUE, 
+                    sep = ",", 
+                    stringsAsFactors = FALSE)
+
 ApiaryDat <- read.csv("CSV_files/singles.csv", 
                       header=TRUE, 
                       sep = ",", 
@@ -118,6 +123,9 @@ hist(histDat$n, freq=TRUE, breaks=25)
 
 histDat$Beektype <- ifelse(histDat$n == 1,"Hobbyist", ifelse(histDat$n <=5, "Sideliner", "Commercial"))
 
+# Write.csv hist dat for shiny app demo
+#write.csv(histDat,"histDat.csv")
+
 BeekTypeStats <- ddply(histDat, c("Beektype"), summarise, 
                      apiaries = length(n),
                      colonies = sum(ColonyCount),
@@ -168,8 +176,15 @@ BeekTypeFig
 #########################################################
 #########################################################
 
+#Combine all Text:
+OpinionText <- paste(unlist(ApiaryDat$Opinion), collapse =" ")
+# I then copied and pasted the above text to a .txt file and saved it in .csv folder. Is there a way to do this in R?
+#text <- readLines("CSV_files/WordCloud2.txt")
+
+docs <- Corpus(VectorSource(OpinionText))
+
 text <- readLines("CSV_files/WordCloud.txt")
-docs <- Corpus(VectorSource(text))
+#docs <- Corpus(VectorSource(text))
 #docs <- tm_map(docs, content_transformer(tolower))
 inspect(docs)
 toSpace <- content_transformer(function (x , pattern ) gsub(pattern, " ", x))
@@ -200,7 +215,7 @@ head(d, 10)
 
 #Generating word cloud
 set.seed(1234)
-wordcloud(words = d$word, freq = d$freq, min.freq = 5,
+wordcloud(words = d$word, freq = d$freq, min.freq = 10,
           max.words=200, random.order=FALSE, rot.per=0.35, 
           colors=brewer.pal(8, "Dark2"))
 
@@ -488,9 +503,9 @@ plot1
 #Combine all Text:
 OtherLossText <- paste(unlist(OtherLoss), collapse =" ")
 # I then copied and pasted the above text to a .txt file and saved it in .csv folder. Is there a way to do this in R?
+#text <- readLines("CSV_files/WordCloud2.txt")
 
-text <- readLines("CSV_files/WordCloud2.txt")
-docs <- Corpus(VectorSource(text))
+docs <- Corpus(VectorSource(OtherLossText))
 #docs <- tm_map(docs, content_transformer(tolower))
 inspect(docs)
 toSpace <- content_transformer(function (x , pattern ) gsub(pattern, " ", x))
