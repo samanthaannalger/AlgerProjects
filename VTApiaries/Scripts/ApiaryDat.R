@@ -607,7 +607,7 @@ histDat$Beektype <- ifelse(histDat$n == 1,"Hobbyist", ifelse(histDat$n <=5, "Sid
 #select only columns we need:
 histDat <- dplyr::select(histDat, LocationID, Beektype, AccountName, BeeKeeperStatus, n)
 
-FullApiaryDat <- dplyr::select(FullApiaryDat, -AccountName)
+FullApiaryDat <- dplyr::select(FullApiaryDat, -AccountName, -BeeKeeperStatus)
 
 Shinydf <- merge.data.frame(FullApiaryDat,histDat, by = "LocationID", all.y = TRUE)
 
@@ -654,8 +654,8 @@ return(x)
 
 SubSetMap <- function(data = data, 
                       rad = 100, 
-                      lat = -73, 
-                      long = 42,
+                      lat = 42, 
+                      long = -72,
                       matrix = x){
 
 library(geosphere)
@@ -685,33 +685,30 @@ return(list(queryDF, rad, lat, long))
 ###########################################################
 ##########Adding Points to a map###########################
 ###########################################################
-dat <- as.data.frame(dat)
-library(leaflet)
 
-func(lat = SSdat[[3]], long = SSdat[[4]], rad = SSdat[[2]] )
-
+Mapfunc <- function(data=data, rad, lat, long) {
+  library(leaflet)
+  
+  content <- paste("Account Name:", data$AccountName, "<br/>", 
+                   "BeekeeperID:", data$BeekeeperID, "<br/>",
+                   "Status:", data$BeeKeeperStatus, "<br/>",
+                   "# Colonies:", data$ColonyCount, "<br/>",
+                   "Annual Loss:", data$PerTotLoss*100, "%","<br/>",
+                   "Beekeeper Type:", data$Beektype)
 m <- leaflet() %>%
   addProviderTiles(providers$Esri.WorldImagery, group="background 1") %>%  # Add default OpenStreetMap map tiles
-  addMarkers(lng=-73.188260 , lat=44.438789,
-             popup="Out Break")
-
-m %>% setView(-73.188260, 44.438789, zoom = 8)
-m %>% addCircles(dat$Longtitude,dat$Latitude, popup=dat$BeekeeperID, weight = 3, radius=40, 
+  addMarkers(lng=long , lat=lat,
+             popup="Outbreak") %>% setView(long, lat, zoom = 8) %>% addCircles(data$Longtitude,data$Latitude, popup=content, weight = 3, radius=40, 
                  color="#ffa500", stroke = TRUE, fillOpacity = 0.8) 
 
-
-
+return(m)
+}
 ############################################################
 ############ PROGRAM BODY ##################################
 ############################################################
 
-LLmat <- LatLongMat(data = histDat)
+LLmat <- LatLongMat(data = Shinydf)
 
-SSdat <- SubSetMap(data = histDat, rad = 20, lat = -72.746286, long = 44.278876, matrix = LLmat)
+SSdat <- SubSetMap(data = Shinydf, rad = 5, lat = -72.746286, long = 44.278876, matrix = LLmat)
 
-dat <-print(SSdat[[1]])
-
-rad <- SSdat[[2]]
-
-
-
+Mapfunc(data=SSdat[[1]], rad= SSdat[[2]], lat = SSdat[[4]], long= SSdat[[3]])
