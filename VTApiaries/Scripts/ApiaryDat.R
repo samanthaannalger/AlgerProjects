@@ -682,9 +682,16 @@ return(list(queryDF, rad, lat, long))
 # END OF FUNCTION
 ####################################################################
 
-###########################################################
-##########Adding Points to a map###########################
-###########################################################
+####################################################################
+# function name: Mapfunc
+# description:plots all apiaries from subsetted list within a certain mile radious from a given point, provides drop down information for apiaries when point is clicked radius
+# parameters: 
+# data = data frame that includes "Latitude" and "Longitude"
+# rad = radius to query (numeric (miles))
+# lat = center point latitude
+# long = center point longtitude
+# returns: a map with center point marked and all apiaries surrounding that point. interactive.
+####################################################################
 
 Mapfunc <- function(data=data, rad, lat, long) {
   library(leaflet)
@@ -694,7 +701,8 @@ Mapfunc <- function(data=data, rad, lat, long) {
                    "Status:", data$BeeKeeperStatus, "<br/>",
                    "# Colonies:", data$ColonyCount, "<br/>",
                    "Annual Loss:", data$PerTotLoss*100, "%","<br/>",
-                   "Beekeeper Type:", data$Beektype)
+                   "Beekeeper Type:", data$Beektype, "<br/>",
+                   "Last Inspection Date:", data$LastInspectionDate)
 m <- leaflet() %>%
   addProviderTiles(providers$Esri.WorldImagery, group="background 1") %>%  # Add default OpenStreetMap map tiles
   addMarkers(lng=long , lat=lat,
@@ -703,12 +711,80 @@ m <- leaflet() %>%
 
 return(m)
 }
+#####################################################################
+# END OF FUNCTION
+####################################################################
+
+
 ############################################################
 ############ PROGRAM BODY ##################################
 ############################################################
 
 LLmat <- LatLongMat(data = Shinydf)
 
-SSdat <- SubSetMap(data = Shinydf, rad = 5, lat = -72.746286, long = 44.278876, matrix = LLmat)
+SSdat <- SubSetMap(data = Shinydf, rad = 20, lat = -72.746286, long = 44.278876, matrix = LLmat)
 
 Mapfunc(data=SSdat[[1]], rad= SSdat[[2]], lat = SSdat[[4]], long= SSdat[[3]])
+
+
+
+
+
+
+
+
+
+
+# SHINY CODE:
+
+
+
+# Define server logic required to draw a histogram
+server <- function(input, output) {
+  
+  output$map <- renderLeaflet({
+    SSdat <- SubSetMap(data = Shinydf, rad = 20, lat = -72.746286, long = 44.278876, matrix = LLmat)
+    
+    Mapfunc(data=SSdat[[1]], rad= SSdat[[2]], lat = SSdat[[4]], long= SSdat[[3]]) 
+  })
+}
+
+# Define UI for application that draws a histogram
+ui <- fluidPage(
+  
+  # Application title
+  titlePanel("Apiary Locator"),
+  
+  # Sidebar with a slider input for distance to central point 
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput("distance",
+                  "Radius (Miles):",
+                  min = 1,
+                  max = 4000,
+                  value = 30)
+    ),
+    
+    # Show a map plot
+    mainPanel(
+      plotOutput("map")
+    )
+    
+    
+    
+    
+    #br(),
+    #leafletOutput("map", height="600px"),
+    #absolutePanel(top=20, left=70, textInput("target_zone", "" , "Ex: Burlington, Vermont")),
+    #br()
+    #)
+  )
+)
+
+
+
+# Run the application 
+shinyApp(ui = ui, server = server)
+
+
+
