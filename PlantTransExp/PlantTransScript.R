@@ -12,6 +12,8 @@ setwd("~/AlgerProjects/PlantTransExp/CSV_Files")
 # read in data:
 plantTrans <- read.csv("plantTransPlantsDF.csv", header=TRUE, sep = ",", stringsAsFactors=FALSE) 
 
+virusLoad <- read.csv("datTransPos.csv", header=TRUE, sep = ",", stringsAsFactors=FALSE) 
+
 # read in data, (skip over meta data in csv file: skip = 9) :
 VideoData <- read.csv("PlantTransVideoData.csv", header=TRUE, sep = ",", stringsAsFactors=FALSE, skip = 9)
 
@@ -25,6 +27,8 @@ VideoDataMerge <- merge(VideoData, VirusDetect, by=c("expID"), all.x=TRUE, all.y
 library(plyr)
 library(dplyr)
 library(ggplot2)
+library(lme4)
+library(car)
 
 # recode DF groups as control, treatment, pre-experiment
 
@@ -34,15 +38,27 @@ plantTrans$group[plantTrans$group == "PRE"] <- "Pre Experiment"
 
 # P12 is negative for DWV- bad meltcurve--- I manually deleted that row from the dataframe***
 
-# Create a table for visitation data
-Visits <- table(VideoDataMerge$expID)
-expID <- as.vector(names(Visits))
-visits <- as.vector(Visits)
 
-VidDat <- data.frame(expID, visits)
+# Create table for forage time data
+VidDat <- ddply(VideoDataMerge, c("expID"), summarise, 
+                       visits = length(expID),
+                       foragetime = sum(Forage, na.rm=TRUE))
+
 
 #merge new visitation data with the virus DF:
-plantTrans <- merge(VidDat,plantTrans,by=c("expID"),all.y=TRUE) 
+plantTrans <- merge(VidDat,plantTrans,by=c("expID"),all.y=TRUE)
+
+# select columns from virus load DF and Merge with plantTrans DF:
+virusLoad <- dplyr::select(virusLoad, labID, target_name, genomeCopy)
+
+plantTrans <-merge(plantTrans, virusLoad, by=c("labID","target_name"), all.x=TRUE)
+
+# Make all genome copyies 0 if Binyprefilter is 0, This is because the virus load data clean up did not take into account the duplicate/triplicate discrepancies...
+plantTrans$genomeCopy <- ifelse(plantTrans$BINYprefilter == 0,0, plantTrans$genomeCopy)
+
+# Add new column for 'experiment' type so that all 'comingle (1-3)' experiments are coded as 'comingle'
+
+plantTrans$experiment <- ifelse(plantTrans$exp == "chronic-1"|plantTrans$exp =="chronic-2"| plantTrans$exp == "chronic-3", "chronic", plantTrans$exp)
 
 # Plant Trans Exp_____________________
 # using ddply to summarize data for treatment groups: 
@@ -79,7 +95,7 @@ plot1 <- ggplot(PlantVirusSum, aes(x=group, y=mean, fill=target_name)) +
 #coord_cartesian= set axis limits in this case, 0-1 because prevalence
 #scale y continuous..= labels as percent
 
-plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Virus", labels=c("BQCV", "DWV")) + theme(legend.position=c(.8, .85)) + coord_cartesian(ylim = c(0, 0.3)) + scale_y_continuous(labels = scales::percent)
+plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Virus", labels=c("BQCV", "DWV")) + theme(legend.position=c(.8, .9)) + coord_cartesian(ylim = c(0, 0.3)) + scale_y_continuous(labels = scales::percent)
 
 #Creating figure for presentation Eagle Hill
 
@@ -128,31 +144,140 @@ plot1 <- ggplot(plantSpp, aes(x=target_name, y=mean, fill=spp)) +
 
 plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Plant Species:", labels=c("Birdsfoot Trefoil", "Red Clover", "White Clover")) + theme(legend.position=c(.8, .85)) + coord_cartesian(ylim = c(0, 1)) + scale_y_continuous(labels = scales::percent)
 
-
+############################################
 #Full Model:
-#remove NAs:
-#ModDat <- plantTreat[complete.cases(plantTreat), ]
 ModDat <- plantTreat
 
-#ModDatSplit <- split(ModDat, ModDat$target_name)
-
-
-#Fullmod3 <- glmer(data=ModDat, BINYprefilter~ spp * target_name * visits + (1|exp), REML = TRUE, family = binomial(link="logit"))
-
-#summary(Fullmod3)
-#Anova(Fullmod3)
-
-
-
-
-
 ##### MODEL WORKS!!!! and is legal!!!!
-Fullmod3 <- glm(data=ModDat, BINYprefilter ~ target_name * spp + visits, family = binomial(link="logit"))
+Fullmod3 <- glm(data=ModDat, BINYprefilter ~ spp * (target_name + experiment), family = binomial(link="logit"))
+
 anova(Fullmod3, test="Chisq")
+Fullmod3
+
+# Testing vistis and forage times across plant species:
+# remove duplicates:
+
+visitation <- ModDat[c("spp", "visits", "foragetime", "experiment")]
+visitation <- visitation[!duplicated(visitation),]
+#visitation <- visitation[!is.na(visitation$visits), ]
+
+hist(visitation$visits)
+hist(visitation$foragetime)
+
+
+# # visits by plant species:
+kruskal.test(visitation$visits, as.factor(visitation$spp))
+# p = 0.058
+
+# total forage time by plant species:
+kruskal.test(visitation$foragetime, as.factor(visitation$spp))
+# p = 0.1225
+
+wilcox.test(ModDat$foragetime,ModDat$BINYprefilter) 
+wilcox.test(ModDat$visits, ModDat$BINYprefilter) 
+
+head(ModDat)
+summary(Fullmod4)
+
+barplot(ModDat$foragetime, ModDat$BINYprefilter)
+
+fig1 <- ddply(ModDat, c("BINYprefilter"), summarise, 
+                  n = length(BINYprefilter),
+                  mean = mean(foragetime, na.rm=TRUE),
+              sd = sd(foragetime, na.rm=TRUE),
+              se = sd / sqrt(n))
+
+
+fig1 <- ggplot(fig1, aes(x=BINYprefilter, y=mean)) + 
+  geom_bar(stat="identity", color="black",
+           position=position_dodge()) + labs(x="virus (yes no)", y = "sum Forage time")
+
+fig1
+# VIRUS LOAD
+# Remove zeros
+Loadno0 <- ModDat[!ModDat$BINYprefilter==0,]
+
+#Checking distribution:
+hist(Loadno0$genomeCopy, breaks = 12)
+
+Loadno0$loggenomeCopy <- log(Loadno0$genomeCopy)
+
+hist(Loadno0$loggenomeCopy,breaks=12)
+
+noBFT<- Loadno0 [! (Loadno0$spp =="BFT"), ]
+
+# We used an ANOVAs:
+#Loadno0$visits <- as.factor(Loadno0$visits)
+#Loadno0$foragetime <- as.factor(Loadno0$foragetime)
+Loadno0$spp <- as.factor(Loadno0$spp)
+
+# VL of the two viruses:
+Fullmod4 <- lm(data=Loadno0, loggenomeCopy ~ spp * target_name)
+anova(Fullmod4)
+TukeyHSD(Fullmod4)
+
+library("multcomp")
+summary(glht(Fullmod4, mcp(spp="Tukey")))
+
+
+str(Loadno0)
+# effect of species: spp: p = 0.01266
+
+max(Loadno0$genomeCopy)
+# 554278.8
+
+min(Loadno0$genomeCopy)
+# 104.6
+
+plot(Loadno0$spp~Loadno0$loggenomeCopy)
+###############################################
+# VIRUS LOAD FIGURE
+VirusLoadFig <- ddply(Loadno0, c("target_name", "spp"), summarise, 
+                  n = length(spp),
+                  mean = mean(loggenomeCopy, na.rm=TRUE),
+                  sd = sd(loggenomeCopy, na.rm=TRUE),
+                  se = sd / sqrt(n))
+
+
+# Virus load by plant species:
+#target_name spp n       mean         sd         se
+#1        BQCV BFT 3 255464.421 273413.507 157855.362
+#2        BQCV  RC 3  75034.743  47963.947  27691.998
+#3        BQCV  WC 1   1481.667         NA         NA
+#4         DWV  RC 4  63154.050  65900.381  32950.190
+#5         DWV  WC 4   2642.083   4970.145   2485.073
+
+#plantSpp$spp[plantSpp$spp == "RC"] <- "Red Clover"
+#plantSpp$spp[plantSpp$spp == "BFT"] <- "BirdsFoot Trefoil"
+#plantSpp$spp[plantSpp$spp == "WC"] <- "White Clover"
+
+
+#choosing color pallet
+colors <- c("goldenrod", "violetred4", "snow1")
+
+#Create a bar graph for viruses by plant species (aes= aesthetics):
+plot1 <- ggplot(VirusLoadFig, aes(x=target_name, y=mean, fill=spp)) + 
+  geom_bar(stat="identity", color="black",
+           position=position_dodge()) + labs(x="Virus", y = "% of Flowers with Virus Detected")
+
+plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Plant Species:", labels=c("Birdsfoot Trefoil", "Red Clover", "White Clover")) + theme(legend.position=c(.8, .85)) + coord_cartesian(ylim = c(0, 15)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.5))
 
 
 
-?convergence
+plot(Loadno0$genomeCopy~Loadno0$foragetime)
+
+
+# Figure of the log virus genome copies 
+LoadPlot <- ggplot(Loadno0, aes(x=target_name, y=loggenomeCopy, fill=spp)) +
+  labs(x=NULL, y = "Log(virus load)")+
+  theme_classic() +  
+  geom_boxplot(outlier.colour="black", outlier.shape=16,
+               outlier.size=2, notch=FALSE) + geom_dotplot(binaxis='y', stackdir = 'center', dotsize = 0.5, position = position_dodge()) + scale_fill_manual(values=colors, name="Plant Species:", labels=c("L. corniculatus", "T. pretense", "T. repens"))
+
+LoadPlot
+
+
+
 #stats for % prevalence, species differences
 statsplit <- split(plantTreat, plantTreat$target_name)
 
@@ -354,3 +479,4 @@ plantTransDiv <- ddply(plantAcute, c("target_name", "spp", "exp"), summarise,
                        sd = sd(BINYprefilter, na.rm=TRUE),
                        se = sd / sqrt(n))
 plantTransDiv$mean
+
