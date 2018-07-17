@@ -22,3 +22,4 @@ leaflet() %>%
   
   # Add the control widget
   addLayersControl(overlayGroups = c("Red","Blue") , baseGroups = c("background 1","background 2"), options = layersControlOptions(collapsed = FALSE))
+

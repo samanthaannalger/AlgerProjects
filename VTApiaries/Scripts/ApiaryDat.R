@@ -773,11 +773,11 @@ ui <- fluidPage(
     
     
     
-    #br(),
-    #leafletOutput("map", height="600px"),
-    #absolutePanel(top=20, left=70, textInput("target_zone", "" , "Ex: Burlington, Vermont")),
-    #br()
-    #)
+    br(),
+    leafletOutput("map", height="600px"),
+    absolutePanel(top=20, left=70, textInput("target_zone", "" , "Ex: Burlington, Vermont")),
+    br()
+    )
   )
 )
 

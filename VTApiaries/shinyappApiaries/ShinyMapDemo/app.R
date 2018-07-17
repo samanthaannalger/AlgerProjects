@@ -150,7 +150,7 @@ Mapfunc <- function(data=data, rad, lat, long) {
 # Pre-Data Cleaning:
 
 LLmat <- LatLongMat(data = Shinydf)
-SSdat <- SubSetMap(data = Shinydf, rad = 20, lat = -72.746286, long = 44.278876, matrix = LLmat)
+#SSdat <- SubSetMap(data = Shinydf, rad = 20, lat = -72.746286, long = 44.278876, matrix = LLmat)
 
 
 #####################################################################
@@ -159,11 +159,45 @@ SSdat <- SubSetMap(data = Shinydf, rad = 20, lat = -72.746286, long = 44.278876,
 
 
 ui <- fluidPage(
-  leafletOutput("mymap"))
+  
+  # Application title
+  titlePanel("Apiary Locator"),
+  
+  # Sidebar with a slider input for distance to central point 
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput("distance",
+                  "Radius (Miles):",
+                  min = 1,
+                  max = 40,
+                  value = 30) 
+      ),
+    
+  mainPanel(
+    leafletOutput("mymap", height="350px"),
+    absolutePanel(top=20, left=70, textInput("target_zone", "" , "Ex: Burlington, Vermont"))
+            )
+        )
+)
 
 server <- function(input, output) {
   
 output$mymap<- renderLeaflet({
+  rad <- input$distance
+    # Get latitude and longitude
+    if(input$target_zone=="Ex: Burlington"){
+      ZOOM=2
+      LAT=0
+      LONG=0
+    }else{
+      target_pos=geocode(input$target_zone)
+      LAT=target_pos$lat
+      LONG=target_pos$lon
+      ZOOM=12
+    }
+  
+  SSdat <- SubSetMap(data = Shinydf, rad = rad, lat = -72.746286, long = 44.278876, matrix = LLmat)
+  
   Mapfunc(data=SSdat[[1]], rad= SSdat[[2]], lat = SSdat[[4]], long= SSdat[[3]]) 
 })
 }
