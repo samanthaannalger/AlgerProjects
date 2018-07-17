@@ -20,6 +20,9 @@ FullApiaryDat <- read.csv("VTApiaries.csv",
 
 library(shiny)
 library(leaflet)
+library(data.table)
+library(geosphere)
+library(ggmap)
 ##############################################################
 # SUBSET Spacial data by lat long Euclidean Distance for mapping purposes:
 
@@ -87,7 +90,6 @@ SubSetMap <- function(data = data,
                       long = -72,
                       matrix = x){
   
-  library(geosphere)
   # use the sp package to determine Euc. Dist between points in matrix "y" and central point "x"
   m <- distm(x = c(lat, long), y = matrix, fun = distHaversine)
   m <- as.vector(m)
@@ -124,7 +126,6 @@ SubSetMap <- function(data = data,
 ####################################################################
 
 Mapfunc <- function(data=data, rad, lat, long) {
-  library(leaflet)
   
   content <- paste("Account Name:", data$AccountName, "<br/>", 
                    "BeekeeperID:", data$BeekeeperID, "<br/>",
