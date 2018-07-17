@@ -188,16 +188,16 @@ output$mymap<- renderLeaflet({
     # Get latitude and longitude
     if(input$target_zone=="Ex: Burlington"){
       ZOOM=2
-      LAT=0
-      LONG=0
+      lat=0
+      long=0
     }else{
       target_pos=geocode(input$target_zone)
-      LAT=target_pos$lat
-      LONG=target_pos$lon
+      lat=target_pos$lat
+      long=target_pos$lon
       ZOOM=12
     }
   
-  SSdat <- SubSetMap(data = Shinydf, rad = rad, lat = -72.746286, long = 44.278876, matrix = LLmat)
+  SSdat <- SubSetMap(data = Shinydf, rad = rad, lat = long ,long =, lat, matrix = LLmat)
   
   Mapfunc(data=SSdat[[1]], rad= SSdat[[2]], lat = SSdat[[4]], long= SSdat[[3]]) 
 })
