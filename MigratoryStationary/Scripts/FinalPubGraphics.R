@@ -178,7 +178,7 @@ BQCVload2 <- ggplot(data = VirusSum8,
                         y = mean, 
                         col = Treatment,
                         linetype= Treatment)
-) + geom_point(size=8) + scale_colour_manual(values = c("darkgrey","black", "black")) + scale_linetype_manual(values = c(1, 1, 2)) + labs(x = NULL, y = "BQCV log(genome copies/bee)") + coord_cartesian(ylim = c(3, 12), xlim = c(1,2,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05), linetype=1, show.legend=FALSE) + geom_line(size=3) + theme_classic(base_size = 30) + theme(legend.position=c(.2, .85), legend.key.width=unit(10,"line"), legend.key.height = unit(3, "line")) + scale_x_continuous(breaks=c(1,2,3))
+) + geom_point(size=8) + scale_colour_manual(values = c("darkgrey","black", "black")) + scale_linetype_manual(values = c(1, 1, 2)) + labs(x = NULL, y = "BQCV log(genome copies/bee)") + coord_cartesian(ylim = c(3, 12), xlim = c(1,2,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05), linetype=1, show.legend=FALSE) + geom_line(size=3) + theme_classic(base_size = 30) + theme(legend.position=c(.3, .85), legend.key.width=unit(10,"line"), legend.key.height = unit(3, "line")) + scale_x_continuous(breaks=c(1,2,3))
 BQCVload2
 
 # Varroa LOAD
