@@ -115,7 +115,6 @@ DWVMod <- lmer(logDWV~Treatment + (1|colony), data=ImidDWV)
 summary(DWVMod)
 Anova(DWVMod)
 
-library("multcomp")
 summary(glht(DWVMod, mcp(Treatment="Tukey")))
 
 
@@ -172,11 +171,9 @@ plot
 ConsumpDF$TimeStep <- as.factor(ConsumpDF$TimeStep)
 ConsumpDF$Treatment <- as.factor(ConsumpDF$Treatment)
 
-mod <- glm(data=ConsumpDF, Consumption_mL~Treatment*TimeStep, family=Gamma)
+mod <- glmer(data=ConsumpDF, Consumption_mL~Treatment*TimeStep + (1|Colony/sample_name), family=Gamma)
+Anova(mod)
 
-summary(mod)
-
-library("multcomp")
 summary(glht(mod, mcp(Treatment="Tukey")))
 
 # Results:
@@ -238,11 +235,12 @@ summary(mod3)
 TukeyHSD(mod3)
 
 # Mixed model for Imid Consumption, colony as a random effect:
-ConsumpFull <- glmer(ImidConsumpTotal~Treatment + (1|Colony), data=ConsumpDF, family = Gamma)
+ConsumpFull <- glm(ImidConsumpTotal~Treatment + Colony, data=ConsumpDF, family=Gamma(link="log"))
+Anova(ConsumpFull)
 
-Mod <- glm(ImidConsumpTotal~Treatment, data=ConsumpDF, family = Gamma)
+summary(glht(ConsumpFull, mcp(Treatment="Tukey")))
 
-summary(Mod)
+
 ########################################################
 #SURVIVAL ANALYSIS
 ########################################################
