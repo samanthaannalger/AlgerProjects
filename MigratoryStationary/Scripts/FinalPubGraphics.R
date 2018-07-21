@@ -19,6 +19,9 @@ MigStat <- read.table("Data/MigStatClean.csv",
                       sep = ",", 
                       stringsAsFactors = FALSE) 
 
+# create log base 10
+MigStat$log10BQCV <- log10(MigStat$BQCVload+1)
+MigStat$log10DWV <- log10(MigStat$DWVload + 1)
 
 MigStat$Treatment <- ifelse(MigStat$Treatment=="Stationary","Stationary\n(Isolated)", ifelse(MigStat$Treatment=="Migratory", "Migratory", "Exposed"))
 
@@ -48,9 +51,9 @@ MigStatExp_1<-MigStat[!(MigStat$Treatment=="Exposed"),]
 
 # Summary of DWV prev. for experiment 1
 VirusSum2 <- ddply(MigStat, c("Treatment", "SamplingEvent"), summarise, 
-                   n = length(logDWV),
-                   mean = mean(logDWV, na.rm=TRUE),
-                   sd = sd(logDWV, na.rm = TRUE),
+                   n = length(log10DWV),
+                   mean = mean(log10DWV, na.rm=TRUE),
+                   sd = sd(log10DWV, na.rm = TRUE),
                    se = sd / sqrt(n))
 
 # plotting DWV prev. for experiment 1
@@ -58,7 +61,7 @@ DWVload1 <- ggplot(data = VirusSum2,
                    aes(x = SamplingEvent, 
                        y = mean, 
                        group = Treatment)
-) + geom_point(size=4) + labs(x = NULL, y = "DWV log(genome copies/bee)") + coord_cartesian(ylim = c(0, 15), xlim = c(1,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05)) + geom_line(aes(linetype=Treatment), size=1.5) + scale_fill_brewer(palette = "Paired") + theme_classic(base_size = 17) + theme(legend.position = "none") + labs(linetype="Operation Type:") + scale_x_continuous(breaks=c(1,2,3))
+) + geom_point(size=4) + labs(x = NULL, y = "DWV log(genome copies/bee)") + coord_cartesian(ylim = c(0, 8), xlim = c(1,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05)) + geom_line(aes(linetype=Treatment), size=1.5) + scale_fill_brewer(palette = "Paired") + theme_classic(base_size = 17) + theme(legend.position = "none") + labs(linetype="Operation Type:") + scale_x_continuous(breaks=c(1,2,3))
 DWVload1
 
 
@@ -72,9 +75,9 @@ DWVload1
 
 # Summary of BQCV load. for experiment 1
 VirusSum1 <- ddply(MigStatExp_1, c("Treatment", "SamplingEvent"), summarise, 
-                   n = length(logBQCV),
-                   mean = mean(logBQCV, na.rm=TRUE),
-                   sd = sd(logBQCV, na.rm = TRUE),
+                   n = length(log10BQCV),
+                   mean = mean(log10BQCV, na.rm=TRUE),
+                   sd = sd(log10BQCV, na.rm = TRUE),
                    se = sd / sqrt(n))
 
 # plotting BQCV prev. for experiment 1
@@ -82,7 +85,7 @@ BQCVload1 <- ggplot(data = VirusSum1,
                     aes(x = SamplingEvent, 
                         y = mean, 
                         group = Treatment)
-) + geom_point(size=4) + labs(x = NULL, y = "BQCV log(genome copies/bee)") + coord_cartesian(ylim = c(10, 25), xlim = c(1,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05)) + geom_line(aes(linetype=Treatment), size=1.5) + scale_fill_brewer(palette = "Paired") + theme_classic(base_size = 17) + theme(legend.position=c(.3, .85),legend.key.width=unit(5,"line")) + labs(linetype="Operation Type:") + scale_x_continuous(breaks=c(1,2,3))
+) + geom_point(size=4) + labs(x = NULL, y = "BQCV log(genome copies/bee)") + coord_cartesian(ylim = c(3, 12), xlim = c(1,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05)) + geom_line(aes(linetype=Treatment), size=1.5) + scale_fill_brewer(palette = "Paired") + theme_classic(base_size = 17) + theme(legend.position=c(.3, .85),legend.key.width=unit(5,"line")) + labs(linetype="Operation Type:") + scale_x_continuous(breaks=c(1,2,3))
 BQCVload1
 
 
@@ -144,9 +147,9 @@ FOB1
 
 # Summary of DWV VL for experiment 2
 VirusSum6 <- ddply(MigStat, c("Treatment", "SamplingEvent"), summarise, 
-                   n = length(logDWV),
-                   mean = mean(logDWV, na.rm=TRUE),
-                   sd = sd(logDWV, na.rm = TRUE),
+                   n = length(log10DWV),
+                   mean = mean(log10DWV, na.rm=TRUE),
+                   sd = sd(log10DWV, na.rm = TRUE),
                    se = sd / sqrt(n))
 
 # plotting DWV VL for experiment 2
@@ -155,7 +158,7 @@ DWVload2 <- ggplot(data = VirusSum6,
                        y = mean, 
                        col = Treatment,
                        linetype= Treatment)
-) + geom_point(size=8) + scale_colour_manual(values = c("darkgrey","black", "black")) + scale_linetype_manual(values = c(1, 1, 2)) + labs(x = NULL, y = "DWV log(genome copies/bee)") + coord_cartesian(ylim = c(0, 17), xlim = c(1,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05), linetype=1, show.legend=FALSE) + geom_line(size=3) + theme_classic(base_size = 30) + theme(legend.position="none")+ scale_x_continuous(breaks=c(1,2,3)) 
+) + geom_point(size=8) + scale_colour_manual(values = c("darkgrey","black", "black")) + scale_linetype_manual(values = c(1, 1, 2)) + labs(x = NULL, y = "DWV log(genome copies/bee)") + coord_cartesian(ylim = c(0, 8), xlim = c(1,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05), linetype=1, show.legend=FALSE) + geom_line(size=3) + theme_classic(base_size = 30) + theme(legend.position="none")+ scale_x_continuous(breaks=c(1,2,3)) 
 DWVload2
 
 
@@ -164,9 +167,9 @@ DWVload2
 
 # Summary of BQCV VL for experiment 2
 VirusSum8 <- ddply(MigStat, c("Treatment", "SamplingEvent"), summarise, 
-                   n = length(logBQCV),
-                   mean = mean(logBQCV, na.rm=TRUE),
-                   sd = sd(logBQCV, na.rm = TRUE),
+                   n = length(log10BQCV),
+                   mean = mean(log10BQCV, na.rm=TRUE),
+                   sd = sd(log10BQCV, na.rm = TRUE),
                    se = sd / sqrt(n))
 
 # plotting BQCV VL for experiment 2
@@ -175,7 +178,7 @@ BQCVload2 <- ggplot(data = VirusSum8,
                         y = mean, 
                         col = Treatment,
                         linetype= Treatment)
-) + geom_point(size=8) + scale_colour_manual(values = c("darkgrey","black", "black")) + scale_linetype_manual(values = c(1, 1, 2)) + labs(x = NULL, y = "BQCV log(genome copies/bee)") + coord_cartesian(ylim = c(10, 25), xlim = c(1,2,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05), linetype=1, show.legend=FALSE) + geom_line(size=3) + theme_classic(base_size = 30) + theme(legend.position=c(.2, .85), legend.key.width=unit(10,"line"), legend.key.height = unit(3, "line")) + scale_x_continuous(breaks=c(1,2,3))
+) + geom_point(size=8) + scale_colour_manual(values = c("darkgrey","black", "black")) + scale_linetype_manual(values = c(1, 1, 2)) + labs(x = NULL, y = "BQCV log(genome copies/bee)") + coord_cartesian(ylim = c(3, 12), xlim = c(1,2,3)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05), linetype=1, show.legend=FALSE) + geom_line(size=3) + theme_classic(base_size = 30) + theme(legend.position=c(.2, .85), legend.key.width=unit(10,"line"), legend.key.height = unit(3, "line")) + scale_x_continuous(breaks=c(1,2,3))
 BQCVload2
 
 # Varroa LOAD
