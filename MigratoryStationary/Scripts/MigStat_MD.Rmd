@@ -89,7 +89,7 @@ chisq.test(x)
 
 ```{r, echo=FALSE}
 # DWV prevalence using glmer
-Fullmod <- glmer(data=MigStatExp_1, formula = DWVbinary~Treatment * SamplingEvent + (1|ID), family = binomial(link = "logit"))
+Fullmod <- glmer(data=MigStatExp_1, formula = DWVbinary~Treatment * SamplingEvent + (1|ID) + (1|Yard), family = binomial(link = "logit"))
 Anova(Fullmod)
 
 
@@ -140,7 +140,7 @@ summary(x)
 
 
 
-nbDWV <- lmer(data=MigStatExp_1, formula = logDWV~Treatment * SamplingEvent + (1|ID))
+nbDWV <- lmer(data=MigStatExp_1, formula = logDWV~Treatment * SamplingEvent + (1|ID)+ (1|Yard))
 Anova(nbDWV)
 
 
@@ -259,7 +259,7 @@ summary(x)
 #summary(aov.BQCV)
 
 
-nbBQCV <- lmer(data=MigStatExp_1, formula = logBQCV~Treatment * SamplingEvent + (1|ID))
+nbBQCV <- lmer(data=MigStatExp_1, formula = logBQCV~Treatment * SamplingEvent + (1|ID)+ (1|Yard))
 Anova(nbBQCV)
 
 ```
@@ -322,7 +322,7 @@ chisq.test(x)
 ```{r, echo=FALSE}
 
 #Varroa prevalence using glmer
-Fullmod2 <- glmer(data=MigStatExp_1, formula = VarroaBinary~Treatment * SamplingEvent + (1|ID), family = binomial(link = "logit"))
+Fullmod2 <- glmer(data=MigStatExp_1, formula = VarroaBinary~Treatment * SamplingEvent + (1|ID)+ (1|Yard), family = binomial(link = "logit"))
 Anova(Fullmod2)
 ```
 
@@ -371,7 +371,7 @@ summary(x)
 #summary(aov.Var)
 
 
-nbVAR <- lmer(data=MigStatExp_1, formula = Varroa~Treatment * SamplingEvent + (1|ID))
+nbVAR <- lmer(data=MigStatExp_1, formula = Varroa~Treatment * SamplingEvent + (1|ID)+ (1|Yard))
 Anova(nbVAR)
 ```
 
@@ -428,7 +428,7 @@ chisq.test(x)
 ```{r, echo=FALSE}
 
 #Varroa prevalence using glmer
-Fullmod2 <- glmer(data=MigStatExp_1, formula = NosemaBinary~Treatment * SamplingEvent + (1|ID), family = binomial(link = "logit"))
+Fullmod2 <- glmer(data=MigStatExp_1, formula = NosemaBinary~Treatment * SamplingEvent + (1|ID)+ (1|Yard), family = binomial(link = "logit"))
 Anova(Fullmod2)
 ```
 
@@ -478,7 +478,7 @@ summary(x)
 
 
 
-nbNos <- lmer(data=MigStatExp_1, formula = NosemaLoadRecount~Treatment * SamplingEvent + (1|ID))
+nbNos <- lmer(data=MigStatExp_1, formula = NosemaLoadRecount~Treatment * SamplingEvent + (1|ID)+ (1|Yard))
 Anova(nbNos)
 ```
 
@@ -549,7 +549,7 @@ chisq.test(x)
 #summary(aov.FOB)
 
 
-nbFOB <- lmer(data=MigStatExp_1, formula = FOB~Treatment * SamplingEvent + (1|ID))
+nbFOB <- lmer(data=MigStatExp_1, formula = FOB~Treatment * SamplingEvent + (1|ID)+ (1|Yard))
 Anova(nbFOB)
 
 ```
@@ -612,7 +612,7 @@ summary(x)
 #summary(aov.BroodPat)
 
 
-nbBP <- lmer(data=MigStatExp_1, formula = BroodPattern~Treatment * SamplingEvent + (1|ID))
+nbBP <- lmer(data=MigStatExp_1, formula = BroodPattern~Treatment * SamplingEvent + (1|ID)+ (1|Yard))
 Anova(nbBP)
 ```
 
@@ -700,7 +700,7 @@ chisq.test(x)
 
 ```{r, echo=FALSE}
 #DWV prevalence using glmer
-Fullmod3 <- glmer(data=MigStatExp_2_analysis, formula = DWVbinary~Treatment * SamplingEvent + (1|ID), family = binomial(link = "logit"))
+Fullmod3 <- glmer(data=MigStatExp_2_analysis, formula = DWVbinary~Treatment * SamplingEvent + (1|ID)+ (1|Yard), family = binomial(link = "logit"))
 Anova(Fullmod3)
 ```
 
@@ -751,7 +751,7 @@ summary(x)
 aov.DWV2 <- aov(logDWV~Treatment * SamplingEvent + Error(ID), data=MigStatExp_2_analysis)
 summary(aov.DWV2)
 
-Fullmod4 <- lmer(data=MigStatExp_2_analysis, formula = logDWV~Treatment * SamplingEvent + (1|ID))
+Fullmod4 <- lmer(data=MigStatExp_2_analysis, formula = logDWV~Treatment * SamplingEvent + (1|ID)+ (1|Yard))
 Anova(Fullmod4)
 ```
 
@@ -866,7 +866,7 @@ summary(x)
 
 
 
-Fullmod5 <- lmer(data=MigStatExp_2_analysis, formula = logBQCV~Treatment * SamplingEvent + (1|ID))
+Fullmod5 <- lmer(data=MigStatExp_2_analysis, formula = logBQCV~Treatment * SamplingEvent + (1|ID)+ (1|Yard))
 Anova(Fullmod5)
 ```
 
@@ -940,7 +940,7 @@ chisq.test(x)
 ```{r, echo=FALSE}
 #Varroa prevalence using glmer
 
-Fullmod10 <- glmer(data=MigStatExp_2_analysis, formula = VarroaBinary~Treatment * SamplingEvent + (1|ID), family = binomial(link = "logit"), nAGQ = 0)
+Fullmod10 <- glmer(data=MigStatExp_2_analysis, formula = VarroaBinary~Treatment * SamplingEvent + (1|ID)+ (1|Yard), family = binomial(link = "logit"), nAGQ = 0)
 Anova(Fullmod10)
 ```
 
@@ -992,7 +992,7 @@ summary(x)
 #summary(aov.Var2)
 
 
-Fullmod15 <- lmer(data=MigStatExp_2_analysis, formula = Varroa~Treatment * SamplingEvent + (1|ID))
+Fullmod15 <- lmer(data=MigStatExp_2_analysis, formula = Varroa~Treatment * SamplingEvent + (1|ID)+ (1|Yard))
 Anova(Fullmod15)
 
 ```
@@ -1064,7 +1064,7 @@ chisq.test(x)
 ```{r, echo=FALSE}
 #Varroa prevalence using glmer
 
-Fullmod11 <- glmer(data=MigStatExp_2_analysis, formula = NosemaBinary~Treatment * SamplingEvent + (1|ID), family = binomial(link = "logit"))
+Fullmod11 <- glmer(data=MigStatExp_2_analysis, formula = NosemaBinary~Treatment * SamplingEvent + (1|ID)+ (1|Yard), family = binomial(link = "logit"))
 Anova(Fullmod11)
 ```
 
@@ -1115,7 +1115,7 @@ summary(x)
 #summary(aov.Var2)
 
 
-Fullmod6 <- lmer(data=MigStatExp_2_analysis, formula = NosemaLoadRecount~Treatment * SamplingEvent + (1|ID))
+Fullmod6 <- lmer(data=MigStatExp_2_analysis, formula = NosemaLoadRecount~Treatment * SamplingEvent + (1|ID)+ (1|Yard))
 Anova(Fullmod6)
 ```
 
@@ -1184,7 +1184,7 @@ summary(x)
 #summary(aov.FOB2)
 
 
-Fullmod7 <- lmer(data=MigStatExp_2_analysis, formula = FOB~Treatment * SamplingEvent + (1|ID))
+Fullmod7 <- lmer(data=MigStatExp_2_analysis, formula = FOB~Treatment * SamplingEvent + (1|ID)+ (1|Yard))
 Anova(Fullmod7)
 ```
 
