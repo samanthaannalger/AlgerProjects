@@ -8,6 +8,7 @@
 # Clear memory of characters:
 rm(list=ls())
 
+setwd("~/AlgerProjects/VTApiaries/shinyappApiaries")
 RegData <- read.csv("RegActiveAndDelinquent.csv", 
                     header=TRUE, 
                     sep = ",", 
@@ -25,6 +26,7 @@ library(geosphere)
 library(ggmap)
 library(markdown)
 library(DT)
+library(expss)
 
 ##############################################################
 # SUBSET Spacial data by lat long Euclidean Distance for mapping purposes:
@@ -46,6 +48,8 @@ FullApiaryDat <- dplyr::select(FullApiaryDat, -AccountName, -BeeKeeperStatus)
 
 Shinydf <- merge.data.frame(FullApiaryDat,histDat, by = "LocationID", all.y = TRUE)
 
+# Select only columns we need:
+Shinydf<- dplyr::select(Shinydf, Latitude, Longtitude, LocationID, BeekeeperID, PaPlantsID, AccountName, City, BeePurchaseVendorName, MiteCounts,ColonyCount, PerTotLoss, BeeKeeperStatus, n, Beektype)
 ###########################################################
 # Begin Functions
 ###########################################################
@@ -150,6 +154,41 @@ Mapfunc <- function(data=data, rad, lat, long) {
 # END OF FUNCTION
 ####################################################################
 
+####################################################################
+# function name: sumtable
+# description: creates summary table for subsetted df of apiaries
+# parameters: 
+# data = subsetted dataframe to be used
+# returns: a formatted table
+####################################################################
+
+sumtable<- function(data=data) {
+  
+  dat$PerTotLoss2 <- dat$PerTotLoss*100
+  
+  dat = apply_labels(dat,
+                     ColonyCount = "Summary",
+                     PerTotLoss2 = "Annual Colony Loss",
+                     Beektype = "Beekeeper Type")
+  
+  
+  sumtable<- dat %>%
+    tab_cells(ColonyCount) %>%
+    tab_cols(Beektype, total()) %>%
+    tab_stat_sum("Colonies") %>%
+    tab_stat_valid_n("Apiaries") %>%
+    tab_cells(PerTotLoss2) %>%
+    tab_stat_mean("% Average") %>%
+    tab_pivot()
+  
+  return(sumtable)
+  
+}
+
+#####################################################################
+# END OF FUNCTION
+####################################################################
+
 
 # Pre-Data Cleaning:
 
@@ -162,66 +201,90 @@ LLmat <- LatLongMat(data = Shinydf)
 ####################################################################
 
 
+# User interface, creating tabs
 ui <- navbarPage("Apiary Locator",
            tabPanel("Map",
                     sidebarLayout(
                       sidebarPanel(
-                        sliderInput("distance",
+                        sliderInput("distance", # Slider bar for distance
                                     "Radius (Miles):",
                                     min = 1,
                                     max = 40,
-                                    value = 30) 
+                                    value = 30)
                       ),
                       
                       mainPanel(
-                        leafletOutput("mymap", height="350px"),
-                        absolutePanel(top=20, left=70, textInput("target_zone", "" , "Ex: Burlington, Vermont"))
+                        leafletOutput("mymap", # creating the main map output
+                                      height="300px"),
+                                absolutePanel(top=0, 
+                                      left=55, 
+                                      textInput("target_zone", 
+                                                "" ,
+                                                "Ex: Burlington, Vermont")),
+                #Create summary table
+                        h5("Summary Table"),
+                        DT::dataTableOutput("sum")
+                        )
                       )
-                    )
-           ),
+            ),
+           # creating an ouput for the table
            tabPanel("Table",
-                    verbatimTextOutput("summary")
+                    DT::dataTableOutput("table")
            ),
            navbarMenu("More",
-                      tabPanel("Table",
-                               DT::dataTableOutput("table")
+                      tabPanel("Summary",
+                               DT::dataTableOutput("summary")
                       ),
                       tabPanel("About",
                                fluidRow(
                                  column(6),
                                  column(3)
-                                        )
-                                 )
-                               )
-                      )
+         )
+      )
+   )
+)
 
+
+# Server code for Shiny App:
+#Starts with the code for mymap
 server <- function(input, output, session) {
-  output$mymap<- renderLeaflet({
-    rad <- input$distance
-    # Get latitude and longitude
-    if(input$target_zone=="Ex: Burlington"){
-      ZOOM=2
-      lat=0
-      long=0
-    }else{
-      target_pos=geocode(input$target_zone)
-      lat=target_pos$lat
-      long=target_pos$lon
-      ZOOM=12
-    }
-    
-    SSdat <- SubSetMap(data = Shinydf, rad = rad, lat = long ,long =, lat, matrix = LLmat)
-    
+                 output$mymap<- renderLeaflet({
+                  rad <- input$distance # Uses the slider bar input for the distance radius
+                   # Uses latitude and longitude entered into the bar
+                              if(input$target_zone=="Ex: Burlington"){
+                              ZOOM=2
+                              lat=0
+                              long=0
+                              }else{
+                              target_pos=geocode(input$target_zone)
+                              lat=target_pos$lat
+                              long=target_pos$lon
+                              ZOOM=12
+                        }
+    # Program body that uses the functions defined at the beginning of the strip
+    # Create a subsetted DF that uses the input radious, long, and lat
+    SSdat <<- SubSetMap(data = Shinydf, rad = rad, lat = long ,long =, lat, matrix = LLmat)
+    # create an output table of this dataframe (Full table on tab)
+    output$table <- DT::renderDataTable({
+      DT::datatable(SSdat[[1]])
+    })
+  #create summary table on main panel under map
+    x <- sumtable(SSdat[[1]])
+    output$sum <- DT::renderDataTable({
+    as.datatable_widget(sumtable(x))
+    })
+    # Map function that maps the new df subsetted above
     Mapfunc(data=SSdat[[1]], rad= SSdat[[2]], lat = SSdat[[4]], long= SSdat[[3]]) 
+    
+    
+    
   })
+  
   
   output$summary <- renderPrint({
     summary(cars)
   })
   
-  output$table <- DT::renderDataTable({
-    DT::datatable(cars)
-  })
 }
 
 shinyApp(ui, server)
