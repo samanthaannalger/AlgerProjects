@@ -1,0 +1,78 @@
+---
+title: "TableDemo"
+author: "Samantha A. Alger"
+date: "7/23/2018"
+output: html_document
+---
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+setwd("~/AlgerProjects/VTApiaries/shinyappApiaries")
+RegData <- read.csv("RegActiveAndDelinquent.csv", 
+                    header=TRUE, 
+                    sep = ",", 
+                    stringsAsFactors = FALSE)
+
+FullApiaryDat <- read.csv("VTApiaries.csv", 
+                          header=TRUE, 
+                          sep = ",", 
+                          stringsAsFactors = FALSE)
+
+library(shiny)
+library(leaflet)
+library(data.table)
+library(geosphere)
+library(ggmap)
+library(markdown)
+library(DT)
+
+##############################################################
+# SUBSET Spacial data by lat long Euclidean Distance for mapping purposes:
+
+# Data cleaning to make final df:
+histDat = data.table(RegData)
+histDat[, `n` := .N, by = BeekeeperID]
+#histDat <-  histDat[!duplicated(histDat$BeekeeperID),]
+
+histDat$Beektype <- ifelse(histDat$n == 1,"Hobbyist", ifelse(histDat$n <=5, "Sideliner", "Commercial"))
+
+####### 
+#Merging the two dataframes for shiny app:
+
+#select only columns we need:
+histDat <- dplyr::select(histDat, LocationID, Beektype, AccountName, BeeKeeperStatus, n)
+
+FullApiaryDat <- dplyr::select(FullApiaryDat, -AccountName, -BeeKeeperStatus)
+
+Shinydf <- merge.data.frame(FullApiaryDat,histDat, by = "LocationID", all.y = TRUE)
+
+# Select only columns we need:
+Shinydf<- dplyr::select(Shinydf, Latitude, Longtitude, LocationID, BeekeeperID, PaPlantsID, AccountName, City, BeePurchaseVendorName, MiteCounts,ColonyCount, PerTotLoss, BeeKeeperStatus, n, Beektype)
+
+dat<-Shinydf
+
+library(expss)
+
+dat$PerTotLoss2 <- dat$PerTotLoss*100
+
+sumtable<- function(data=data) {
+  
+dat = apply_labels(dat,
+                      ColonyCount = "Summary",
+                      PerTotLoss2 = "Annual Colony Loss",
+                      Beektype = "Beekeeper Type")
+
+
+sumtable<- dat %>%
+  tab_cells(ColonyCount) %>%
+  tab_cols(Beektype, total()) %>%
+  tab_stat_sum("Sum Colonies") %>%
+  tab_stat_valid_n("Sum Apiaries") %>%
+  tab_cells(PerTotLoss2) %>%
+  tab_stat_mean("% Average") %>%
+  tab_pivot()
+
+return(sumtable)
+
+}
+```
