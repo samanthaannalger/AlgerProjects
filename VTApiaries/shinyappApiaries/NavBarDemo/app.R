@@ -164,15 +164,15 @@ Mapfunc <- function(data=data, rad, lat, long) {
 
 sumtable<- function(data=data) {
   
-  dat$PerTotLoss2 <- dat$PerTotLoss*100
+  data$PerTotLoss2 <- data$PerTotLoss*100
   
-  dat = apply_labels(dat,
+  data = apply_labels(data,
                      ColonyCount = "Summary",
                      PerTotLoss2 = "Annual Colony Loss",
                      Beektype = "Beekeeper Type")
   
   
-  sumtable<- dat %>%
+  sumtable<- data %>%
     tab_cells(ColonyCount) %>%
     tab_cols(Beektype, total()) %>%
     tab_stat_sum("Colonies") %>%
@@ -229,7 +229,9 @@ ui <- navbarPage("Apiary Locator",
             ),
            # creating an ouput for the table
            tabPanel("Table",
-                    DT::dataTableOutput("table")
+                    DT::dataTableOutput("table"),
+                    # Button
+                    downloadButton("downloadData", "Download")
            ),
            navbarMenu("More",
                       tabPanel("Summary",
@@ -268,10 +270,19 @@ server <- function(input, output, session) {
     output$table <- DT::renderDataTable({
       DT::datatable(SSdat[[1]])
     })
+    # Downloadable csv of selected dataset ----
+    output$downloadData <- downloadHandler(
+      filename = function() {
+        paste("data", ".csv", sep = "")
+     },
+      content = function(file) {
+        write.csv(SSdat[[1]], file)
+      }
+    )
   #create summary table on main panel under map
-    x <- sumtable(SSdat[[1]])
+    #x <- sumtable(SSdat[[1]])
     output$sum <- DT::renderDataTable({
-    as.datatable_widget(sumtable(x))
+    as.datatable_widget(sumtable(SSdat[[1]]))
     })
     # Map function that maps the new df subsetted above
     Mapfunc(data=SSdat[[1]], rad= SSdat[[2]], lat = SSdat[[4]], long= SSdat[[3]]) 
