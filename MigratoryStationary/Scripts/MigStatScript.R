@@ -592,10 +592,12 @@ MiteFobFull <- MigStat[!MigStat$Treatment=="Exposed", ]
 
 mod <- lmer(data = MiteFobFull, formula = Varroa ~  SamplingEvent * (FOB * Treatment) + (1|ID) + (1|Yard))
 
-
+library(lmtest)
 acf(residuals(mod))
 
 
+
+resid(mod)
 Anova(mod)
 summary(mod)
 coef(summary(mod))
