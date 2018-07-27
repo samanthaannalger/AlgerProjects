@@ -116,9 +116,10 @@ leaflet(vermont) %>%
 
 ui <- fluidPage(
   theme = shinytheme("cerulean"),
-        navbarPage("Vermont Registered Beekeeper Data",
+        navbarPage("Vermont Registered Apiary Data",
+           tabPanel("Home"),
            navbarMenu("Maps", 
-                    tabPanel("Apiaries",
+                    tabPanel("Apiary Density",
                               mainPanel(br(),
                                         h3("Apiary Density"),
                                         br(),
@@ -140,20 +141,20 @@ server <- function(input,output, session){
     output$mymap <- renderLeaflet({
     m <- leaflet(vermont) %>%
   addTiles() %>%
-  addPolygons(stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
+  addPolygons(stroke = FALSE, smoothFactor = 0.3, fillOpacity = 0.90,
               fillColor = ~pal(apiaries),
               label = ~paste0(NAME, ": ", formatC(apiaries, big.mark = ","))) %>%
-  addLegend(pal = pal, values = ~apiaries, opacity = 1.0, title = "# Apiaries")
+  addLegend(pal = pal, values = ~apiaries, opacity = 1, title = "# Apiaries")
 m })
 
 
 output$mymap2 <- renderLeaflet({
   m <- leaflet(vermont) %>%
     addTiles() %>%
-    addPolygons(stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
+    addPolygons(stroke = FALSE, smoothFactor = 0.3, fillOpacity = 0.9,
                 fillColor = ~pal(Loss),
                 label = ~paste0(NAME, ": ", formatC(Loss, big.mark = ","),"%, n=",nLoss)) %>%
-    addLegend(pal = pal, values = ~Loss, opacity = 1.0, title = "% Annual Loss")
+    addLegend(pal = pal, values = ~Loss, opacity = 1, title = "% Annual Loss")
   m })
 }
 
