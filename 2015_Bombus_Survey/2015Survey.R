@@ -13,8 +13,8 @@ rm(list=ls())
 # Call Packages
 library("RColorBrewer")
 library("ggplot2")
-library("plyr")
 library("dplyr")
+library("plyr")
 library("spdep")
 library("lme4")
 library("car")
@@ -24,10 +24,10 @@ library("MuMIn")
 # Set Working Directory 
 
 # FOR SAM:
-setwd("~/AlgerProjects/2015_Bombus_Survey/CSV_Files") 
+# setwd("~/AlgerProjects/2015_Bombus_Survey/CSV_Files") 
 
 # FOR ALEX
-# setwd("~/Documents/GitHub/AlgerProjects/2015_Bombus_Survey/CSV_Files") 
+setwd("~/Documents/GitHub/AlgerProjects/2015_Bombus_Survey/CSV_Files") 
 
 # load in data
 BombSurv <- read.csv("BombSurvNHBS.csv", header=TRUE, stringsAsFactors=FALSE)
@@ -38,16 +38,16 @@ Plants <- read.table("plants2015DF.csv",header=TRUE,sep=",",stringsAsFactors=FAL
 
 # load site level data and merge pathogen data with GIS HB colony/apiary output:
 SpatDat <- read.table("SpatDatBuffs.csv", header=TRUE,sep=",",stringsAsFactors=FALSE)
-SpatDat <- select(SpatDat, -elevation, -town, -apiary, -siteNotes, -apiaryNotes)
+SpatDat <- dplyr::select(SpatDat, -elevation, -town, -apiary, -siteNotes, -apiaryNotes)
 SurvData <- read.csv("MixedModelDF.csv", header=TRUE, sep = ",", stringsAsFactors=FALSE)
 SpatialDat <- merge(SurvData, SpatDat, by = "site")
 
 # merge data to create final APC data frame:
-SpatDat <- select(SpatDat, -lat, -long)
+SpatDat <- dplyr::select(SpatDat, -lat, -long)
 BombSurv <- merge(BombSurv, SpatDat, by = "site")
 
 # remove unneeded columns from the DF
-BombSurv <- select(BombSurv, -X, -Ct_mean, -Ct_sd, -quantity_mean, -quantity_sd, -run, -date_processed, -dil.factor, -genome_copbee, -Ct_mean_hb, -ID, -ACT_genome_copbee, -City, -Name, -virusBINY_PreFilter, -siteNotes, -X)
+BombSurv <- dplyr::select(BombSurv, -X, -Ct_mean, -Ct_sd, -quantity_mean, -quantity_sd, -run, -date_processed, -dil.factor, -genome_copbee, -Ct_mean_hb, -ID, -ACT_genome_copbee, -City, -Name, -virusBINY_PreFilter, -siteNotes, -X)
 
 # remove unwanted sites and bombus species
 BombSurv<-BombSurv[!BombSurv$site==("PITH"),]
@@ -348,6 +348,10 @@ plot1 + theme_bw(base_size = 23) + scale_fill_manual(values=colors, name="Site T
 ###################################################################################################
 ######################## CREATING PUBLICATION GRAPHICS FOR PLANT PREV #############################
 ###################################################################################################
+# create a binary varaible for apiary or no apiary 
+Plants$apiary <- ifelse(Plants$sumColonies1 <= 0, "no apiary","apiary")
+Plants$HBlowHigh <- ifelse(Plants$apis <= 4, "Low HB","High HB")
+
 
 #ddply summarize:
 fieldPlantsSum <- ddply(Plants, c("target_name", "apiary"), summarise, 
@@ -435,22 +439,19 @@ plot1 + theme_bw(base_size = 23) + scale_fill_manual(values=colors) + coord_cart
 # CREATING MODELS FOR PLANT PREV:
 ###################################################################################################
 
-# create a binary varaible for apiary or no apiary 
-Plants$apiary <- ifelse(Plants$sumColonies1 <= 0, "no apiary","apiary")
-Plants$HBlowHigh <- ifelse(Plants$apis <= 4, "Low HB","High HB")
 
 # Full, Null and Reduced Models
-PlantsFull <- glmer(data=Plants, formula = BINYprefilter ~ apis + bombus + target_name + (1|apiary/site), family = binomial(link = "logit"))
+PlantsFull <- glmer(data=Plants, formula = BINYprefilter ~ apis + bombus + target_name + Density + (1|site), family = binomial(link = "logit"))
 
-PlantsNull <- glmer(data=Plants, formula = BINYprefilter ~ 1 + (1|apiary_near_far/site), family = binomial(link = "logit"))
+PlantsNull <- glmer(data=Plants, formula = BINYprefilter ~ 1 + (1|site), family = binomial(link = "logit"))
 
-PlantsApis <- glmer(data=Plants, formula = BINYprefilter ~ target_name + bombus + (1|apiary/site), family = binomial(link = "logit"))
+PlantsApis <- glmer(data=Plants, formula = BINYprefilter ~ target_name + bombus + Density + (1|site), family = binomial(link = "logit"))
 
-PlantsTarg <- glmer(data=Plants, formula = BINYprefilter ~ apis + bombus + (1|apiary/site), family = binomial(link = "logit"))
+PlantsTarg <- glmer(data=Plants, formula = BINYprefilter ~ apis + bombus + Density + (1|site), family = binomial(link = "logit"), control=glmerControl(optimizer="bobyqa"))
 
-PlantsBombus <- glmer(data=Plants, formula = BINYprefilter ~ apis + bombus + target_name + (1|apiary/site), family = binomial(link = "logit"))
+PlantsBombus <- glmer(data=Plants, formula = BINYprefilter ~ apis + target_name + Density + (1|site), family = binomial(link = "logit"))
 
-PlantsDensity <- glmer(data=Plants, formula = BINYprefilter ~ bombus + apis + target_name + (1|apiary_near_far/site), family = binomial(link = "logit"))
+PlantsDensity <- glmer(data=Plants, formula = BINYprefilter ~ bombus + apis + target_name + (1|site), family = binomial(link = "logit"))
 
 # liklihood ratio tests between models for significance
 anova(PlantsFull, PlantsNull, test="LRT") # full model versus the null model
@@ -458,6 +459,7 @@ anova(PlantsFull, PlantsApis, test="LRT")
 anova(PlantsFull,PlantsTarg, test="LRT")
 anova(PlantsFull, PlantsBombus, test="LRT")
 anova(PlantsFull, PlantsDensity, test="LRT")
+
 
 # To view effects and std. errors of each variable:
 summary(PlantsFull)
