@@ -77,23 +77,12 @@ plot1 + theme_minimal(base_size = 18) + coord_cartesian(ylim = c(0, .5)) + scale
 
 DatCleanNeg <- DatClean[DatClean$target_name=="BQCV",]
 
+
 chisq.test(DatCleanNeg$BinaryNeg, DatCleanNeg$apiary_near_far)
+chisq.test(DatCleanNeg$BinaryNeg, DatCleanNeg$species)
 
-xFull <- glmer(data=DatCleanNeg,BinaryNeg~apiary_near_far + species + (1|Sample), family = binomial(link = "logit"))
 
-#for apiary near/far
-xNull <- glmer(data=DatCleanNeg,BinaryNeg ~ species + (1|Sample), family = binomial(link = "logit"))
 
-#for species
-xNullSP <- glmer(data=DatCleanNeg,BinaryNeg ~ apiary_near_far + (1|Sample), family = binomial(link = "logit"))
-
-anova(xFull, xNull, type="LRT")
-
-anova(xFull,xNullSP, type = "LRT")
-
-summary(xFull)
-
-xNullSP
 
 #Calculate percentage of replicating infections:
 mean(BQ$BinaryNeg)
@@ -146,22 +135,7 @@ plot1 + theme_minimal(base_size = 18) + coord_cartesian(ylim = c(0, .5)) + scale
 DatCleanNeg <- DatClean[DatClean$target_name=="DWV",]
 
 chisq.test(DatCleanNeg$BinaryNeg, DatCleanNeg$apiary_near_far)
-
-xFull2 <- glmer(data=DatCleanNeg,BinaryNeg~apiary_near_far + species + (1|Sample), family = binomial(link = "logit"))
-
-#for apiary near/far
-xNull2 <- glmer(data=DatCleanNeg,BinaryNeg ~ species + (1|Sample), family = binomial(link = "logit"))
-
-#for species
-xNullSP2 <- glmer(data=DatCleanNeg,BinaryNeg ~ apiary_near_far + (1|Sample), family = binomial(link = "logit"))
-
-anova(xFull2, xNull2, type="LRT")
-
-anova(xFull2,xNullSP2, type = "LRT")
-
-summary(xFull2)
-
-xNullSP2
+chisq.test(DatCleanNeg$BinaryNeg, DatCleanNeg$species)
 
 #Calculate % of replicating infections
 mean(DW$BinaryNeg)
@@ -183,3 +157,4 @@ plot1 <- ggplot(plotdat, aes(x=species, y=mean, fill=target_name)) +
 
 plot1 + theme_minimal(base_size = 18) + coord_cartesian(ylim = c(0, 1)) + scale_y_continuous(labels = scales::percent) + guides(fill=FALSE)
 plotdat
+
