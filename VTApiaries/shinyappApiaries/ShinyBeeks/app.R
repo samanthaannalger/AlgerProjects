@@ -12,6 +12,7 @@ library(data.table)
 library(leaflet)
 library(rgdal)
 library(shiny)
+library(shinythemes)
 
 #set working director
 setwd("~/AlgerProjects/VTApiaries/shinyappApiaries")
@@ -114,7 +115,26 @@ leaflet(vermont) %>%
 
 
 ui <- fluidPage(
-  leafletOutput("mymap"))
+  theme = shinytheme("cerulean"),
+        navbarPage("Vermont Registered Beekeeper Data",
+           navbarMenu("Maps", 
+                    tabPanel("Apiaries",
+                              mainPanel(br(),
+                                        h3("Apiary Density"),
+                                        br(),
+                        leafletOutput("mymap"))),
+                    tabPanel("Colony Loss",
+                             mainPanel(br(),
+                                       h3("% Annual Colony Loss"),
+                                       br(),
+                        leafletOutput("mymap2")))),
+                        # creating an ouput for the table
+          navbarMenu("Analyses",
+                      tabPanel("Colony Loss"),
+                      tabPanel("Management"),
+                      tabPanel("Basic Statistics")
+          )
+))
 
 server <- function(input,output, session){
     output$mymap <- renderLeaflet({
@@ -125,6 +145,18 @@ server <- function(input,output, session){
               label = ~paste0(NAME, ": ", formatC(apiaries, big.mark = ","))) %>%
   addLegend(pal = pal, values = ~apiaries, opacity = 1.0, title = "# Apiaries")
 m })
-  }
+
+
+output$mymap2 <- renderLeaflet({
+  m <- leaflet(vermont) %>%
+    addTiles() %>%
+    addPolygons(stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
+                fillColor = ~pal(Loss),
+                label = ~paste0(NAME, ": ", formatC(Loss, big.mark = ","),"%, n=",nLoss)) %>%
+    addLegend(pal = pal, values = ~Loss, opacity = 1.0, title = "% Annual Loss")
+  m })
+}
+
+
 
 shinyApp(ui, server)
