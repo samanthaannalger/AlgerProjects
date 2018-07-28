@@ -201,12 +201,12 @@ LLmat <- LatLongMat(data = Shinydf)
 
 
 # User interface, creating tabs
-ui <- navbarPage("Apiary Locator",
+ui <- navbarPage("InspectApp",
                  tabPanel("Map",
                           sidebarLayout(
                             sidebarPanel(
                               sliderInput("distance", # Slider bar for distance
-                                          "Radius (Miles):",
+                                          "Distance (Miles):",
                                           min = 1,
                                           max = 40,
                                           value = 5)
@@ -279,7 +279,6 @@ server <- function(input, output, session) {
       }
     )
     #create summary table on main panel under map
-    #x <- sumtable(SSdat[[1]])
     output$sum <- DT::renderDataTable({
       as.datatable_widget(sumtable(SSdat[[1]]))
     })
