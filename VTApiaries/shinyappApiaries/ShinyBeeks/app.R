@@ -12,6 +12,14 @@ library(data.table)
 library(leaflet)
 library(rgdal)
 library(shiny)
+library(shinythemes)
+library(markdown)
+library(knitr)
+library(DT)
+library(expss)
+library(ggplot2)
+#library(lemon)
+#library(kableExtra)
 
 #set working director
 setwd("~/AlgerProjects/VTApiaries/shinyappApiaries")
@@ -29,7 +37,8 @@ FullApiaryDat <- read.csv("VTApiaries.csv",
                           stringsAsFactors = FALSE)
 
 ##############################################################
-# SUBSET Spacial data by lat long Euclidean Distance for mapping purposes:
+# DATA PREP:
+##############################################################
 
 # Data cleaning to make final df:
 histDat = data.table(RegData)
@@ -38,7 +47,7 @@ histDat[, `n` := .N, by = BeekeeperID]
 
 histDat$Beektype <- ifelse(histDat$n == 1,"Hobbyist", ifelse(histDat$n <=5, "Sideliner", "Commercial"))
 
-####### 
+################################################
 #Merging the two dataframes for shiny app:
 
 #select only columns we need:
@@ -51,13 +60,15 @@ Shinydf <- merge.data.frame(FullApiaryDat,histDat, by = "LocationID", all.y = TR
 #Create Summary data for Chloropleth mapping
 
 CountySummary <- ddply(Shinydf,c("CountyName"), summarise,
-                       Loss = 100* mean(PerTotLoss, na.rm=TRUE),
+                       Loss = round(100* mean(PerTotLoss, na.rm=TRUE), digits = 2),
                        apiaries = length(n),
                        colonies = sum(ColonyCount),
+                       beeks = length(unique(unlist(BeekeeperID[!is.na(BeekeeperID)]))),
+                       n = length(n),
                        nLoss = length(PerTotLoss [!is.na(PerTotLoss)]),
                        MiteTrue = length(MiteCounts[MiteCounts==TRUE]),
                        MiteFalse = length(MiteCounts[MiteCounts==FALSE]),
-                       PerMiteTrue = 100*(MiteTrue/length(MiteCounts [!is.na(MiteCounts)])))
+                       PerMiteTrue = round(100*(MiteTrue/length(MiteCounts [!is.na(MiteCounts)])),digits = 2))
 
 #rename countyname column
 names(CountySummary)[1] <- "NAME"
@@ -66,65 +77,327 @@ names(CountySummary)[1] <- "NAME"
 vtcounties <- rgdal::readOGR(dsn="cb_2017_us_county_5m.geojson")
 
 #subset to only include vermont
-vermont <- vtcounties[vtcounties$STATEFP == 50, ]
+vermont <- vtcounties[vtcounties@data$STATEFP == 50, ]
 
 #merge the summary data with the base map data
 vermont <- merge(vermont, CountySummary)
 
-#set color pallet
-pal <- colorNumeric("YlOrRd", NULL)
+# Preparing df for map summary tables:
 
-#Map for # of apiaries by county
-leaflet(vermont) %>%
-  addTiles() %>%
-  addPolygons(stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
-              fillColor = ~pal(apiaries),
-              label = ~paste0(NAME, ": ", formatC(apiaries, big.mark = ","))) %>%
-  addLegend(pal = pal, values = ~apiaries, opacity = 1.0, title = "# Apiarires")
-
-#Map for # colonies by county
-leaflet(vermont) %>%
-  addTiles() %>%
-  addPolygons(stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
-              fillColor = ~pal(colonies),
-              label = ~paste0(NAME, ": ", formatC(colonies, big.mark = ","))) %>%
-  addLegend(pal = pal, values = ~colonies, opacity = 1.0, title = "# Colonies")
+#rename the 'data' slot of the vermont spatial dataframe. Use the '@' symbol to refer to the slot name 'data', and drop unused levels to reduce the df to the VT counties only:
+vermontdf <- droplevels(vermont@data)
 
 
-#Map for % colony loss by county
-pal <- colorNumeric("YlOrRd", NULL)
+#select only columns we will need for the summary tables
+vermontdf<- dplyr::select(vermontdf, NAME, Loss, apiaries, colonies, nLoss, n, PerMiteTrue, beeks)
 
-leaflet(vermont) %>%
-  addTiles() %>%
-  addPolygons(stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
-              fillColor = ~pal(Loss),
-              label = ~paste0(NAME, ": ", formatC(Loss, big.mark = ","),"%, n=",nLoss)) %>%
-  addLegend(pal = pal, values = ~Loss, opacity = 1.0, title = "% Annual Loss")
+####################################################################
+# Data prep for Analyses Tab
+###################################################################
+# Apiary and Colony number by beekeeper Type:
 
-# Map for mite monitoring by county
+BeekTypeStats <- ddply(Shinydf, c("Beektype"), summarise, 
+                       apiaries = length(n),
+                       colonies = sum(ColonyCount, na.rm = TRUE),
+                       loss = round(100*mean(PerTotLoss, na.rm = TRUE),digits=2),
+                       sd = sd(100*PerTotLoss, na.rm=TRUE),
+                       se = sd / sqrt(apiaries))
+BeekTypeStats$perApiaries <- round(100*BeekTypeStats$apiaries/sum(BeekTypeStats$apiaries), digits=2)
 
-pal <- colorNumeric("Blues", NULL)
-leaflet(vermont) %>%
-  addTiles() %>%
-  addPolygons(stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
-              fillColor = ~pal(PerMiteTrue),
-              label = ~paste0(NAME, ": ", formatC(PerMiteTrue, big.mark = ","), "%, n=",apiaries)) %>%
-  addLegend(pal = pal, values = ~PerMiteTrue, opacity = 1.0, title = "% Monitor Mites")
+BeekTypeStats$perColonies <- round(100*BeekTypeStats$colonies/sum(BeekTypeStats$colonies), digits=2)
 
+# Code for stacked bar plot
+BeekTypeDF <- rbind(BeekTypeStats, BeekTypeStats)
+MeasureType <- c(rep("Apiary", 3), rep("Colony", 3))
+BeekTypeDF <- cbind(BeekTypeDF, MeasureType)
+BeekTypeDF$Percent <- c(BeekTypeDF$perApiaries[1:3], BeekTypeDF$perColonies[4:6])
 
+#Reorder factors for stacked bar plot:
+BeekTypeDF$Beektype <- factor(BeekTypeDF$Beektype, levels = c("Hobbyist","Sideliner", "Commercial"))
+
+# Reorder factors for colony loss bar plot:
+BeekTypeStats$Beektype <- factor(BeekTypeStats$Beektype, levels = c("Hobbyist","Sideliner", "Commercial"))
+
+# Create df for Pie Chart:
+Singles <- Shinydf[!duplicated(Shinydf$BeekeeperID), ]
+
+mitedf <- data.frame(group = c("Did not count mites", "Counted mites"), value = c(table(Singles$MiteCounts)))
+####################################################################
+# END Data prep for Analyses Tab
+###################################################################
+####################################################################
+# function name: sumtable
+# description: creates summary table for subsetted df of apiaries
+# parameters: 
+# data = subsetted dataframe to be used
+# returns: a formatted table
+####################################################################
+
+sumtable<- function(data=data) {
+  
+  data$PerTotLoss2 <- data$PerTotLoss*100
+  
+  data = apply_labels(data,
+                      ColonyCount = "Sum",
+                      PerTotLoss2 = "Colony Loss",
+                      Beektype = "Beekeeper Type")
+  
+  
+  sumtable<- data %>%
+    tab_cells(ColonyCount) %>%
+    tab_cols(Beektype, total()) %>%
+    tab_stat_sum("Colonies") %>%
+    tab_stat_valid_n("Apiaries") %>%
+    tab_cells(PerTotLoss2) %>%
+    tab_stat_mean("% Ave") %>%
+    tab_pivot()
+  
+  return(sumtable)
+  
+}
+
+####################################################################
+# BEGIN SHINY CODE
+###################################################################
+# Set default color for maps:
+pal <- colorNumeric("Blues",NULL)
 
 ui <- fluidPage(
-  leafletOutput("mymap"))
+  theme = shinytheme("cerulean"),
+        navbarPage("VT BeekApp",
+           tabPanel("Home",
+                h4("Home of Vermont's Registered Apiary Data")),
+           navbarMenu("Maps", 
+                    tabPanel("Apiary Density",
+                            mainPanel(
+                              h3("Apiary Density"),
+                              br(),
+                                tabsetPanel(type = "tabs",
+                                  tabPanel("Map", leafletOutput("mymap")),
+                                  tabPanel("Table",
+                                           DT::dataTableOutput("sum")),
+                                  tabPanel("Description",
+                                           h5("Apiary Density"),
+                                           p("Map and table display the total number of registered apiaries in Vermont by county"))))),
+                    tabPanel("Beekeeper Density",
+                             mainPanel(
+                               h3("Beekeeper Density"),
+                               br(),
+                               tabsetPanel(type = "tabs",
+                                  tabPanel("Map", leafletOutput("mymap2")),
+                                  tabPanel("Table",
+                                            DT::dataTableOutput("sum2")),
+                                  tabPanel("Description",
+                                           h5("Beekeeper Density"),
+                                           p("Map and table display the total number of registered beekeepers in Vermont by county"))))),
+                    tabPanel("Colony Loss",
+                             mainPanel(
+                              h3("% Annual Colony Loss (2017)"),
+                              br(),
+                                tabsetPanel(type = "tabs",
+                                  tabPanel("Map", leafletOutput("mymap3")),
+                                  tabPanel("Table",
+                                           DT::dataTableOutput("sum3")),
+                                  tabPanel("Description",
+                                           h5("% Annual Colony Loss (2017)"),
+                                           p("Map and table display county averages for % colony loss during the 2016-2017 season"))))),
+                    tabPanel("Mite Monitoring",
+                            mainPanel(
+                              h3("% Mite Monitoring"),
+                              br(),
+                                tabsetPanel(type = "tabs",
+                                  tabPanel("Map", leafletOutput("mymap4")),
+                                  tabPanel("Table",
+                                           DT::dataTableOutput("sum4")),
+                                  tabPanel("Description",
+                                           h5("% Mite Monitoring"),
+                                           p("Map and table display county level data for the % of apiaries managed by beekeepers who reported using mite monitoring practices")))))),
+
+                        # creating an ouput for the table
+          navbarMenu("Data",
+                      tabPanel("Registrations",
+                            mainPanel(
+                              h3("Registrations by beekeeper type"),
+                              br(),
+                              plotlyOutput('BeekPlot', height = "350px"),
+                              DT::dataTableOutput("BeekTable"))),
+                      tabPanel("Colony Loss",
+                               mainPanel(
+                              h3("Colony loss by beekeeper type"),
+                              br(),
+                              plotlyOutput("BeekLoss", height = "350px"),
+                              DT::dataTableOutput("BeekTable2"))),
+                      tabPanel("Management",
+                               mainPanel(
+                                 h3("Mite Counts"),
+                                 br(),
+                                 plotlyOutput("pie", height = "350px")
+                               )),
+                      tabPanel("ADD HERE")
+          )))
 
 server <- function(input,output, session){
     output$mymap <- renderLeaflet({
     m <- leaflet(vermont) %>%
   addTiles() %>%
-  addPolygons(stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
+  addPolygons(stroke = FALSE, smoothFactor = 0.3, fillOpacity = 0.90,
               fillColor = ~pal(apiaries),
               label = ~paste0(NAME, ": ", formatC(apiaries, big.mark = ","))) %>%
-  addLegend(pal = pal, values = ~apiaries, opacity = 1.0, title = "# Apiaries")
-m })
-  }
+              addLegend(pal = pal, values = ~apiaries, opacity = 1, title = "# Apiaries")
+    m })
+    
+apiaryTab = dplyr::select(vermontdf, NAME, apiaries)
+  output$sum <- DT::renderDataTable ({
+                  DT::datatable(apiaryTab, 
+                              rownames = FALSE, 
+                              colnames = c("County", "# Apiaries"), 
+                              options = list(pageLength=17, dom = 'ft'))
+  })
+  
+  output$mymap2 <- renderLeaflet({
+    m <- leaflet(vermont) %>%
+      addTiles() %>%
+      addPolygons(stroke = FALSE, smoothFactor = 0.3, fillOpacity = 0.9,
+                  fillColor = ~pal(beeks),
+                  label = ~paste0(NAME, ": ", formatC(beeks, big.mark=","))) %>%
+                  addLegend(pal = pal, values = ~beeks, opacity = 1, title = "# Beekeepers")
+    m })
+  
+  beekTab = dplyr::select(vermontdf, NAME, beeks)
+                output$sum2 <- DT::renderDataTable ({
+                  DT::datatable(beekTab, 
+                                rownames = FALSE, 
+                                colnames = c("County", "# Beekeepers"), 
+                                options = list(pageLength=17, dom = 'ft'))
+  })
+
+
+output$mymap3 <- renderLeaflet({
+  pal <- colorNumeric("YlOrRd", NULL)
+  m <- leaflet(vermont) %>%
+    addTiles() %>%
+    addPolygons(stroke = FALSE, smoothFactor = 0.3, fillOpacity = 0.9,
+                fillColor = ~pal(Loss),
+                label = ~paste0(NAME, ": ", formatC(Loss, big.mark = ","),"%, n=",nLoss)) %>%
+                addLegend(pal = pal, values = ~Loss, opacity = 1, title = "% Annual Loss")
+  m })
+
+lossTab = dplyr::select(vermontdf, NAME, Loss, nLoss)
+          output$sum3 <- DT::renderDataTable ({
+                  DT::datatable(lossTab, 
+                                      rownames = FALSE, 
+                                      colnames = c("County", "% Annual Colony Loss", "N"), 
+                                      options = list(pageLength=17, dom = 'ft'))
+  
+})
+output$mymap4 <- renderLeaflet({
+  m <- leaflet(vermont) %>%
+  addTiles() %>%
+  addPolygons(stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
+              fillColor = ~pal(PerMiteTrue),
+              label = ~paste0(NAME, ": ", formatC(PerMiteTrue, big.mark = ","),"%, n=",n)) %>%
+              addLegend(pal = pal, values = ~PerMiteTrue, opacity = 1.0, title = "% mite monitoring")
+  m })
+
+MiteTab = dplyr::select(vermontdf, NAME, PerMiteTrue, n)
+                  output$sum4 <- DT::renderDataTable ({
+                        DT::datatable(MiteTab, 
+                                      rownames = FALSE, 
+                                      colnames = c("County", "% Mite Monitoring", "N"), 
+                                      options = list(pageLength=17, dom = 'ft'))
+  
+})
+                  
+# Plot for Beekeeper type and apiary/colonies:
+# Use ggplot sntax and then use ggplotly to make the figure "interactive"
+output$BeekPlot <- renderPlotly({
+                    BeekTypeFig <- ggplot(BeekTypeDF, 
+                                          aes(y = Percent, 
+                                              x = MeasureType , 
+                                              fill = Beektype)) + 
+                      geom_bar(stat="identity") + theme_classic() + 
+                      labs(x=NULL, y = "% Registered in VT") +
+                      scale_fill_brewer() +
+                      scale_x_discrete(labels=c("Apiary" = "Apiaries", "Colony" = "Colonies")) + 
+                      guides(fill=guide_legend(title="Beekeeper Type"))
+  
+#Use ggplotly to make the figure:
+  ggplotly(BeekTypeFig)  %>% 
+    layout(height = input$plotHeight, autosize=TRUE) %>% # set the size, specified in the ui
+    config(displayModeBar = F) %>% # Removes the hover bar
+    layout(xaxis=list(fixedrange=TRUE)) %>%  # disables the zoom option
+    layout(yaxis=list(fixedrange=TRUE)) #disables the zoom option
+
+})
+
+# Plot for Beekeeper type and apiary/colonies:
+# Use ggplot sntax and then use ggplotly to make the figure "interactive"
+output$BeekLoss <- renderPlotly({
+                    BeekPlot <- ggplot(BeekTypeStats, 
+                                  aes(y = loss, x = Beektype, fill = Beektype)) + 
+                                  geom_bar(stat="identity") + 
+                                  theme_classic() + 
+                                  labs(x=NULL, y = "% of total in Vermont") +
+                                  scale_fill_brewer() +
+                                  scale_x_discrete(labels=c("Apiary" = "Apiaries", "Colony" = "Colonies")) +
+                                  geom_errorbar(aes(ymin = loss - se, ymax = loss + se, width = 0.2)) +
+                                  guides(fill=guide_legend(title="Beekeeper Type"))
+  
+  #Use ggplotly to make the figure:
+  ggplotly(BeekPlot)  %>% 
+    layout(height = input$plotHeight, autosize=TRUE) %>% # set the size, specified in the ui
+    config(displayModeBar = F) %>% # Removes the hover bar
+    layout(xaxis=list(fixedrange=TRUE)) %>%  # disables the zoom option
+    layout(yaxis=list(fixedrange=TRUE)) #disables the zoom option
+  
+})
+
+#create summary tables below figures
+output$BeekTable <- DT::renderDataTable({
+  as.datatable_widget(sumtable(Shinydf))
+})
+
+output$BeekTable2 <- DT::renderDataTable({
+  as.datatable_widget(sumtable(Shinydf))
+})
+
+output$pie <- renderPlotly({
+  pie<-plot_ly(mitedf, labels = ~group, 
+               values = ~value, 
+               type = 'pie') %>%
+    layout( xaxis = list(showgrid = FALSE, 
+                         zeroline = FALSE, showticklabels = FALSE), 
+            yaxis = list(showgrid = FALSE, zeroline = FALSE, 
+                         showticklabels = FALSE))
+  ggplotly(pie) %>% 
+    layout(height = input$plotHeight, autosize=TRUE) %>% # set the size, specified in the ui
+    config(displayModeBar = F) %>% # Removes the hover bar
+    layout(xaxis=list(fixedrange=TRUE)) %>%  # disables the zoom option
+    layout(yaxis=list(fixedrange=TRUE)) #disables the zoom option
+
+})
+}
+
+
 
 shinyApp(ui, server)
+
+
+
+
+
+
+#Code for table using kable:
+
+# ui:
+#tableOutput("sum")),
+
+#server:
+#vermontdf = dplyr::select(vermontdf, NAME, apiaries)
+#    output$sum <- function() {
+#        vermontdf %>%
+#        mutate(County = rownames(.)) %>%
+#        select(NAME, apiaries) %>%
+#        knitr::kable("html") %>%
+#        kable_styling(latex_options = c("striped", "hold_position"))
+#    }
