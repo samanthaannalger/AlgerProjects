@@ -18,6 +18,8 @@ library(knitr)
 library(DT)
 library(expss)
 library(ggplot2)
+library(plotly)
+library(tidyr)
 #library(lemon)
 #library(kableExtra)
 
@@ -122,6 +124,52 @@ BeekTypeStats$Beektype <- factor(BeekTypeStats$Beektype, levels = c("Hobbyist","
 Singles <- Shinydf[!duplicated(Shinydf$BeekeeperID), ]
 
 mitedf <- data.frame(group = c("Did not count mites", "Counted mites"), value = c(table(Singles$MiteCounts)))
+
+####################################################
+#Figure for Mite count methods:
+
+#Import data:
+MiteMon<- Singles
+
+#Create  separate dfs for analysis with specified columns:
+MonMethods <- dplyr::select(MiteMon, BeekeeperID,SugarShakeYN, AlcoholWashYN, BottomBoardYN, DroneSurveyYN, OtherMiteCountYN)
+
+#Switch df format to 'long' format:
+MonMethods <- gather(MonMethods, question, response, SugarShakeYN:OtherMiteCountYN, factor_key=TRUE)
+
+#Convert all True and False to '0' and '1' in the 'ReasonLoss' dataframe
+MonMethods$response<-as.integer(as.logical(MonMethods$response))
+
+# Preparing Data for Bar Plot
+MiteMon <- ddply(MonMethods, c("question"), summarise, 
+                 n = length(response),
+                 mean =round(100*mean(response, na.rm=TRUE), digits=2),
+                 sd = round(100*sd(response, na.rm=TRUE), digits=2),
+                 se = sd / sqrt(n))
+
+#########################################################
+# Reasons for Losses
+
+#Import data:
+LossDat<- Singles
+
+#Create two separate dfs for analysis with specified columns:
+ReasonLoss <- dplyr::select(LossDat, BeekeeperID, ColonyLossVarroaMiteYN, ColonyLossStarvationYN, ColonyLossBearsYN, ColonyLossAmericanFoulbroodYN, ColonyLossSwarmingYN, ColonyLossPesticidesYN, ColonyLossMitacidesYN, OtherColonyLossYN)
+
+#Convert to long format
+ReasonLoss <- gather(ReasonLoss, question, response, ColonyLossVarroaMiteYN:OtherColonyLossYN, factor_key=TRUE)
+
+#Convert all True and False to '0' and '1' in the 'ReasonLoss' dataframe
+ReasonLoss$response<-as.integer(as.logical(ReasonLoss$response))
+
+# Preparing Data for Bar Plot
+LossCause <- ddply(ReasonLoss, c("question"), summarise, 
+                   n = length(response),
+                   mean = round(100*mean(response, na.rm=TRUE),digits=2),
+                   sd = round(100*sd(response, na.rm=TRUE),digits=2),
+                   se = sd / sqrt(n))
+
+
 ####################################################################
 # END Data prep for Analyses Tab
 ###################################################################
@@ -166,7 +214,9 @@ ui <- fluidPage(
   theme = shinytheme("cerulean"),
         navbarPage("VT BeekApp",
            tabPanel("Home",
-                h4("Home of Vermont's Registered Apiary Data")),
+                h4("Welcome to BeekApp"),
+                   p("Home of Vermont's Registered Apiary Data"),
+                h5("Under Consruction")),
            navbarMenu("Maps", 
                     tabPanel("Apiary Density",
                             mainPanel(
@@ -223,18 +273,38 @@ ui <- fluidPage(
                               DT::dataTableOutput("BeekTable"))),
                       tabPanel("Colony Loss",
                                mainPanel(
-                              h3("Colony loss by beekeeper type"),
+                              h3("Colony losses"),
                               br(),
-                              plotlyOutput("BeekLoss", height = "350px"),
-                              DT::dataTableOutput("BeekTable2"))),
-                      tabPanel("Management",
+                              tabsetPanel(type = "tabs",
+                                          tabPanel("Loss Summary (2017)",
+                                              plotlyOutput("BeekLoss", height = "350px"),
+                                              DT::dataTableOutput("BeekTable2")),
+                                          tabPanel("Losses Explained",
+                                              plotlyOutput("LossExp", height = "500px"),
+                                              plotlyOutput("Other")))
+                              )),
+                      tabPanel("Pest Management",
                                mainPanel(
-                                 h3("Mite Counts"),
+                                 h3("Pest Management"),
                                  br(),
-                                 plotlyOutput("pie", height = "350px")
-                               )),
-                      tabPanel("ADD HERE")
-          )))
+                                 tabsetPanel(type = "tabs",
+                                      tabPanel("Mite Monitoring", 
+                                             plotlyOutput("pie", height = "350px")),
+                                      tabPanel("Monitoring Methods",
+                                            plotlyOutput("MiteMethods", height = "500px")),
+                                      tabPanel("Treatments ",
+                                               br(),
+                                               br(),
+                                               p("under construction"),
+                                               plotlyOutput("TreatPlot", height = "500px"))))),
+                      tabPanel("Challenges",
+                              mainPanel(
+                                h3("Challenges"),
+                                p("We asked VT beekeepers to tell us about the biggest challenges they face as beekeepers and here are the results"),
+                                br(),
+                                br(),
+                                p("under construction")
+          )))))
 
 server <- function(input,output, session){
     output$mymap <- renderLeaflet({
@@ -374,11 +444,50 @@ output$pie <- renderPlotly({
     config(displayModeBar = F) %>% # Removes the hover bar
     layout(xaxis=list(fixedrange=TRUE)) %>%  # disables the zoom option
     layout(yaxis=list(fixedrange=TRUE)) #disables the zoom option
+  
+  })
 
+output$MiteMethods <- renderPlotly ({
+          MitePlot <- ggplot(MiteMon,
+                      aes(x=question, y=mean, fill=question)) + 
+                      geom_bar(stat="identity", color="black", position=position_dodge()) + 
+                      labs(x="Mite Monitoring Method", y = "% Reported Use") + 
+                      theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), 
+                      legend.position="none", axis.text=element_text(size=15), 
+                      axis.title=element_text(size=18,face="bold")) + 
+                      geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.2)) +                       scale_fill_brewer() + 
+                      scale_x_discrete(labels=c("SugarShakeYN" = "Sugar Shake", "AlcoholWashYN" = "Alcohol Wash", "BottomBoardYN" = "Bottom Board", "DroneSurveyYN"= "Drone Survey", "OtherMiteCountYN"= "Other"))
+  
+  
+  ggplotly(MitePlot)  %>% 
+    layout(height = input$plotHeight, autosize=TRUE) %>% # set the size, specified in the ui
+    config(displayModeBar = F) %>% # Removes the hover bar
+    layout(xaxis=list(fixedrange=TRUE)) %>%  # disables the zoom option
+    layout(yaxis=list(fixedrange=TRUE)) #disables the zoom option
+  
+  
 })
+
+output$LossExp <- renderPlotly ({
+                    LossExpPlot <- ggplot(LossCause, aes(x=question, y=mean, fill=question)) + 
+                    geom_bar(stat="identity", color="black",
+                    position=position_dodge()) + 
+                    labs(x="Causes", y = "% Reported Causes") + 
+                    theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), 
+                          legend.position="none", axis.text=element_text(size=9), 
+                          axis.title=element_text(size=18,face="bold")) + 
+                    geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.2)) + 
+                       scale_fill_brewer() +
+                      scale_x_discrete(labels=c("ColonyLossVarroaMiteYN" = "Varroa", "ColonyLossStarvationYN"= "Starvation", "ColonyLossBearsYN" = "Bears", "ColonyLossAmericanFoulbroodYN" = "AFB", "ColonyLossSwarmingYN" = "Swarming", "ColonyLossPesticidesYN" = "Pesticides", "ColonyLossMitacidesYN" = "Mitacides", "OtherColonyLossYN"= "Other"))
+
+ggplotly(LossExpPlot)  %>% 
+        layout(height = input$plotHeight, autosize=TRUE) %>% # set the size, specified in the ui
+        config(displayModeBar = F) %>% # Removes the hover bar
+        layout(xaxis=list(fixedrange=TRUE)) %>%  # disables the zoom option
+        layout(yaxis=list(fixedrange=TRUE)) #disables the zoom option
+})
+
 }
-
-
 
 shinyApp(ui, server)
 
@@ -401,3 +510,5 @@ shinyApp(ui, server)
 #        knitr::kable("html") %>%
 #        kable_styling(latex_options = c("striped", "hold_position"))
 #    }
+
+
