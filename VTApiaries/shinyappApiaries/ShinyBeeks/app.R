@@ -118,6 +118,10 @@ BeekTypeDF$Beektype <- factor(BeekTypeDF$Beektype, levels = c("Hobbyist","Sideli
 # Reorder factors for colony loss bar plot:
 BeekTypeStats$Beektype <- factor(BeekTypeStats$Beektype, levels = c("Hobbyist","Sideliner", "Commercial"))
 
+# Create df for Pie Chart:
+Singles <- Shinydf[!duplicated(Shinydf$BeekeeperID), ]
+
+mitedf <- data.frame(group = c("Did not count mites", "Counted mites"), value = c(table(Singles$MiteCounts)))
 ####################################################################
 # END Data prep for Analyses Tab
 ###################################################################
@@ -156,7 +160,7 @@ sumtable<- function(data=data) {
 # BEGIN SHINY CODE
 ###################################################################
 # Set default color for maps:
-pal <- colorNumeric("Blues", NULL)
+pal <- colorNumeric("Blues",NULL)
 
 ui <- fluidPage(
   theme = shinytheme("cerulean"),
@@ -223,7 +227,12 @@ ui <- fluidPage(
                               br(),
                               plotlyOutput("BeekLoss", height = "350px"),
                               DT::dataTableOutput("BeekTable2"))),
-                      tabPanel("Management"),
+                      tabPanel("Management",
+                               mainPanel(
+                                 h3("Mite Counts"),
+                                 br(),
+                                 plotlyOutput("pie", height = "350px")
+                               )),
                       tabPanel("ADD HERE")
           )))
 
@@ -352,6 +361,21 @@ output$BeekTable2 <- DT::renderDataTable({
   as.datatable_widget(sumtable(Shinydf))
 })
 
+output$pie <- renderPlotly({
+  pie<-plot_ly(mitedf, labels = ~group, 
+               values = ~value, 
+               type = 'pie') %>%
+    layout( xaxis = list(showgrid = FALSE, 
+                         zeroline = FALSE, showticklabels = FALSE), 
+            yaxis = list(showgrid = FALSE, zeroline = FALSE, 
+                         showticklabels = FALSE))
+  ggplotly(pie) %>% 
+    layout(height = input$plotHeight, autosize=TRUE) %>% # set the size, specified in the ui
+    config(displayModeBar = F) %>% # Removes the hover bar
+    layout(xaxis=list(fixedrange=TRUE)) %>%  # disables the zoom option
+    layout(yaxis=list(fixedrange=TRUE)) #disables the zoom option
+
+})
 }
 
 
