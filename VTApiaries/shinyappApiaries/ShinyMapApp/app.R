@@ -7,7 +7,7 @@
 # Clear memory of characters:
 rm(list=ls())
 
-setwd("~/AlgerProjects/VTApiaries/shinyappApiaries")
+setwd("~/AlgerProjects/VTApiaries/shinyappApiaries/ShinyMapApp/")
 RegData <- read.csv("RegActiveAndDelinquent.csv", 
                     header=TRUE, 
                     sep = ",", 
