@@ -10,7 +10,6 @@ library(rgeos)
 library(plyr)
 library(data.table)
 library(leaflet)
-library(rgdal)
 library(shiny)
 library(shinythemes)
 library(markdown)
@@ -20,11 +19,11 @@ library(expss)
 library(ggplot2)
 library(plotly)
 library(tidyr)
-#library(lemon)
-#library(kableExtra)
+library(mgcv)
+library(Matrix)
 
 #set working director
-setwd("~/AlgerProjects/VTApiaries/shinyappApiaries")
+#setwd("~/AlgerProjects/VTApiaries/shinyappApiaries/BeekApp/")
 
 
 #upload data
@@ -53,9 +52,9 @@ histDat$Beektype <- ifelse(histDat$n == 1,"Hobbyist", ifelse(histDat$n <=5, "Sid
 #Merging the two dataframes for shiny app:
 
 #select only columns we need:
-histDat <- dplyr::select(histDat, LocationID, Beektype, AccountName, BeeKeeperStatus, n)
+histDat <- dplyr::select(histDat, LocationID, Beektype, BeeKeeperStatus, n)
 
-FullApiaryDat <- dplyr::select(FullApiaryDat, -AccountName, -BeeKeeperStatus)
+FullApiaryDat <- dplyr::select(FullApiaryDat, -BeeKeeperStatus)
 
 Shinydf <- merge.data.frame(FullApiaryDat,histDat, by = "LocationID", all.y = TRUE)
 
