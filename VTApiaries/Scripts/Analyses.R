@@ -13,15 +13,15 @@ library(lme4)
 library(data.table)
 
 # Set working directory:
-setwd("~/AlgerProjects/VTApiaries/CSV_files/")
+setwd("~/Documents/GitHub/AlgerProjects/VTApiaries")
 
 #upload data
-RegData <- read.csv("RegActiveAndDelinquent.csv", 
+RegData <- read.csv("CSV_files/RegActiveAndDelinquent.csv", 
                     header=TRUE, 
                     sep = ",", 
                     stringsAsFactors = FALSE)
 
-FullApiaryDat <- read.csv("VTApiaries.csv", 
+FullApiaryDat <- read.csv("CSV_files/VTApiaries.csv", 
                           header=TRUE, 
                           sep = ",", 
                           stringsAsFactors = FALSE)
@@ -52,15 +52,21 @@ Apiarydf <- merge.data.frame(FullApiaryDat,histDat, by = "LocationID", all.y = T
 Beekdf <- Apiarydf[!duplicated(Apiarydf$BeekeeperID), ]
 
 
-######################################################################
-#End Data Prep   ###################################################
-#####################################################################
+################################## ############## ############## ############## ###############
+#End Data Prep   ################ ############## ############## ############## ###############
+################################ ############## ############## ############## ###############
 
 #Analyses:
 
 # 1. Density/Distribution of beekeepers, colonies, and apiaries… Which counties have the greatest?  ANOVA
       # for beekeepers, use Beekdf and'County' column
       # for apiaries and colonies, use Apiarydf, For colonies: column     ColonyCount and County column. For apiaries: and length of Apiary df 
+
+#Beekpers: 
+mod <- glmer(data = Beekdf, CountyName ~ ColonyCount + (1|) )
+
+mod <- aov(ColonyCount ~ CountyName, data = Beekdf)
+TukeyHSD(mod)
 
 # 2. Distribution of colony losses-  Is there spatial clustering? If so, where are the greatest colony losses? (it appears that losses are higher in counties east of the Green Mountains) Moran's I/ANOVA
     # Use apiary df, and use PerTotLoss, which is the % colony loss for that apiary. and 'County', Lat and Long (long might be spelled wrong- longtitude)
