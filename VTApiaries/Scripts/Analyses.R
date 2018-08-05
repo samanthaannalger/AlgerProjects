@@ -11,6 +11,9 @@ library(ggplot2)
 library(dplyr)
 library(lme4)
 library(data.table)
+library(ape)
+library(spdep)
+library("MuMIn")
 
 # Set working directory:
 setwd("~/Documents/GitHub/AlgerProjects/VTApiaries")
@@ -71,8 +74,37 @@ TukeyHSD(mod)
 # 2. Distribution of colony losses-  Is there spatial clustering? If so, where are the greatest colony losses? (it appears that losses are higher in counties east of the Green Mountains) Moran's I/ANOVA
     # Use apiary df, and use PerTotLoss, which is the % colony loss for that apiary. and 'County', Lat and Long (long might be spelled wrong- longtitude)
 
+
+# clean data frame by selcting needed columns 
+moransDat <- select(Apiarydf, CountyName, MiteCounts, PerTotLoss, Latitude, Longtitude, Beektype)
+
+# remove NAs
+moransDat <- moransDat[complete.cases(moransDat),]
+
+# create distnace matrix
+#For DWV:
+colLoss.dists <- as.matrix(dist(cbind(moransDat$Longtitude, moransDat$Latitude)))
+colLoss.dists.inv <- 1/colLoss.dists
+diag(colLoss.dists.inv) <- 0
+
+# remove infinity 
+colLoss.dists.inv[colLoss.dists.inv=="Inf"] <- 0
+
+
+# run Moran/s I
+Moran.I(moransDat$PerTotLoss, colLoss.dists.inv)
+
 # 3. Distribution of mite monitoring- Where are highest proportions of mite monitors? (it appears that mite monitoring is more common west of the green mountains) Moran's I/ANOVA. 
-      # Use True/False data from 'MiteCounts' True means the beekeeper monitors mite levles
+# Use True/False data from 'MiteCounts' True means the beekeeper monitors mite levles
+
+# run Moran's I
+Moran.I(moransDat$MiteCounts, colLoss.dists.inv)
+
+
+
+
+
+
 
 
 
