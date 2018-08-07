@@ -23,7 +23,7 @@ library(mgcv)
 library(Matrix)
 
 #set working director
-setwd("~/AlgerProjects/VTApiaries/shinyappApiaries/BeekApp/")
+#setwd("~/AlgerProjects/VTApiaries/shinyappApiaries/BeekApp/")
 
 
 #upload data
@@ -223,7 +223,11 @@ ui <- fluidPage(
                    h6("Home of Vermont's Registered Apiary Data"),
                 p("In 2017, Vermont's Apiary Inspection Program began collecting data on beekeeping practices and colony loss. Now, you can explore and visualize results through BeekApp!"),
                 p("BeekApp is open to the public and intended for use by beekeepers, beekeeping clubs, and researchers. It allows users to explore Vermont state trends and identify opportunities for education and new research."), 
-                  p("All data were collected through Vermont Apiary Registrations and Beekeeper Censuses. State wide trends are shown. Beekeeper personal information and apiary locations are kept confidential.")),
+                  p("All data were collected through Vermont Apiary Registrations and Beekeeper Censuses. State wide trends are shown. Beekeeper personal information and apiary locations are kept confidential."),
+                br(),
+                br(),
+                br(),
+                uiOutput("tab")),
            navbarMenu("Maps", 
                     tabPanel("Apiary Density",
                             mainPanel(
@@ -323,6 +327,10 @@ ui <- fluidPage(
           )))))
 
 server <- function(input,output, session){
+  url <- a("Vermont Apiary Inspection Homepage", href="http://agriculture.vermont.gov/food_safety_consumer_protection/apiary")
+  output$tab <- renderUI({
+    tagList("For more information about apiary registration visit:", url)
+  })
     output$mymap <- renderLeaflet({
     m <- leaflet(vermont) %>%
   addTiles() %>%
