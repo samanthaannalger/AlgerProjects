@@ -150,7 +150,7 @@ BeekTypeDF
 #Currenlty no significant differences! p = 0.09
 BeekTypeLoss <- aov(histDat$PerTotLoss~histDat$Beektype)
 summary(BeekTypeLoss)
-
+BeekTypeLoss
 # Check to see which beekeepers told us about hive losses... #MISSING LOTS OF COLONY LOSS DATA FROM COMMERICIAL BEEKEEPERS!!
 NAcheck<-histDat[is.na(histDat$PerTotLoss),]
 table(NAcheck$Beektype)
