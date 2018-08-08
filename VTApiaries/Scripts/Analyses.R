@@ -14,6 +14,7 @@ library(data.table)
 library(ape)
 library(spdep)
 library("MuMIn")
+library("multcomp")
 
 # Set working directory:
 setwd("~/Documents/GitHub/AlgerProjects/VTApiaries")
@@ -65,11 +66,21 @@ Beekdf <- Apiarydf[!duplicated(Apiarydf$BeekeeperID), ]
       # for beekeepers, use Beekdf and'County' column
       # for apiaries and colonies, use Apiarydf, For colonies: column     ColonyCount and County column. For apiaries: and length of Apiary df 
 
-#Beekpers: 
-mod <- glmer(data = Beekdf, CountyName ~ ColonyCount + (1|) )
+# Colony Count: 
+Apiarydf$CountyName <- as.factor(Apiarydf$CountyName)
 
-mod <- aov(ColonyCount ~ CountyName, data = Beekdf)
-TukeyHSD(mod)
+mod <- glm(data = Apiarydf, ColonyCount ~ CountyName, family = poisson)
+Anova(mod)
+#summary(glht(mod, mcp(CountyName="Tukey")))
+
+# Apiary Count
+mod1 <- glm(data = Beekdf, n ~ CountyName, family = poisson)
+Anova(mod1)
+#summary(glht(mod1, mcp(CountyName="Tukey")))
+
+# Beekeeper Count:
+
+
 
 # 2. Distribution of colony losses-  Is there spatial clustering? If so, where are the greatest colony losses? (it appears that losses are higher in counties east of the Green Mountains) Moran's I/ANOVA
     # Use apiary df, and use PerTotLoss, which is the % colony loss for that apiary. and 'County', Lat and Long (long might be spelled wrong- longtitude)
