@@ -24,10 +24,10 @@ library("MuMIn")
 # Set Working Directory 
 
 # FOR SAM:
-# setwd("~/AlgerProjects/2015_Bombus_Survey/CSV_Files") 
+setwd("~/AlgerProjects/2015_Bombus_Survey/CSV_Files") 
 
 # FOR ALEX
-setwd("~/Documents/GitHub/AlgerProjects/2015_Bombus_Survey/CSV_Files") 
+#setwd("~/Documents/GitHub/AlgerProjects/2015_Bombus_Survey/CSV_Files") 
 
 # load in data
 BombSurv <- read.csv("BombSurvNHBS.csv", header=TRUE, stringsAsFactors=FALSE)

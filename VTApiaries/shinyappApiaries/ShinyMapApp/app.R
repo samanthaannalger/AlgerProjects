@@ -268,6 +268,10 @@ server <- function(input, output, session) {
     # create an output table of this dataframe (Full table on tab)
     output$table <- DT::renderDataTable({
       DT::datatable(SSdat[[1]])
+      # search box:
+      output$table <- DT::renderDataTable(
+        DT::datatable(SSdat[[1]], options = list(searching = TRUE))
+      )
     })
     # Downloadable csv of selected dataset ----
     output$downloadData <- downloadHandler(

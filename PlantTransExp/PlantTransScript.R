@@ -14,6 +14,9 @@ plantTrans <- read.csv("plantTransPlantsDF.csv", header=TRUE, sep = ",", strings
 
 virusLoad <- read.csv("datTransPos.csv", header=TRUE, sep = ",", stringsAsFactors=FALSE) 
 
+PlantVL <- read.csv ("CleanPlantVirus.csv", header= TRUE, sep = ",", stringsAsFactors=FALSE)
+
+
 # read in data, (skip over meta data in csv file: skip = 9) :
 VideoData <- read.csv("PlantTransVideoData.csv", header=TRUE, sep = ",", stringsAsFactors=FALSE, skip = 9)
 
@@ -87,7 +90,7 @@ colors <- c("olivedrab", "darkolivegreen2")
 
 plot1 <- ggplot(PlantVirusSum, aes(x=group, y=mean, fill=target_name)) +
   geom_bar(stat="identity",
-           position=position_dodge()) + labs(x=NULL, y="% plants with virus detected")
+           position=position_dodge()) + labs(x=NULL, y="% flowers with virus detected")
 
 #adding additional aesthetics to the figure:
 #name....labels...= for legend (if there is a fill)
@@ -142,7 +145,7 @@ plot1 <- ggplot(plantSpp, aes(x=target_name, y=mean, fill=spp)) +
   geom_bar(stat="identity", color="black",
            position=position_dodge()) + labs(x="Virus", y = "% of Flowers with Virus Detected")
 
-plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Plant Species:", labels=c("Birdsfoot Trefoil", "Red Clover", "White Clover")) + theme(legend.position=c(.8, .85)) + coord_cartesian(ylim = c(0, 1)) + scale_y_continuous(labels = scales::percent)
+plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Plant Species:", labels=c(expression(italic("L. corniculatus"),italic("T. pretense"), italic("T. repens")))) + theme(legend.position=c(.8, .85)) + coord_cartesian(ylim = c(0, 1)) + scale_y_continuous(labels = scales::percent)
 
 ############################################
 #Full Model:
@@ -270,9 +273,8 @@ plot(Loadno0$genomeCopy~Loadno0$foragetime)
 # Figure of the log virus genome copies 
 LoadPlot <- ggplot(Loadno0, aes(x=target_name, y=loggenomeCopy, fill=spp)) +
   labs(x=NULL, y = "Log(virus load)")+
-  theme_classic() +  
-  geom_boxplot(outlier.colour="black", outlier.shape=16,
-               outlier.size=2, notch=FALSE) + geom_dotplot(binaxis='y', stackdir = 'center', dotsize = 0.5, position = position_dodge()) + scale_fill_manual(values=colors, name="Plant Species:", labels=c("L. corniculatus", "T. pretense", "T. repens"))
+  theme_classic(base_size = 20) +  
+  geom_boxplot(outlier.colour="black", outlier.shape=16, outlier.size=2, notch=FALSE) + geom_dotplot(binaxis='y', stackdir = 'center', dotsize = 0.5, position = position_dodge()) + scale_fill_manual(values=colors, name="Plant Species:", labels=c(expression(italic("L. corniculatus"),italic("T. pretense"), italic("T. repens"))))
 
 LoadPlot
 
@@ -480,3 +482,113 @@ plantTransDiv <- ddply(plantAcute, c("target_name", "spp", "exp"), summarise,
                        se = sd / sqrt(n))
 plantTransDiv$mean
 
+
+# Testing virus load on plants for Plant Trans and BombSurv here...
+
+# only include virus positive plant samples
+PlantVL <- PlantVL[ which(PlantVL$virusBINY==1), ]
+
+# split by experiment
+PlantVLsplit <- split(PlantVL, PlantVL$Exp)
+
+# get the Max, Min, Average VL for each experiment:
+
+summary(PlantVLsplit$PlantTrans$genomeCopy)
+#   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#   6959   20790   47830  107200  125100  554300 
+# Range = 10^3 - 10^5
+# Mean = 10^5
+sd(PlantVLsplit$PlantTrans$genomeCopy)
+# 53358.1
+
+summary(PlantVLsplit$Survey$genomeCopy)
+#    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#    17010   39470   68340  175600  181200  702400
+# Range= 10^4- 10^5
+# Mean = 10^4
+
+sd(PlantVLsplit$Survey$genomeCopy)
+# 246831.9
+
+# Determine starting VL for honey bees 
+#read in data:
+HB <- read.csv ("CorgiTest.csv", header= TRUE, sep = ",", stringsAsFactors=FALSE)
+
+# read in functions:
+###########################################################################
+# function name: VirusNorm
+# description: normalizes virus data with dilutions and constants 
+# parameters: number of bees and a data frame 
+# returns a dataframe with normalized virus values 
+###########################################################################
+
+VirusNorm <- function(number_bees = 50, data=data){
+  
+  # set constant values for genome copies per bee calculations:
+  crude_extr <- 100
+  eluteRNA <- 50
+  GITCperbee <- 200
+  cDNA_eff <- 0.1
+  rxn_vol <- 3
+  
+  #create column for total_extr_vol
+  total_extr_vol <- (GITCperbee * number_bees)
+  
+  # create column for genome copies per bee:
+  data$genomeCopy <- ((((((data$quantity_mean / cDNA_eff) / rxn_vol) * data$dil.factor) * eluteRNA) / crude_extr) * total_extr_vol) / number_bees
+  
+  # norm_genomeCopy is 0 if NA
+  data$genomeCopy[is.na(data$genomeCopy)] <- 0
+  
+  return(data)
+  
+}
+
+###########################################################################
+# END OF FUNCITON
+###########################################################################
+
+
+
+
+
+###########################################################################
+# function name: actinNormal
+# description: normalizes virus data with actin values 
+# parameters: a data frame with actin values
+# returns a dataframe with normalized virus values 
+###########################################################################
+
+actinNormal <- function(data=MigVirus){
+  
+  # pull only actin values out of dataframe
+  ActinOnly <- data[which(data$target_name=="ACTIN"),]
+  
+  # create DF of ACTIN genome copies and lab ID:
+  ActinDF <- data.frame(ActinOnly$sample_name, ActinOnly$run, ActinOnly$genomeCopy)
+  colnames(ActinDF) <- c("sample_name", "run", "ACT_genomeCopy")
+  
+  # merge ACTIN dataframe with main dataframe:
+  #Need rownames and all.x=TRUE because data frames are different sizes.
+  data <- merge(data, ActinDF, by=c("sample_name", "run"), all.x=TRUE)
+  
+  # find mean of all ACTIN values:
+  ActinMean <- mean(ActinOnly$genomeCopy, na.rm = TRUE)
+  
+  # create column for normalized genome copies per bee:
+  data$NormGenomeCopy <- (data$genomeCopy/data$ACT_genomeCopy)*ActinMean
+  
+  return(data)
+}
+
+
+# USE FUNCTIONS:
+HBNorm<- VirusNorm(data=HB, 50)
+HBVL<-actinNormal(data=HBNorm)
+table(HBVL$target_name, HBVL$NormGenomeCopy)
+View(HBVL)
+
+# HB: DWV- 10^9, 
+#     BQCV- 10^6
+#NYHB: DWV - 10^4
+#     BQCV: 10^8

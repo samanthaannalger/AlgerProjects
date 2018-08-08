@@ -116,8 +116,14 @@ BeekTypeDF$Percent <- c(BeekTypeDF$perApiaries[1:3], BeekTypeDF$perColonies[4:6]
 #Reorder factors for stacked bar plot:
 BeekTypeDF$Beektype <- factor(BeekTypeDF$Beektype, levels = c("Hobbyist","Sideliner", "Commercial"))
 
+#rename factors for plotting:
+levels(BeekTypeDF$Beektype) <- c("Hobbyist (1 apiary)", "Sideliner (2-5 apiaries)", "Commercial (5+ apiaries)")
+
 # Reorder factors for colony loss bar plot:
 BeekTypeStats$Beektype <- factor(BeekTypeStats$Beektype, levels = c("Hobbyist","Sideliner", "Commercial"))
+
+#rename factors for plotting:
+levels(BeekTypeStats$Beektype) <- c("Hobbyist (1 apiary)", "Sideliner (2-5 apiaries)", "Commercial (5+ apiaries)")
 
 # Create df for Pie Chart:
 Singles <- Shinydf[!duplicated(Shinydf$BeekeeperID), ]
@@ -212,10 +218,16 @@ pal <- colorNumeric("Blues",NULL)
 ui <- fluidPage(
   theme = shinytheme("cerulean"),
         navbarPage("VT BeekApp",
-           tabPanel("Home",
+           tabPanel("About",
                 h4("Welcome to BeekApp"),
-                   p("Home of Vermont's Registered Apiary Data"),
-                h5("Under Consruction")),
+                   h6("Home of Vermont's Registered Apiary Data"),
+                p("In 2017, Vermont's Apiary Inspection Program began collecting data on beekeeping practices and colony loss. Now, you can explore and visualize results through BeekApp!"),
+                p("BeekApp is open to the public and intended for use by beekeepers, beekeeping clubs, and researchers. It allows users to explore Vermont state trends and identify opportunities for education and new research."), 
+                  p("All data were collected through Vermont Apiary Registrations and Beekeeper Censuses. State wide trends are shown. Beekeeper personal information and apiary locations are kept confidential."),
+                br(),
+                br(),
+                br(),
+                uiOutput("tab")),
            navbarMenu("Maps", 
                     tabPanel("Apiary Density",
                             mainPanel(
@@ -266,6 +278,7 @@ ui <- fluidPage(
           navbarMenu("Data",
                       tabPanel("Registrations",
                             mainPanel(
+                              br(),
                               h3("Registrations by beekeeper type"),
                               br(),
                               plotlyOutput('BeekPlot', height = "350px"),
@@ -275,10 +288,14 @@ ui <- fluidPage(
                               h3("Colony losses"),
                               br(),
                               tabsetPanel(type = "tabs",
-                                          tabPanel("Loss Summary (2017)",
+                                          tabPanel("Loss Summary",
+                                              br(),
+                                              p("Annual colony loss by beekeepers type (2017)."),
                                               plotlyOutput("BeekLoss", height = "350px"),
                                               DT::dataTableOutput("BeekTable2")),
                                           tabPanel("Losses Explained",
+                                              br(),
+                                              p("Explanations provided by beekeepers for their colony losses."),
                                               plotlyOutput("LossExp", height = "500px"),
                                               plotlyOutput("Other")))
                               )),
@@ -287,9 +304,13 @@ ui <- fluidPage(
                                  h3("Pest Management"),
                                  br(),
                                  tabsetPanel(type = "tabs",
-                                      tabPanel("Mite Monitoring", 
+                                      tabPanel("Mite Monitoring",
+                                               br(),
+                                               p("Figure shows the percentage of beekeepers who reported monitoring Varroa mites in their colonies."),
                                              plotlyOutput("pie", height = "350px")),
                                       tabPanel("Monitoring Methods",
+                                               br(),
+                                            p("The methods beekeepers report using to monitor Varroa mites in their colonies."),
                                             plotlyOutput("MiteMethods", height = "500px")),
                                       tabPanel("Treatments ",
                                                br(),
@@ -306,6 +327,10 @@ ui <- fluidPage(
           )))))
 
 server <- function(input,output, session){
+  url <- a("Vermont Apiary Inspection Homepage", href="http://agriculture.vermont.gov/food_safety_consumer_protection/apiary")
+  output$tab <- renderUI({
+    tagList("For more information about apiary registration visit:", url)
+  })
     output$mymap <- renderLeaflet({
     m <- leaflet(vermont) %>%
   addTiles() %>%
@@ -408,7 +433,7 @@ output$BeekLoss <- renderPlotly({
                                   theme_classic() + 
                                   labs(x=NULL, y = "% of total in Vermont") +
                                   scale_fill_brewer() +
-                                  scale_x_discrete(labels=c("Apiary" = "Apiaries", "Colony" = "Colonies")) +
+                                  scale_x_discrete(labels=c("Hobbyist", "Sideliner", "Commercial")) +
                                   geom_errorbar(aes(ymin = loss - se, ymax = loss + se, width = 0.2)) +
                                   guides(fill=guide_legend(title="Beekeeper Type"))
   
@@ -431,9 +456,11 @@ output$BeekTable2 <- DT::renderDataTable({
 })
 
 output$pie <- renderPlotly({
-  pie<-plot_ly(mitedf, labels = ~group, 
+  pie<-plot_ly(mitedf, 
+               labels = ~group, 
                values = ~value, 
-               type = 'pie') %>%
+               type = 'pie',
+               marker = list(colors=c("dodgerblue", "lightskyblue"))) %>%
     layout( xaxis = list(showgrid = FALSE, 
                          zeroline = FALSE, showticklabels = FALSE), 
             yaxis = list(showgrid = FALSE, zeroline = FALSE, 
@@ -449,7 +476,8 @@ output$pie <- renderPlotly({
 output$MiteMethods <- renderPlotly ({
           MitePlot <- ggplot(MiteMon,
                       aes(x=question, y=mean, fill=question)) + 
-                      geom_bar(stat="identity", color="black", position=position_dodge()) + 
+                      geom_bar(stat="identity", position=position_dodge()) + 
+                      theme_classic() +
                       labs(x="Mite Monitoring Method", y = "% Reported Use") + 
                       theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), 
                       legend.position="none", axis.text=element_text(size=15), 
