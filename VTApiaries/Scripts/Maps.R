@@ -14,7 +14,7 @@ library(leaflet)
 library(rgdal)
 
 #set working director
-setwd("~/AlgerProjects/VTApiaries/shinyappApiaries")
+setwd("~/AlgerProjects/VTApiaries/CSV_files/")
 
 
 #upload data
@@ -48,6 +48,7 @@ FullApiaryDat <- dplyr::select(FullApiaryDat, -AccountName, -BeeKeeperStatus)
 
 Shinydf <- merge.data.frame(FullApiaryDat,histDat, by = "LocationID", all.y = TRUE)
 
+write.csv(Shinydf, file ="Shinydf.csv")
 table(Shinydf$CountyName)
 
 

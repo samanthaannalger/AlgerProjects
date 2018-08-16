@@ -39,7 +39,7 @@ InspectCloud <- read.csv("InspectWordCloud.csv",
 #########################################################
 
 #Combine all Text:
-OpinionText <- paste(unlist(InspectCloud$BeeChallenges), collapse =" ")
+OpinionText <- paste(unlist(InspectSurvey$BeeChallenges), collapse =" ")
 # I then copied and pasted the above text to a .txt file and saved it in .csv folder. Is there a way to do this in R?
 #text <- readLines("CSV_files/WordCloud2.txt")
 
@@ -62,7 +62,7 @@ docs <- tm_map(docs, removeWords, stopwords("english"))
 # Remove your own stop word
 
 # specify your stopwords as a character vector
-docs <- tm_map(docs, removeWords, c("michigan"))
+docs <- tm_map(docs, removeWords, c("michigan", "state", "keith"))
 # Remove punctuations
 docs <- tm_map(docs, removePunctuation)
 # Eliminate extra white spaces
@@ -78,16 +78,32 @@ head(d, 10)
 #Generating word cloud
 set.seed(1234)
 wordcloud(words = d$word, freq = d$freq, min.freq = 2,
-          max.words=200, random.order=FALSE, rot.per=0.4, 
+          max.words=300, random.order=FALSE, rot.per=0.6, 
           colors=brewer.pal(8, "Dark2"))
 
 ##################################################
 
 table(InspectSurvey$Registration)
 
-6/16
-4/16
-6/16
-3/16
 
-0.42+0.42+0.28
+#Function to get the percentage of each registration types:
+multi.fun <- function(x) {
+  cbind(freq = table(x), 
+        percentage = round(prop.table(table(x))*100, 2))
+}
+
+#Using the function on the data:
+multi.fun(InspectSurvey$Registration)
+                   
+# freq percentage
+# Mandatory   11         44
+# N/A          5         20
+# Voluntary    9         36
+# 55, 45
+
+multi.fun(InspectSurvey$PositionRequirements)
+multi.fun(InspectSurvey$FundingOpinion)
+
+(InspectSurvey$TimeBeeSeason)
+100+75+100+20+15+10+75+65+60
+520/9

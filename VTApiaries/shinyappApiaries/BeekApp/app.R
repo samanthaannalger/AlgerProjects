@@ -23,7 +23,7 @@ library(mgcv)
 library(Matrix)
 
 #set working director
-#setwd("~/AlgerProjects/VTApiaries/shinyappApiaries/BeekApp/")
+setwd("~/AlgerProjects/VTApiaries/shinyappApiaries/BeekApp/")
 
 
 #upload data
@@ -282,7 +282,8 @@ ui <- fluidPage(
                               h3("Registrations by beekeeper type"),
                               br(),
                               plotlyOutput('BeekPlot', height = "350px"),
-                              DT::dataTableOutput("BeekTable"))),
+                              DT::dataTableOutput("BeekTable"))
+                            ),
                       tabPanel("Colony Loss",
                                mainPanel(
                               h3("Colony losses"),
@@ -306,7 +307,7 @@ ui <- fluidPage(
                                  tabsetPanel(type = "tabs",
                                       tabPanel("Mite Monitoring",
                                                br(),
-                                               p("Figure shows the percentage of beekeepers who reported monitoring Varroa mites in their colonies."),
+                                               p("The percentage of beekeepers who reported monitoring Varroa mites in their colonies."),
                                              plotlyOutput("pie", height = "350px")),
                                       tabPanel("Monitoring Methods",
                                                br(),
@@ -497,13 +498,13 @@ output$MiteMethods <- renderPlotly ({
 
 output$LossExp <- renderPlotly ({
                     LossExpPlot <- ggplot(LossCause, aes(x=question, y=mean, fill=question)) + 
-                    geom_bar(stat="identity", color="black",
+                    geom_bar(stat="identity",
                     position=position_dodge()) + 
                     labs(x="Causes", y = "% Reported Causes") + 
                     theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), 
                           legend.position="none", axis.text=element_text(size=9), 
                           axis.title=element_text(size=18,face="bold")) + 
-                    geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.2)) + 
+                    geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.2)) +
                        scale_fill_brewer() +
                       scale_x_discrete(labels=c("ColonyLossVarroaMiteYN" = "Varroa", "ColonyLossStarvationYN"= "Starvation", "ColonyLossBearsYN" = "Bears", "ColonyLossAmericanFoulbroodYN" = "AFB", "ColonyLossSwarmingYN" = "Swarming", "ColonyLossPesticidesYN" = "Pesticides", "ColonyLossMitacidesYN" = "Mitacides", "OtherColonyLossYN"= "Other"))
 
