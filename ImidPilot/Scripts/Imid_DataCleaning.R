@@ -207,8 +207,8 @@ Consump <- merge(x = Consump, y = ImidConsumpTotal, by = "sample_name", all.x=TR
 
 # Write out data frames
 #Sucrose/imid consumption data:
-write.csv(Consump, "csv_files/ConsumpDF.csv")
+#write.csv(Consump, "csv_files/ConsumpDF.csv")
 
 #Virus data:
-write.csv(ImidVirus, "csv_files/ImidDF.csv")
+#write.csv(ImidVirus, "csv_files/ImidDF.csv")
 

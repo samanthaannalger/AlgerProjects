@@ -91,15 +91,15 @@ summary(glht(BQCVMod, mcp(Treatment="Tukey")))
 ImidDWV$Treatment <- factor(ImidDWV$Treatment, levels = c("C", "0.1", "1", "10", "20"))
 
 # remove 0.1 and 1 treatment groups
-ImidDWV <- ImidDWV[!(ImidDWV$Treatment=="0.1"), ]
-ImidDWV <- ImidDWV[!(ImidDWV$Treatment=="1"), ]
+#ImidDWV <- ImidDWV[!(ImidDWV$Treatment=="0.1"), ]
+#ImidDWV <- ImidDWV[!(ImidDWV$Treatment=="1"), ]
 
 # Figure of the log virus genome copies 
 DWVPlot <- ggplot(ImidDWV, aes(x=Treatment, y=logDWV, fill=Treatment)) +
   labs(x="Dose (ppb)", y = "Log(DWV titer)")+
   theme_classic() +  
   geom_boxplot(outlier.colour="black", outlier.shape=16,
-               outlier.size=2, notch=FALSE) + geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5) + scale_x_discrete(labels=c("Control","10","20")) + scale_fill_grey(start = 1, end = .4, guide=FALSE)
+               outlier.size=2, notch=FALSE) + geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5) + scale_x_discrete(labels=c("Control","0.1","1", "10","20")) + scale_fill_grey(start = 1, end = .4, guide=FALSE)
 
 DWVPlot
 
@@ -131,14 +131,14 @@ summary(Evap)
 #############################################
 # Time Series for Sucrose Consumption FIGURE:
 
-# I manually made blank sample_names "NA", these are bees that died and were not part of the experiment 
-
 # Remove two outliers- measuring error- values are more than the sucrose and vial can possibly weigh: sample_name: I-33, Treatment:20, time step 3: & sample I-4, Treatment: C, time step 2
 
 ConsumpDF<-ConsumpDF[!(ConsumpDF$sample_name=="I-33" & ConsumpDF$TimeStep==3),]
 ConsumpDF<-ConsumpDF[!(ConsumpDF$sample_name=="I-4" & ConsumpDF$TimeStep==2),]
+ConsumpDF<-ConsumpDF[!(ConsumpDF$sample_name==""),]
 ConsumpDF<-ConsumpDF[!is.na(ConsumpDF$sample_name),]
 ConsumpDF<-ConsumpDF[!is.na(ConsumpDF$Consumption_g),]
+
 
 # reorder factors for plotting
 ConsumpDF$Treatment <- factor(ConsumpDF$Treatment, levels = c("C", "0.1", "1", "10", "20"))
@@ -171,8 +171,11 @@ plot
 ConsumpDF$TimeStep <- as.factor(ConsumpDF$TimeStep)
 ConsumpDF$Treatment <- as.factor(ConsumpDF$Treatment)
 
-mod <- glmer(data=ConsumpDF, Consumption_mL~Treatment*TimeStep + (1|Colony/sample_name), family=Gamma)
+mod <- glmer(data=ConsumpDF, Consumption_mL~Treatment*TimeStep + (1|Colony), family=Gamma)
 Anova(mod)
+
+mod <- lm(ConsumpDF$Consumption_mL~ConsumpDF$Treatment*ConsumpDF$TimeStep)
+summary(mod)
 
 summary(glht(mod, mcp(Treatment="Tukey")))
 
@@ -270,10 +273,11 @@ legend(.6, .6, legend=c("0.1", "1", "10","20","Control"), title = "Dose (ppb)",
 
 
 
+mean(ImidDF$DWVbinary, na.rm=TRUE)
+mean(ImidDF$BQCVbinary, na.rm=TRUE)
 
-
-
-
+x<-aov(ImidDF$DWVbinary~ImidDF$Treatment)
+summary(x)
 
 # END OF FIGURES AND STATS##################################
 ################################################################################################################################################################################################################################################

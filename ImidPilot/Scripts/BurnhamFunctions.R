@@ -200,7 +200,7 @@ actinNormal <- function(data=MigVirus){
   
   # merge ACTIN dataframe with main dataframe:
   #Need rownames and all.x=TRUE because data frames are different sizes.
-  data <- merge(data, ActinDF, by=c("sample_name", "run"), all.x=TRUE)
+  data <- merge(data, ActinDF, by=c("sample_name"), all.x=TRUE)
   
   # find mean of all ACTIN values:
   ActinMean <- mean(ActinOnly$genomeCopy, na.rm = TRUE)
