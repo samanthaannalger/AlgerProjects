@@ -6,7 +6,7 @@
 # Preliminaries:
 # Clear memory of characters:
 rm(list=ls())
-#setwd("~/AlgerProjects/VTApiaries/shinyappApiaries/")
+setwd("~/AlgerProjects/VTApiaries/shinyappApiaries/")
 
 library(shiny)
 library(data.table)

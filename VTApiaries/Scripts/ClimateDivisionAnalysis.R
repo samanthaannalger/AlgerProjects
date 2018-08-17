@@ -11,24 +11,63 @@ library(ggplot2)
 library(dplyr)
 library(lme4)
 library(data.table)
-library(rgdal)
 library(rgeos)
-library(leaflet)
+library(sf)
+library(maps)
+library(maptools)
+library(sp)
+library(rgdal)
 # Set working directory:
 setwd("~/AlgerProjects/VTApiaries/CSV_files/")
 
+Shinydf <- read.csv("Shinydf.csv", 
+                          header=TRUE, 
+                          sep = ",", 
+                          stringsAsFactors = FALSE)
 
-# read in geojson data (county basemaps)
-division <- rgdal::readOGR(dsn="AK_divisions_NAD83.geojson")
+Clim <- read.csv("DivDat.csv", 
+                    header=TRUE, 
+                    sep = ",", 
+                    stringsAsFactors = FALSE,
+                    skip = 8)
 
-(division@data)
+# GeoDataConverter:
+# https://mygeodata.cloud/converter/
 
-pal <- colorNumeric("viridis", NULL)
+#read in data:
+division <- read_sf("~/AlgerProjects/VTApiaries/CSV_files/CONUS_CLIMATE_DIVISIONS.shp")
 
-leaflet(division) %>%
-  addTiles() %>%
-  addPolygons(stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
-              fillColor = ~pal)
-            #  label = ~paste0(county, ": ", formatC(pop, big.mark = ","))) %>%
- # addLegend(pal = pal, values = ~log10(pop), opacity = 1.0,
-  #          labFormat = labelFormat(transform = function(x) round(10^x)))
+
+# https://stackoverflow.com/questions/13316185/r-convert-zipcode-or-lat-long-to-county
+
+# Pull the lat and long coordinates out of Shinydf
+coords<- dplyr::select(Shinydf, Longtitude,Latitude)
+
+#remove NAs
+coords <- coords[complete.cases(coords),]
+
+# Begin spatial data analysis...
+points <- SpatialPoints(coords)
+#SpatialPolygonDataFrame - I'm using a shapefile of climatological divisions
+counties <- rgdal::readOGR(dsn="CONUS_CLIMATE_DIVISIONS.shp")
+#select Vermont climatological divisions only based on state 'FIPS' code.
+counties <- counties[counties$STATE_FIPS == 50, ]
+#assume same proj as shapefile!
+proj4string(points) <- proj4string(counties)
+#get division polygon point is in
+Div <- as.character(over(points, counties)$NAME)
+
+#Bind it back with the coordinates
+Div<-cbind(coords, Div)
+
+#merge it back with the original df
+ClimDiv <- merge(Div, Shinydf, by = c("Latitude","Longtitude"))
+
+# Now need to add climatological data:
+
+# Testing to see if colony loss differed by climatological divsision.
+mod<-aov(ClimDiv$PerTotLoss~ClimDiv$Div)
+summary(mod)
+mod
+TukeyHSD(mod)
+

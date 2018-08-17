@@ -205,11 +205,14 @@ ui <- navbarPage("InspectApp",
                  tabPanel("Map",
                           sidebarLayout(
                             sidebarPanel(
+                              radioButtons("typeInput", "Choose Selection Method ", choices = c("Distance", "County", "Entire State")),
                               sliderInput("distance", # Slider bar for distance
                                           "Distance (Miles):",
                                           min = 1,
                                           max = 40,
-                                          value = 5)
+                                          value = 5),
+                              selectInput("countyInput", "County",
+                                          choices = c("Addison", "Bennington", "Caledonia", "Chittenden", "Essex", "Franklin", "Grand Isle", "Lamoille", "Orange", "Orleans", "Rutland", "Washington", "Widham", "Windsor"))
                             ),
                             
                             mainPanel(
@@ -232,18 +235,20 @@ ui <- navbarPage("InspectApp",
                           # Button
                           downloadButton("downloadData", "Download")
                  ),
-                 navbarMenu("More",
-                            tabPanel("Summary",
-                                     DT::dataTableOutput("summary")
-                            ),
-                            tabPanel("About",
-                                     fluidRow(
-                                       column(6),
-                                       column(3)
-                                     )
-                            )
+                 tabPanel("About",
+                          h2("About InspectApp"),
+                          p("InspectApp is intended for use by apiary inspection personnel to derive summary statistics, query registration data, and prioritize inspections."),
+                          h4("'Map' Tab"),
+                          p("The 'Map' tab shows a map that displays all specified registered apiaires. Click the yellow points to view additional information about each apiary. Using the search bar, enter a latitude and longitude or address to display all apiaries near a specified location. Use the slider distance bar to select only apiaries within a specified distance to the point. A table below the map summarizes the selected data. "),
+                          h4("'Table' Tab"),
+                          p("The 'Table' tap displays the full dataset for selected apiaries. Click the columns to sort the data or use the search bar to query the dataset. The 'download' button on the bottom allows you to download a .csv file of the queried data table"),
+                          br(),
+                        h4("Applications"),
+                        h5("New Apiary Locations"),
+                        p("To test if proposed locations for new apiaries fall within 2 miles from a preexisting apiary, enter the proposed location in the search map of the 'Map' tab. Use the slider bar to specify '2 miles'. All apiaries within 2 miles from the proposed location will apear on the map. The summary table below the map and full table on the 'Table' tab display the queried data"),
+                          h5("Prioritizing inspections after AFB outbreak"),
+                          p("After an AFB outbreak, use InspectApp to identify all apiaries within 5 miles from the outbreak to schedule inspections. Using the search bar, enter the location of the AFB outbreak. Using the slider bar, choose '5 miles'. Navigate to the 'Table' tab and export the full list. Use this list to schedule inspections."))
                  )
-)
 
 
 # Server code for Shiny App:
