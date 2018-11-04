@@ -148,14 +148,83 @@ plot1 <- ggplot(plantSpp, aes(x=target_name, y=mean, fill=spp)) +
 plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Plant Species:", labels=c(expression(italic("L. corniculatus"),italic("T. pretense"), italic("T. repens")))) + theme(legend.position=c(.8, .85)) + coord_cartesian(ylim = c(0, 1)) + scale_y_continuous(labels = scales::percent)
 
 ############################################
+library(multcomp)
+
+
 #Full Model:
 ModDat <- plantTreat
+ModDat$spp <- as.factor(ModDat$spp)
+ModDat$target_name <- as.factor(ModDat$target_name)
 
-##### MODEL WORKS!!!! and is legal!!!!
-Fullmod3 <- glm(data=ModDat, BINYprefilter ~ spp * (target_name + experiment), family = binomial(link="logit"))
 
+
+# subset to remove diversity and comingle
+ModDatAcute <- ModDat[!ModDat$experiment==c("diversity"), ]
+ModDatAcute <- ModDatAcute[!ModDatAcute$experiment==c("comingle"), ]
+
+
+
+##### Revision, attempt to seperate out experiments and run analysis seperately 
+Fullmod3 <- glm(data=ModDatAcute, BINYprefilter ~ spp * target_name, family = binomial(link="logit"))
 anova(Fullmod3, test="Chisq")
-Fullmod3
+
+
+
+
+# remove comingle
+ModDatNoCoM <- ModDat[!ModDat$experiment==c("comingle"), ]
+
+ModDatNoCoM$expSimple <- ifelse(ModDatNoCoM$experiment=="diversity", "diversity", "acute")
+ModDatNoCoM$expSimple <- as.factor(ModDatNoCoM$expSimple)
+
+
+#Checking out by plant species
+plantSpp <- ddply(ModDatNoCoM, c("target_name", "spp", "expSimple"), summarise, 
+                  n = length(BINYprefilter),
+                  mean = mean(BINYprefilter, na.rm=TRUE),
+                  sd = sd(BINYprefilter, na.rm=TRUE),
+                  se = sd / sqrt(n))
+
+plantSppMon <- plantSpp[plantSpp$expSimple=="acute",]
+plantSppDiv <- plantSpp[plantSpp$expSimple=="diversity",]
+
+#choosing color pallet
+colors <- c("goldenrod", "violetred4", "snow1")
+
+#Create a bar graph for viruses by plant species (aes= aesthetics):
+plot1 <- ggplot(plantSppMon, aes(x=target_name, y=mean, fill=spp)) + 
+  geom_bar(stat="identity", color="black",
+           position=position_dodge()) + labs(x="Single Species", y = "% of Flowers with Virus Detected")+ theme_minimal(base_size = 16) + scale_fill_manual(values=colors, name="Plant Species:", labels=c(expression(italic("L. corniculatus"),italic("T. pretense"), italic("T. repens")))) + theme(legend.position=c(.7, .85)) + coord_cartesian(ylim = c(0, 1)) + scale_y_continuous(labels = scales::percent) 
+
+
+#Create a bar graph for viruses by plant species (aes= aesthetics):
+plot2 <- ggplot(plantSppDiv, aes(x=target_name, y=mean, fill=spp)) + 
+  geom_bar(stat="identity", color="black",
+           position=position_dodge()) + labs(x="Diversity", y = NULL) + theme_minimal(base_size = 16) + scale_fill_manual(values=colors, name="Plant Species:", labels=c(expression(italic("L. corniculatus"),italic("T. pretense"), italic("T. repens")))) + theme(legend.position="none", plot.margin = unit(c(0,0,0,0), "cm")) + coord_cartesian(ylim = c(0, 1)) + scale_y_continuous(labels = NULL)
+
+library(patchwork)
+plot1+plot2
+
+
+
+
+ModDatNoCoM$INT <- interaction(ModDatNoCoM$spp, ModDatNoCoM$expSimple)
+##### MODEL WORKS!!!! and is legal!!!!
+Fullmod4 <- glm(data=ModDatNoCoM, BINYprefilter ~ expSimple + INT, family = binomial(link="logit"))
+anova(Fullmod4, test="Chisq")
+
+
+
+
+Fullmod4 <- glm(data=ModDatNoCoM, BINYprefilter ~ -1 + INT, family = binomial(link="logit"))
+Anova(Fullmod4, test="Chisq")
+
+
+Treat.comp<-glht(Fullmod4, mcp(INT='Tukey'))
+
+summary(Treat.comp)
+
+
 
 # Testing vistis and forage times across plant species:
 # remove duplicates:
@@ -214,13 +283,47 @@ noBFT<- Loadno0 [! (Loadno0$spp =="BFT"), ]
 #Loadno0$foragetime <- as.factor(Loadno0$foragetime)
 Loadno0$spp <- as.factor(Loadno0$spp)
 
-# VL of the two viruses:
-Fullmod4 <- lm(data=Loadno0, loggenomeCopy ~ spp * target_name)
-anova(Fullmod4)
-TukeyHSD(Fullmod4)
 
+# removove comingle and create binary exp var
+Loadno0 <- Loadno0[!Loadno0$experiment=="comingle",]
+Loadno0$expMerge <- ifelse(Loadno0$experiment=="diversity", "diversity", "acute")
+Loadno0$expMerge <- as.factor(Loadno0$expMerge)
+
+x <- split(Loadno0, Loadno0$expMerge)
+
+kruskal.test(data=x$acute, loggenomeCopy ~ target_name)
+
+boxplot(data=x$acute, loggenomeCopy ~ target_name)
+
+kruskal.test(data=x$acute, loggenomeCopy ~ spp)
+
+
+
+summary(Fullmod5)
 library("multcomp")
-summary(glht(Fullmod4, mcp(spp="Tukey")))
+summary(glht(Fullmod5, mcp(spp="Tukey")))
+
+
+FullmodN <- aov(data=Loadno0, loggenomeCopy ~ expMerge)
+
+kruskal.test(data=Loadno0, loggenomeCopy ~ expMerge)
+
+summary(FullmodN)
+
+
+
+boxplot(data=Loadno0, loggenomeCopy ~ expMerge)
+
+
+fig1 <- ddply(Loadno0, c("expMerge", "target_name"), summarise, 
+              n = length(loggenomeCopy),
+              mean = mean(loggenomeCopy, na.rm=TRUE),
+              sd = sd(loggenomeCopy, na.rm=TRUE),
+              se = sd / sqrt(n))
+
+
+
+
 
 
 str(Loadno0)
@@ -592,3 +695,67 @@ View(HBVL)
 #     BQCV- 10^6
 #NYHB: DWV - 10^4
 #     BQCV: 10^8
+
+
+########### Analysis visitation time
+
+
+
+
+
+
+VD_diversity <- VideoData[VideoData$Experiment=="diversity",]
+VD_diversity$ExpComp <- c(rep("Diversity", length(VD_diversity$PlantSpp)))
+
+hist(log10(VD_diversity$Forage))
+
+mod <- aov(log10(VD_diversity$Forage)~VD_diversity$PlantSpp)
+TukeyHSD(mod)
+
+boxplot(log10(VD_diversity$Forage)~VD_diversity$PlantSpp)
+
+
+
+
+
+
+
+VD_acute <- VideoData[!VideoData$Experiment==c("diversity"),]
+VD_acute$ExpComp <- c(rep("Single Species", length(VD_acute$PlantSpp)))
+
+hist(log10(VD_acute$Forage))
+VD_acute$PlantSpp <- as.factor(VD_acute$PlantSpp)
+mod <- aov(data=VD_acute, log10(Forage+1)~PlantSpp)
+summary(glht(mod, mcp(PlantSpp="Tukey")))
+summary(mod)
+boxplot(log10(VD_acute$Forage)~VD_acute$PlantSpp)
+
+
+
+
+
+
+
+
+VD <- rbind(VD_acute, VD_diversity)
+VD$PlantSpp <- as.factor(VD$PlantSpp)
+
+mod <- aov(data=VD, log10(Forage+1)~PlantSpp*ExpComp)
+summary(mod)
+
+
+
+
+
+plantSpp <- ddply(VD, c("PlantSpp", "ExpComp"), summarise, 
+                  n = length(Forage),
+                  mean = mean(Forage, na.rm=TRUE),
+                  sd = sd(Forage, na.rm=TRUE),
+                  se = sd / sqrt(n))
+
+ggplot(VD, aes(x = PlantSpp, y = log10(Forage+1), color = ExpComp)) +
+  geom_boxplot(outlier.shape=16,
+               outlier.size=2, notch=FALSE) + theme_bw(base_size = 15) + labs(x="Flower Spp.", y = "Log10(visit duration (s))") + scale_color_manual(values = c("slategrey", "black"), name = "Experiment") + coord_cartesian(ylim = c(0, 4)) + theme(legend.position=c(.17, .87)) + annotate(geom = "text", x = .8, y = 2.3, label = "AB",cex = 6) + annotate(geom = "text", x = 1.8, y = 3.3, label = "A",cex = 6) +  annotate(geom = "text", x = 2.8, y = 3.5, label = "B",cex = 6) + annotate(geom = "text", x = 1.2, y = 2.3, label = "AB",cex = 6) + annotate(geom = "text", x = 2.2, y = 3.3, label = "A",cex = 6) +  annotate(geom = "text", x = 3.2, y = 3.5, label = "B",cex = 6)
+
+
+
