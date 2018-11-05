@@ -145,7 +145,7 @@ plot1 <- ggplot(plantSpp, aes(x=target_name, y=mean, fill=spp)) +
   geom_bar(stat="identity", color="black",
            position=position_dodge()) + labs(x="Virus", y = "% of Flowers with Virus Detected")
 
-plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Plant Species:", labels=c(expression(italic("L. corniculatus"),italic("T. pretense"), italic("T. repens")))) + theme(legend.position=c(.8, .85)) + coord_cartesian(ylim = c(0, 1)) + scale_y_continuous(labels = scales::percent)
+plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Plant Species:", labels=c(expression(italic("L. corniculatus"),italic("T. pratense"), italic("T. repens")))) + theme(legend.position=c(.8, .85)) + coord_cartesian(ylim = c(0, 1)) + scale_y_continuous(labels = scales::percent)
 
 ############################################
 library(multcomp)
@@ -194,13 +194,13 @@ colors <- c("goldenrod", "violetred4", "snow1")
 #Create a bar graph for viruses by plant species (aes= aesthetics):
 plot1 <- ggplot(plantSppMon, aes(x=target_name, y=mean, fill=spp)) + 
   geom_bar(stat="identity", color="black",
-           position=position_dodge()) + labs(x="Single Species", y = "% of Flowers with Virus Detected")+ theme_minimal(base_size = 16) + scale_fill_manual(values=colors, name="Plant Species:", labels=c(expression(italic("L. corniculatus"),italic("T. pretense"), italic("T. repens")))) + theme(legend.position=c(.7, .85)) + coord_cartesian(ylim = c(0, 1)) + scale_y_continuous(labels = scales::percent) 
+           position=position_dodge()) + labs(x="Single Species", y = "% of Flowers with Virus Detected")+ theme_minimal(base_size = 16) + scale_fill_manual(values=colors, name="Plant Species:", labels=c(expression(italic("L. corniculatus"),italic("T. pratense"), italic("T. repens")))) + theme(legend.position=c(.7, .85)) + coord_cartesian(ylim = c(0, 1)) + scale_y_continuous(labels = scales::percent) 
 
 
 #Create a bar graph for viruses by plant species (aes= aesthetics):
 plot2 <- ggplot(plantSppDiv, aes(x=target_name, y=mean, fill=spp)) + 
   geom_bar(stat="identity", color="black",
-           position=position_dodge()) + labs(x="Diversity", y = NULL) + theme_minimal(base_size = 16) + scale_fill_manual(values=colors, name="Plant Species:", labels=c(expression(italic("L. corniculatus"),italic("T. pretense"), italic("T. repens")))) + theme(legend.position="none", plot.margin = unit(c(0,0,0,0), "cm")) + coord_cartesian(ylim = c(0, 1)) + scale_y_continuous(labels = NULL)
+           position=position_dodge()) + labs(x="Diversity", y = NULL) + theme_minimal(base_size = 16) + scale_fill_manual(values=colors, name="Plant Species:", labels=c(expression(italic("L. corniculatus"),italic("T. pratense"), italic("T. repens")))) + theme(legend.position="none", plot.margin = unit(c(0,0,0,0), "cm")) + coord_cartesian(ylim = c(0, 1)) + scale_y_continuous(labels = NULL)
 
 library(patchwork)
 plot1+plot2
@@ -721,7 +721,7 @@ boxplot(log10(VD_diversity$Forage)~VD_diversity$PlantSpp)
 
 
 VD_acute <- VideoData[!VideoData$Experiment==c("diversity"),]
-VD_acute$ExpComp <- c(rep("Single Species", length(VD_acute$PlantSpp)))
+VD_acute$ExpComp <- c(rep("Single species", length(VD_acute$PlantSpp)))
 
 hist(log10(VD_acute$Forage))
 VD_acute$PlantSpp <- as.factor(VD_acute$PlantSpp)
@@ -753,9 +753,14 @@ plantSpp <- ddply(VD, c("PlantSpp", "ExpComp"), summarise,
                   sd = sd(Forage, na.rm=TRUE),
                   se = sd / sqrt(n))
 
+plantSpp$PlantSpp <- as.factor(plantSpp$PlantSpp)
+
+RC <- expression(paste(italic("T. pratense")))
+WC <- expression(paste(italic("T. repens")))
+BFT <- expression(paste(italic("L. corniculatus")))
+
 ggplot(VD, aes(x = PlantSpp, y = log10(Forage+1), color = ExpComp)) +
   geom_boxplot(outlier.shape=16,
-               outlier.size=2, notch=FALSE) + theme_bw(base_size = 15) + labs(x="Flower Spp.", y = "Log10(visit duration (s))") + scale_color_manual(values = c("slategrey", "black"), name = "Experiment") + coord_cartesian(ylim = c(0, 4)) + theme(legend.position=c(.17, .87)) + annotate(geom = "text", x = .8, y = 2.3, label = "AB",cex = 6) + annotate(geom = "text", x = 1.8, y = 3.3, label = "A",cex = 6) +  annotate(geom = "text", x = 2.8, y = 3.5, label = "B",cex = 6) + annotate(geom = "text", x = 1.2, y = 2.3, label = "AB",cex = 6) + annotate(geom = "text", x = 2.2, y = 3.3, label = "A",cex = 6) +  annotate(geom = "text", x = 3.2, y = 3.5, label = "B",cex = 6)
-
+               outlier.size=2, notch=FALSE) + theme_bw(base_size = 15) + labs(x="Plant spp.", y = "Log10(visit duration (s))") + scale_color_manual(values = c("slategrey", "black"), name = "Experiment") + coord_cartesian(ylim = c(0, 4)) + theme(legend.position=c(.17, .87)) + annotate(geom = "text", x = .8, y = 2.3, label = "AB",cex = 6) + annotate(geom = "text", x = 1.8, y = 3.3, label = "A",cex = 6) +  annotate(geom = "text", x = 2.8, y = 3.5, label = "B",cex = 6) + annotate(geom = "text", x = 1.2, y = 2.3, label = "AB",cex = 6) + annotate(geom = "text", x = 2.2, y = 3.3, label = "A",cex = 6) +  annotate(geom = "text", x = 3.2, y = 3.5, label = "B",cex = 6) + scale_x_discrete(labels=c("BFT" = BFT, "RC" = RC, "WC" = WC))
 
 
