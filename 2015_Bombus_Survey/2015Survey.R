@@ -27,7 +27,7 @@ library("MuMIn")
 setwd("~/AlgerProjects/2015_Bombus_Survey/CSV_Files") 
 
 # FOR ALEX
-#setwd("~/Documents/GitHub/AlgerProjects/2015_Bombus_Survey/CSV_Files") 
+# setwd("~/Documents/GitHub/AlgerProjects/2015_Bombus_Survey/CSV_Files") 
 
 # load in data
 BombSurv <- read.csv("BombSurvNHBS.csv", header=TRUE, stringsAsFactors=FALSE)
@@ -321,8 +321,6 @@ plot1 <- ggplot(data = VirusSum,
 ) + geom_point(size=4) + coord_cartesian(ylim = c(0, 1)) + labs(x = "# apis colonies within 1km radius", y = "% prevalence", shape="Virus:") + scale_y_continuous(labels = scales::percent) + geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd, width = 0.2))
 
 # add a theme 
-plot1 + theme_bw(base_size = 17) + scale_shape_manual(values=c(19, 1)) + annotate(geom = "text", x = 1, y = .11, label = "n=205",cex = 4) + annotate(geom = "text", x = 2, y = .18, label = "n=71",cex = 4) + annotate(geom = "text", x = 3, y = .3, label = "n=92",cex = 4) + annotate(geom = "text", x = 1, y = .72, label = "n=188",cex = 4) + annotate(geom = "text", x = 2, y = 1, label = "n=62",cex = 4) + annotate(geom = "text", x = 3, y = .98, label = "n=88",cex = 4) 
-
 
 
 VirusSum1 <- ddply(BombSurvNoAIPV, c("target_name", "apiary_near_far"), summarise, 

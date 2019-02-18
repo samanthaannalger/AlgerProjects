@@ -23,11 +23,12 @@ library("MuMIn")
 library("MASS")
 
 # Set Working Directory 
-setwd("~/AlgerProjects/Ross_Conrad/")
+setwd("~/Documents/GitHub/AlgerProjects/Ross_Conrad")
 
 # load in data
 #Conrad <- read.table("ConradSARE.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
-Conrad <- read.table("conradSAREtwo.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
+#Conrad <- read.table("conradSAREtwo.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
+Conrad <- read.table("RossFinal.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
 
 ###############################################################
 # Varroa Figure
@@ -50,7 +51,7 @@ ggplot(data = VarSum,
        aes(x = SamplingEvent, 
            y = mean, 
            color = Treatment)
-) + geom_point(size=4) + labs(x = "Sampling Event", y = "Varroa (mites/300 bees)") + coord_cartesian(ylim = c(0, 40), xlim = c(1,5)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05)) + geom_line(size=1.5) + scale_fill_brewer(palette = "Paired") + theme_classic(base_size = 17) + theme(legend.position=c(.85, .85),legend.key.width=unit(5,"line"), panel.border = element_blank(), axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'), axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'), panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs(color="Treatment:") + scale_x_continuous(breaks=c(1,2,3,4,5)) + scale_color_manual(values=colors)
+) + geom_point(size=4) + labs(x = "Sampling Event", y = "Varroa (mites/300 bees)") + coord_cartesian(ylim = c(0, 40), xlim = c(1,6)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05)) + geom_line(size=1.5) + scale_fill_brewer(palette = "Paired") + theme_classic(base_size = 17) + theme(legend.position=c(.85, .85),legend.key.width=unit(5,"line"), panel.border = element_blank(), axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'), axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'), panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs(color="Treatment:") + scale_x_continuous(breaks=c(1,2,3,4,5,6)) + scale_color_manual(values=colors)
 
 
 mod <- glmer(data=ConradSub, formula = Varroa~Treatment * SamplingEvent + (1+SamplingEvent|ID), family = poisson)
@@ -67,10 +68,23 @@ HoneySum <- ddply(Conrad, c("Treatment", "SamplingEvent"), summarise,
                    se = sd / sqrt(n))
 
 HoneySum <-HoneySum[complete.cases(HoneySum),]
-HoneySum$SamplingEvent <- as.character(HoneySum$SamplingEvent)
-HoneySum$se[5] <- NA
+#HoneySum$SamplingEvent <- as.character(HoneySum$SamplingEvent)
+#HoneySum$se[5] <- NA
 
-colors <- c("slategray3", "blue")
+
+# plotting DWV prev. for experiment 1
+colors <- c("slategray3", "dodgerblue4", "black", "blue")
+
+ggplot(data = HoneySum, 
+       aes(x = SamplingEvent, 
+           y = mean, 
+           color = Treatment)
+) + geom_point(size=4) + labs(x = "Year", y = "Honey Harvested (# Supers)") + coord_cartesian(ylim = c(0, 4), xlim = c(2,6)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05)) + geom_line(size=1.5) + scale_fill_brewer(palette = "Paired") + theme_classic(base_size = 17) + theme(legend.position=c(.2, .85),legend.key.width=unit(5,"line"), panel.border = element_blank(), axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'), axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'), panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs(color="Treatment:") + scale_x_continuous(breaks=c(2,4,6), labels =c("2016","2017","2018")) + scale_color_manual(values=colors)
+
+
+
+
+colors <- c("slategray3", "blue", "grey")
 
 plot1 <- ggplot(HoneySum, aes(x=Treatment, y=mean, fill=SamplingEvent)) + 
   geom_bar(stat="identity", 
@@ -79,7 +93,7 @@ plot1 <- ggplot(HoneySum, aes(x=Treatment, y=mean, fill=SamplingEvent)) +
                 width=.4,
                 position=position_dodge(.9)) + labs(x="Treatment", y = "Honey Harvested (# Supers)")
 
-plot1 + theme_minimal(base_size = 17) + coord_cartesian(ylim = c(0, 3)) + scale_fill_manual(values=colors, name="", labels=c("2016", "2017")) + theme(legend.position=c(.8, .88))
+plot1 + theme_minimal(base_size = 17) + coord_cartesian(ylim = c(0, 4)) + scale_fill_manual(values=colors, name="", labels=c("2016", "2017", "2018")) + theme(legend.position=c(.8, .88))
 
 #ANOVA testing honey
 

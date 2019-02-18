@@ -1,7 +1,7 @@
 ---
 output: pdf_document
 ---
-### Bumble Bee Extraction Protocol 2016 Temp. Var. Survey
+### Bumble Bee Extraction Protocol PlantTrans II
 
 #### 4-15-18
 
@@ -30,7 +30,7 @@ Make sure there is liquid nitrogen and enough of each reagent (RLT buffer/mercap
 * Pestles- take pestles soaking in 10% bleach and rinse with DI water and then ethanol- set to dry. Clean 1 pestle per specimen plus 1-2 more to prepare for error. *If pestle is touched/dropped at any point get new pestle soaking in bleach and follow procedure. 
 * Buffer RLT (with B-mercaptoethanol) **Make sure <1 mo. old**
 * 1000 ul pippette and tips
-* Labeled 1.5 tubes with lab ID #(3 for each specimen (homogenized, leftover homogenate, crude extr.)) plus one for a negative control.
+* Labeled 1.5 tubes with lab ID #(2 for each specimen (homogenized, crude extr.)) plus one for a negative control.
 * 2 pairs of small forceps, Kimtech wipes, large forceps, timer.
 * 2 small beakers labeled w/ 10% bleach and 70% ethanol (use DI water when diluting bleach and ethanol).
 * Clean lab bench area with 10% bleach and ethanol.   
@@ -39,17 +39,18 @@ _______
 
 **PREPARING SPECIMENS AND HOMOGENIZING TO CREATE CRUDE EXTRACTIONS:**
 
-1.    Place bee on Kimtech, record site ID, doublecheck species and caste of the bee.
+1.    Place bee on Kimtech, record site ID, doublecheck caste of the bee.
+2.    Using disinfected forceps, dissect the legs from the thorax.
+3.    Place bee back into its 1.5 tube add 500uL of GITC buffer and shake for 30 seconds
+4.    Remove bee and discard buffer and vial
+5.    Place cleaned bee into new tube containing buffer RLT and set timer for 2 minutes. (Soak forceps in bleach and use bottle to clean with ethanol between bee samples).  
 
-2.    Using disinfected forceps, dissect the abdomen from the thorax. Place body without abdomen back into vial and on liquidnitrogen. 
 
-
-3. Place the bee abdomen into a 1.5 tube and set timer for 2.5 minutes. (Soak forceps in bleach and use bottle to clean with ethanol between bee samples).  
-4. Immediately add 600ul Buffer RLT-B-mercaptoethanol to tube
-5. Homogenize with pestle for 2.5 minutes.
-6. Put sample in refrigerator.
-7. Repeat for all specimens.
-8. Centrifuge for 3 minutes to push bee specimen tobottom of tube. Before continuing, sample should be brought to room temperature.
+3. Immediately add 600ul Buffer RLT-B-mercaptoethanol to tube
+4. Homogenize with pestle for 2 minutes.
+5. Put sample in refrigerator.
+6. Repeat for all specimens.
+7. Centrifuge for 3 minutes to push bee specimen tobottom of tube. Before continuing, sample should be brought to room temperature.
 
 
 
@@ -58,8 +59,7 @@ _______
 1.    Fill second set of 1.5 tubes with 200 ul of 70% ethanol.
 2.    Pipette out 200ul of bee juice from the homogenized sample into the corresponding 1.5 tube containing 70% ethanol. 
 3.    Create a negative control here (200 ul RLT buffer + 200 ul ethanol). 
-4.    Pipette remaining bee juice  (300uL) into the third set of 1.5 tubes
-5.    Put homogenized bee and left over bee juice vials in liquid nitrogen and set aside to be placed in freezer.
+4.    Put homogenized bee and left over bee juice vials in liquid nitrogen and set aside to be placed in freezer.
 
 
 
