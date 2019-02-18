@@ -45,5 +45,43 @@ MonarchStats <- ddply(Monarch, c("Site", "Date"), summarise,
 
 MonarchLong <- melt(MonarchStats, id.vars = c("Site", "Date"))
 
+MonarchLong <- MonarchLong[order(MonarchLong$Date),]
+
+MonarchLong$Date <- as.character(MonarchLong$Date)
 
 
+p <- ggplot(data=MonarchLong, aes(x=Date, y=value, color=variable)) +
+  geom_line(aes(linetype = Site), size=1.5) + 
+  geom_point(size=3) + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  ylab("Number of Observations") + 
+  theme_minimal(base_size = 15)
+
+p + theme(legend.position="top", legend.box = "horizontal")
+
+
+x <- split(MonarchLong, MonarchLong$Site)
+Borderview <- x$Borderview 
+Dewing <- x$Dewing 
+
+b <- ggplot(Borderview, aes(x=Date, y=value, fill=variable)) + 
+  theme_minimal(base_size = 16) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(hjust = 0.5), legend.position = c(.8, .8), axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) +
+  labs(title="Borderview", x ="Date", y = NULL, fill = "Life Stage") + 
+  geom_bar(stat="identity") +
+  coord_cartesian(ylim = c(0, 15))
+b
+
+
+d <- ggplot(Dewing, aes(x=Date, y=value, fill=variable)) + 
+  theme_minimal(base_size = 16) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(hjust = 0.5), legend.position =c(3,3)) +
+  labs(title="Dewing", x ="Date", y = "Number of Observations", fill = "Life Stage") + 
+  geom_bar(stat="identity") +
+  coord_cartesian(ylim = c(0, 15))
+d
+
+library(patchwork)
+d+b
