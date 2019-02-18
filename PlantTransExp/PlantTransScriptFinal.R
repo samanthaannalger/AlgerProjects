@@ -7,7 +7,8 @@ ls()
 rm(list=ls())
 
 #Set Working Directory: 
-setwd("~/AlgerProjects/PlantTransExp/CSV_Files")
+#setwd("~/AlgerProjects/PlantTransExp/CSV_Files")
+setwd("~/Documents/GitHub/AlgerProjects/PlantTransExp/CSV_Files")
 
 # read in data:
 plantTrans <- read.csv("plantTransPlantsDF.csv", header=TRUE, sep = ",", stringsAsFactors=FALSE) 
@@ -163,12 +164,34 @@ ModDatAcute <- ModDat[!ModDat$experiment==c("diversity"), ]
 ModDatAcute <- ModDatAcute[!ModDatAcute$experiment==c("comingle"), ]
 
 
-
 ##### Revision, attempt to seperate out experiments and run analysis seperately 
-Fullmod3 <- glm(data=ModDatAcute, BINYprefilter ~ spp * target_name, family = binomial(link="logit"))
-anova(Fullmod3, test="Chisq")
+null <- glmer(data=ModDatAcute, BINYprefilter ~ (1|ID), family = binomial(link="logit"))
+full <- glmer(data=ModDatAcute, BINYprefilter ~ spp + target_name + (spp * target_name) + (1|ID), family = binomial(link="logit"))
+main <- glmer(data=ModDatAcute, BINYprefilter ~ target_name + spp + (1|ID), family = binomial(link="logit"))
+virus <- glmer(data=ModDatAcute, BINYprefilter ~ spp + (1|ID), family = binomial(link="logit"))
+flower <- glmer(data=ModDatAcute, BINYprefilter ~ target_name + (1|ID), family = binomial(link="logit"))
 
 
+
+# full model test
+anova(null, full)
+# interaction test
+anova(full, main)
+# flower
+anova(main, flower)
+# virus
+anova(main, virus)
+
+# failed to get interaction posthoc
+library(multcomp)
+ModDatAcute$INT <- interaction(ModDatAcute$spp, ModDatAcute$target_name)
+fullModINT <- glm(data=ModDatAcute, BINYprefilter ~ INT, family = binomial(link="logit"))
+ht = glht(fullModINT, mcp(INT="Tukey"))
+summary(ht)
+
+library(lsmeans)
+lsm <- lsmeans(full, ~ spp*target_name, adjust="tukey")
+contrast(lsm, alpha=0.05, method="pairwise", adjust=NULL)
 
 
 # remove comingle
@@ -207,22 +230,28 @@ plot1+plot2
 
 
 
-
-ModDatNoCoM$INT <- interaction(ModDatNoCoM$spp, ModDatNoCoM$expSimple)
 ##### MODEL WORKS!!!! and is legal!!!!
-Fullmod4 <- glm(data=ModDatNoCoM, BINYprefilter ~ expSimple + INT, family = binomial(link="logit"))
-anova(Fullmod4, test="Chisq")
+full1 <- glmer(data=ModDatNoCoM, BINYprefilter ~ expSimple * spp + (1|ID), family = binomial(link="logit"))
+null1 <- glmer(data=ModDatNoCoM, BINYprefilter ~ (1|ID), family = binomial(link="logit"))
+main1 <- glmer(data=ModDatNoCoM, BINYprefilter ~ expSimple + spp + (1|ID), family = binomial(link="logit"))
+exp1 <- glmer(data=ModDatNoCoM, BINYprefilter ~ spp + (1|ID), family = binomial(link="logit"))
+plant1 <- glmer(data=ModDatNoCoM, BINYprefilter ~ expSimple + (1|ID), family = binomial(link="logit"))
+
+anova(full1, null1) # null vs full model
+anova(full1, main1) # interaction test
+anova(main1, exp1) 
+anova(main1, plant1)
+
+
+full1 <- glm(data=ModDatNoCoM, BINYprefilter ~ expSimple * spp, family = binomial(link="logit"))
+anova(full1, test="LRT")
+
+lsm1 <- lsmeans(full1, ~ spp*expSimple)
+contrast(lsm1)
 
 
 
 
-Fullmod4 <- glm(data=ModDatNoCoM, BINYprefilter ~ -1 + INT, family = binomial(link="logit"))
-Anova(Fullmod4, test="Chisq")
-
-
-Treat.comp<-glht(Fullmod4, mcp(INT='Tukey'))
-
-summary(Treat.comp)
 
 
 
@@ -237,34 +266,11 @@ hist(visitation$visits)
 hist(visitation$foragetime)
 
 
-# # visits by plant species:
-kruskal.test(visitation$visits, as.factor(visitation$spp))
-# p = 0.058
 
-# total forage time by plant species:
-kruskal.test(visitation$foragetime, as.factor(visitation$spp))
-# p = 0.1225
-
-wilcox.test(ModDat$foragetime,ModDat$BINYprefilter) 
-wilcox.test(ModDat$visits, ModDat$BINYprefilter) 
 
 head(ModDat)
-summary(Fullmod4)
-
-barplot(ModDat$foragetime, ModDat$BINYprefilter)
-
-fig1 <- ddply(ModDat, c("BINYprefilter"), summarise, 
-                  n = length(BINYprefilter),
-                  mean = mean(foragetime, na.rm=TRUE),
-              sd = sd(foragetime, na.rm=TRUE),
-              se = sd / sqrt(n))
 
 
-fig1 <- ggplot(fig1, aes(x=BINYprefilter, y=mean)) + 
-  geom_bar(stat="identity", color="black",
-           position=position_dodge()) + labs(x="virus (yes no)", y = "sum Forage time")
-
-fig1
 # VIRUS LOAD
 # Remove zeros
 Loadno0 <- ModDat[!ModDat$BINYprefilter==0,]
@@ -272,7 +278,7 @@ Loadno0 <- ModDat[!ModDat$BINYprefilter==0,]
 #Checking distribution:
 hist(Loadno0$genomeCopy, breaks = 12)
 
-Loadno0$loggenomeCopy <- log(Loadno0$genomeCopy)
+Loadno0$loggenomeCopy <- log10(Loadno0$genomeCopy+1)
 
 hist(Loadno0$loggenomeCopy,breaks=12)
 
@@ -291,28 +297,69 @@ Loadno0$expMerge <- as.factor(Loadno0$expMerge)
 
 x <- split(Loadno0, Loadno0$expMerge)
 
-kruskal.test(data=x$acute, loggenomeCopy ~ target_name)
+#kruskal.test(data=x$acute, loggenomeCopy ~ target_name)
+#kruskal.test(data=x$acute, loggenomeCopy ~ spp)
+#kruskal.test(data=Loadno0, loggenomeCopy ~ expMerge)
 
-boxplot(data=x$acute, loggenomeCopy ~ target_name)
+null2 <- lmer(data=Loadno0, loggenomeCopy~(1|labID), REML=FALSE)
+full2 <- lmer(data=Loadno0, loggenomeCopy~spp*target_name + (1|labID), REML=FALSE)
+main2 <- lmer(data=Loadno0, loggenomeCopy~spp+target_name + (1|labID), REML=FALSE)
+spp2 <- lmer(data=Loadno0, loggenomeCopy~target_name + (1|labID), REML=FALSE)
+virus2 <- lmer(data=Loadno0, loggenomeCopy~spp + (1|labID), REML=FALSE)
 
-kruskal.test(data=x$acute, loggenomeCopy ~ spp)
-
-
-
-summary(Fullmod5)
-library("multcomp")
-summary(glht(Fullmod5, mcp(spp="Tukey")))
-
-
-FullmodN <- aov(data=Loadno0, loggenomeCopy ~ expMerge)
-
-kruskal.test(data=Loadno0, loggenomeCopy ~ expMerge)
-
-summary(FullmodN)
+anova(full2, main2)
+anova(full2, null2)
+anova(main2, spp2)
+anova(main2, virus2)
 
 
 
-boxplot(data=Loadno0, loggenomeCopy ~ expMerge)
+
+
+
+
+null3 <- lmer(data=Loadno0, loggenomeCopy~(1|labID), REML=FALSE)
+full3 <- lmer(data=Loadno0, loggenomeCopy~spp*expMerge + (1|labID), REML=FALSE)
+main3 <- lmer(data=Loadno0, loggenomeCopy~spp+expMerge + (1|labID), REML=FALSE)
+spp3 <- lmer(data=Loadno0, loggenomeCopy~expMerge + (1|labID), REML=FALSE)
+exp3 <- lmer(data=Loadno0, loggenomeCopy~spp + (1|labID), REML=FALSE)
+
+anova(full3, main3)
+anova(full3, null3)
+anova(main3, spp3)
+anova(main3, exp3)
+
+
+
+
+
+
+
+
+# visitation rates and duration of visits on viruses loads and prevalence
+
+
+
+
+full4 <- glmer(data=ModDat,BINYprefilter~visits*foragetime + (1|labID), family = binomial(link = "logit"))
+main4 <- glmer(data=ModDat,BINYprefilter~visits+foragetime + (1|labID), family = binomial(link = "logit"))
+vis4 <- glmer(data=ModDat,BINYprefilter~foragetime + (1|labID), family = binomial(link = "logit"))
+time4 <- glmer(data=ModDat,BINYprefilter~visits + (1|labID), family = binomial(link = "logit"))
+
+anova(full4, main4)
+anova(main4, vis4)
+anova(main4, time4)
+
+
+full5 <- lmer(data=Loadno0, loggenomeCopy~ visits * foragetime + (1|labID), REML = FALSE)
+main5 <- lmer(data=Loadno0, loggenomeCopy~ visits + foragetime + (1|labID), REML = FALSE)
+vis5 <- lmer(data=Loadno0, loggenomeCopy~ foragetime + (1|labID), REML = FALSE)
+time5 <- lmer(data=Loadno0, loggenomeCopy~ visits + (1|labID), REML = FALSE)
+
+anova(full5, main5)
+anova(main5, vis5)
+anova(main5, time5)
+
 
 
 fig1 <- ddply(Loadno0, c("expMerge", "target_name"), summarise, 
@@ -374,11 +421,10 @@ plot(Loadno0$genomeCopy~Loadno0$foragetime)
 
 
 # Figure of the log virus genome copies 
-LoadPlot <- ggplot(Loadno0, aes(x=target_name, y=loggenomeCopy, fill=spp)) +
+LoadPlot <- ggplot(Loadno0, aes(x=target_name, y=log10(genomeCopy), fill=spp)) +
   labs(x=NULL, y = "Log(virus load)")+
   theme_classic(base_size = 20) +  
-  geom_boxplot(outlier.colour="black", outlier.shape=16, outlier.size=2, notch=FALSE) + geom_dotplot(binaxis='y', stackdir = 'center', dotsize = 0.5, position = position_dodge()) + scale_fill_manual(values=colors, name="Plant Species:", labels=c(expression(italic("L. corniculatus"),italic("T. pretense"), italic("T. repens"))))
-
+  geom_boxplot(outlier.colour="black", outlier.shape=16, outlier.size=2, notch=FALSE) + geom_dotplot(binaxis='y', stackdir = 'center', dotsize = 0.5, position = position_dodge()) + scale_fill_manual(values=colors, name="Plant Species:", labels=c(expression(italic("L. corniculatus"),italic("T. pratense"), italic("T. repens")))) + coord_cartesian(ylim = c(0, 6)) + theme(legend.position = c(.2, .2))
 LoadPlot
 
 
@@ -759,8 +805,24 @@ RC <- expression(paste(italic("T. pratense")))
 WC <- expression(paste(italic("T. repens")))
 BFT <- expression(paste(italic("L. corniculatus")))
 
+
+time <- c(3.1, 102, 228.6, 8.3, 36, 40.3)
+ExpComp <- c(rep("Single species", 3), rep("Diversity", 3))
+PlantSpp <- c(rep(c("L. corniculatus", "T. pratense", "T. repens"), 2))
+DFplant <- data.frame(time, ExpComp, PlantSpp)
+
+DFplant$trans <- DFplant$time/75
+
+
 ggplot(VD, aes(x = PlantSpp, y = log10(Forage+1), color = ExpComp)) +
   geom_boxplot(outlier.shape=16,
-               outlier.size=2, notch=FALSE) + theme_bw(base_size = 15) + labs(x="Plant spp.", y = "Log10(visit duration (s))") + scale_color_manual(values = c("slategrey", "black"), name = "Experiment") + coord_cartesian(ylim = c(0, 4)) + theme(legend.position=c(.17, .87)) + annotate(geom = "text", x = .8, y = 2.3, label = "AB",cex = 6) + annotate(geom = "text", x = 1.8, y = 3.3, label = "A",cex = 6) +  annotate(geom = "text", x = 2.8, y = 3.5, label = "B",cex = 6) + annotate(geom = "text", x = 1.2, y = 2.3, label = "AB",cex = 6) + annotate(geom = "text", x = 2.2, y = 3.3, label = "A",cex = 6) +  annotate(geom = "text", x = 3.2, y = 3.5, label = "B",cex = 6) + scale_x_discrete(labels=c("BFT" = BFT, "RC" = RC, "WC" = WC))
+               outlier.size=2, notch=FALSE) + theme_bw(base_size = 15) + labs(x="Plant spp.", y = "Log10(visit duration (s))") + scale_color_manual(values = c("slategrey", "black"), name = "Experiment") + coord_cartesian(ylim = c(0, 4)) + theme(axis.line = element_line(colour = "black"), legend.position=c(.17, .87)) + annotate(geom = "text", x = .8, y = 2.3, label = "AB",cex = 6) + annotate(geom = "text", x = 1.8, y = 3.3, label = "A",cex = 6) +  annotate(geom = "text", x = 2.8, y = 3.5, label = "B",cex = 6) + annotate(geom = "text", x = 1.2, y = 2.3, label = "AB",cex = 6) + annotate(geom = "text", x = 2.2, y = 3.3, label = "A",cex = 6) +  annotate(geom = "text", x = 3.2, y = 3.5, label = "B",cex = 6) + scale_x_discrete(labels=c("BFT" = BFT, "RC" = RC, "WC" = WC)) + scale_y_continuous(sec.axis = sec_axis(~.*75, name = "visitation rate (visit/hr)")) + theme(axis.line.y.right = element_line(color = "red"), axis.ticks.y.right = element_line(color = "red"), axis.text.y.right = element_text(color = "red")) + geom_segment(aes(x = .73, xend=.9, y=.111,yend=.111), color = "red", size=1) + geom_segment(aes(x = 1.1, xend=1.28, y=.041,yend=.041), color = "red", size=1) + geom_segment(aes(x = 1.73, xend=1.9, y=.48,yend=.48), color = "red", size=1) + geom_segment(aes(x = 2.1, xend=2.28, y=1.36,yend=1.36), color = "red", size=1) + geom_segment(aes(x = 2.73, xend=2.9, y=.537,yend=.537), color = "red", size=1) + geom_segment(aes(x = 3.1, xend=3.28, y=3.048,yend=3.048), color = "red", size=1)
+
+
+
+
+
+
+
 
 
