@@ -21,9 +21,14 @@ library(plotly)
 library(tidyr)
 library(mgcv)
 library(Matrix)
+library(sp)
+library(wordcloud)
+library(slam)
+library(shinydashboard)
+
 
 #set working director
-setwd("~/AlgerProjects/VTApiaries/shinyappApiaries/BeekApp/")
+#setwd("~/AlgerProjects/VTApiaries/shinyappApiaries/BeekApp/")
 
 
 #upload data
@@ -36,6 +41,7 @@ FullApiaryDat <- read.csv("VTApiaries.csv",
                           header=TRUE, 
                           sep = ",", 
                           stringsAsFactors = FALSE)
+
 
 ##############################################################
 # DATA PREP:
@@ -152,6 +158,7 @@ MiteMon <- ddply(MonMethods, c("question"), summarise,
                  sd = round(100*sd(response, na.rm=TRUE), digits=2),
                  se = sd / sqrt(n))
 
+MiteMon$question <- factor(MiteMon$question, levels = MiteMon$question[order(-MiteMon$mean)])
 #########################################################
 # Reasons for Losses
 
@@ -173,6 +180,46 @@ LossCause <- ddply(ReasonLoss, c("question"), summarise,
                    mean = round(100*mean(response, na.rm=TRUE),digits=2),
                    sd = round(100*sd(response, na.rm=TRUE),digits=2),
                    se = sd / sqrt(n))
+LossCause$question <- factor(LossCause$question, levels = LossCause$question[order(-LossCause$mean)])
+
+####################################################################
+# Word Cloud
+###################################################################
+library(tm)
+library(wordcloud)
+library(RColorBrewer)
+library(memoise)
+
+#OpinionText <- paste(unlist(FullApiaryDat$Opinion), collapse =" ")
+#answers<<- list("Challenges" = "OpinionText")
+
+# Useing memoise to automatically cache the results
+#getTermMatrix <- memoise(function(answer){
+#  if (!(answer %in% answers))
+#    stop("Unknown answer")
+#Combine all Text:
+OpinionText <- paste(unlist(FullApiaryDat$Opinion), collapse =" ")
+docs <- Corpus(VectorSource(OpinionText))
+docs <- Corpus(VectorSource(docs))
+toSpace <- content_transformer(function (x , pattern ) gsub(pattern, " ", x))
+docs2 <- tm_map(docs, toSpace, "/")
+docs2 <- tm_map(docs, toSpace, "@")
+docs2 <- tm_map(docs, toSpace, "\\|")
+# Remove numbers
+docs2 <- tm_map(docs, removeNumbers)
+# Remove english common stopwords and own stop words
+docs2 <- tm_map(docs2, removeWords, c(stopwords("SMART"), "and","the"))
+# Remove punctuations
+docs <- tm_map(docs, removePunctuation)
+# Eliminate extra white spaces
+docs <- tm_map(docs, stripWhitespace)
+# Text stemming
+
+# docs <- tm_map(docs, stemDocument)
+myDTM <- TermDocumentMatrix(docs2, control = list(minWordLength = 1))
+m <- as.matrix(myDTM)
+v <- sort(rowSums(m),decreasing=TRUE)
+d <- data.frame(word = names(v),freq=v)
 
 
 ####################################################################
@@ -219,11 +266,17 @@ ui <- fluidPage(
   theme = shinytheme("cerulean"),
         navbarPage("VT BeekApp",
            tabPanel("About",
+#                    box( status = "primary",
+ #                       solidHeader = F,
+  #                      collapsible = F,
+   #                     width = 12,
+    #                    fluidRow(column(width=4,h4("Welcome to BeekApp")),
+     #                            column(width=2, align="center",
+      #                                  img(src="BeePic.JPG", height = "150px")))),
                 h4("Welcome to BeekApp"),
                    h6("Home of Vermont's Registered Apiary Data"),
-                p("In 2017, Vermont's Apiary Inspection Program began collecting data on beekeeping practices and colony loss. Now, you can explore and visualize results through BeekApp!"),
-                p("BeekApp is open to the public and intended for use by beekeepers, beekeeping clubs, and researchers. It allows users to explore Vermont state trends and identify opportunities for education and new research."), 
-                  p("All data were collected through Vermont Apiary Registrations and Beekeeper Censuses. State wide trends are shown. Beekeeper personal information and apiary locations are kept confidential."),
+                p("In 2017, Vermont's Apiary Inspection Program began collecting data on beekeeping practices and colony loss. Now, you can explore Vermont state trends with BeekApp."),
+                  p("All data were collected by the Vermont Department of Agriculture Apiary Inspection Program. Data were collected from Apiary Registration and Beekeeper Censuses. State wide trends are shown. Beekeeper personal information and apiary locations are kept confidential."),
                 br(),
                 br(),
                 br(),
@@ -321,11 +374,25 @@ ui <- fluidPage(
                       tabPanel("Challenges",
                               mainPanel(
                                 h3("Challenges"),
-                                p("We asked VT beekeepers to tell us about the biggest challenges they face as beekeepers and here are the results"),
+                                p("We asked VT beekeepers to tell us about the biggest challenges they face as beekeepers and here are the collective results displayed in a wordcloud. Words appear larger if they were mentioned more often by beekeepers."),
+                                p("Use the slider bars to filter results. Select how often words were mentioned using the 'Minimum Frequency' slider. Choose to see how many words appear using the 'Maximum Number of Words' slider."),
                                 br(),
                                 br(),
-                                p("under construction")
-          )))))
+                                sidebarLayout(
+                                  # Sidebar with a slider and selection inputs
+                                  sidebarPanel(
+                                    sliderInput("freq",
+                                                "Minimum Frequency:",
+                                                min = 1,  max = 30, value = 10),
+                                    sliderInput("max",
+                                                "Maximum Number of Words:",
+                                                min = 1,  max = 200,  value = 41)),
+                                  mainPanel( # Show Word Cloud
+                                    plotOutput("cloud",width= "600px", height = "500px")
+                                  )
+                                )
+                              )
+          ))))
 
 server <- function(input,output, session){
   url <- a("Vermont Apiary Inspection Homepage", href="http://agriculture.vermont.gov/food_safety_consumer_protection/apiary")
@@ -477,7 +544,7 @@ output$pie <- renderPlotly({
 output$MiteMethods <- renderPlotly ({
           MitePlot <- ggplot(MiteMon,
                       aes(x=question, y=mean, fill=question)) + 
-                      geom_bar(stat="identity", position=position_dodge()) + 
+                      geom_bar(stat="identity",color="black", position=position_dodge()) + 
                       theme_classic() +
                       labs(x="Mite Monitoring Method", y = "% Reported Use") + 
                       theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), 
@@ -498,8 +565,9 @@ output$MiteMethods <- renderPlotly ({
 
 output$LossExp <- renderPlotly ({
                     LossExpPlot <- ggplot(LossCause, aes(x=question, y=mean, fill=question)) + 
-                    geom_bar(stat="identity",
+                    geom_bar(stat="identity",color="black",
                     position=position_dodge()) + 
+                    theme_classic() +
                     labs(x="Causes", y = "% Reported Causes") + 
                     theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), 
                           legend.position="none", axis.text=element_text(size=9), 
@@ -514,6 +582,13 @@ ggplotly(LossExpPlot)  %>%
         layout(xaxis=list(fixedrange=TRUE)) %>%  # disables the zoom option
         layout(yaxis=list(fixedrange=TRUE)) #disables the zoom option
 })
+
+wordcloud_rep<- repeatable(wordcloud)
+  output$cloud <- renderPlot({
+  wordcloud_rep(words = d$word, freq = d$freq, min.freq = input$freq,
+            max.words=input$max, rot.per=0.35, scale=c(4,1.5), 
+            colors=brewer.pal(8, "Dark2"))
+  })
 
 }
 

@@ -59,9 +59,9 @@ ImidBQCV$Treatment <- factor(ImidBQCV$Treatment, levels = c("C", "0.1", "1", "10
 # Figure of the log virus genome copies 
 BQCVPlot <- ggplot(ImidBQCV, aes(x=Treatment, y=logBQCV, fill=Treatment)) +
   labs(x="Dose (ppb)", y = "Log(BQCV titer)")+
-  theme_classic() +  
+  theme_classic(base_size = 17) +  
   geom_boxplot(outlier.colour="black", outlier.shape=16,
-               outlier.size=2, notch=FALSE) + geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5) + scale_x_discrete(labels=c("Control", "0.1","1","10","20")) + scale_fill_grey(start = 1, end = .4, guide=FALSE)
+               outlier.size=2, notch=FALSE) + scale_x_discrete(labels=c("Control", "0.1","1","10","20")) + scale_fill_grey(start = 1, end = .4, guide=FALSE)
 
 BQCVPlot
 
@@ -90,25 +90,17 @@ summary(glht(BQCVMod, mcp(Treatment="Tukey")))
 #Change order of factors
 ImidDWV$Treatment <- factor(ImidDWV$Treatment, levels = c("C", "0.1", "1", "10", "20"))
 
-# remove 0.1 and 1 treatment groups
-#ImidDWV <- ImidDWV[!(ImidDWV$Treatment=="0.1"), ]
-#ImidDWV <- ImidDWV[!(ImidDWV$Treatment=="1"), ]
-
 # Figure of the log virus genome copies 
 DWVPlot <- ggplot(ImidDWV, aes(x=Treatment, y=logDWV, fill=Treatment)) +
   labs(x="Dose (ppb)", y = "Log(DWV titer)")+
-  theme_classic() +  
+  theme_classic(base_size = 17) +  
   geom_boxplot(outlier.colour="black", outlier.shape=16,
-               outlier.size=2, notch=FALSE) + geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5) + scale_x_discrete(labels=c("Control","0.1","1", "10","20")) + scale_fill_grey(start = 1, end = .4, guide=FALSE)
+               outlier.size=2, notch=FALSE) + scale_x_discrete(labels=c("Control","0.1","1", "10","20")) + scale_fill_grey(start = 1, end = .4, guide=FALSE)
 
 DWVPlot
 
 # STATISTICS FOR DWV:##############################################################
 
-#ANOVA testing for difference, using log transformed value to improve normality
-mod1 <- aov(logDWV~Treatment, data = ImidDWV)
-summary(mod1)
-TukeyHSD(mod1)
 
 # Mixed model for DWV load:
 DWVMod <- lmer(logDWV~Treatment + (1|colony), data=ImidDWV)
@@ -196,7 +188,7 @@ ConsumpDF$logImidConsumpTotal <- log(ConsumpDF$ImidConsumpTotal)
 
 TotalImid <- ggplot(ConsumpDF, aes(x=Treatment, y=ImidConsumpTotal, fill=Treatment)) +
   labs(x="Dose (ppb)", y = "Total Imidacloprid Consumed (ng)")+
-  theme_classic() +  
+  theme_classic(base_size = 17) +  
   geom_boxplot(outlier.colour="black", outlier.shape=16,
                outlier.size=2, notch=FALSE) + scale_x_discrete(labels=c("0.1","1", "10","20")) + scale_fill_grey(start = 1, end = .4, guide=FALSE)
 
@@ -261,11 +253,11 @@ library("survival")
 
 #Fitting the survival model
 mod <- survdiff(Surv(time, status) ~ Treatment, data=BeeMort, rho = 0)
-mod
+print(mod)
 # NO difference in mortality (df = 4, chisq = 4.3, p = 0.4), "Kaplan-Meier estimate of survival, Tests if there is a difference between two or more survival curves using the Gρ family of tests, or for a single curve against a known alternative." Using 'survival' package, function = "survdiff"
 
 #Creating the survival curve:
-survival_func=survfit(Surv(BeeMort$time,BeeMort$status)~BeeMort$Treatment)
+survival_func=survfit(Surv(time,status)~Treatment, data = BeeMort)
 
 plot(survival_func, ylab="Survival", xlab="Days", col=c("red", "blue", "green", "black", "purple"))
 legend(.6, .6, legend=c("0.1", "1", "10","20","Control"), title = "Dose (ppb)",

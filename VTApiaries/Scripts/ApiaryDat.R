@@ -23,6 +23,7 @@ library(tm)
 library(SnowballC)
 library(wordcloud)
 library(RColorBrewer)
+library(slam)
 
 
 ###########################################################

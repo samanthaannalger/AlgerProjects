@@ -340,9 +340,23 @@ plot1 <- ggplot(VirusSum1, aes(x=target_name, y=mean, fill=apiary_near_far)) +
   geom_bar(stat="identity", color="black", 
            position=position_dodge()) + labs(x="Virus", y = "% Prevalence") + geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd, width = 0.2),position=position_dodge(.9))
 
-plot1 + theme_bw(base_size = 23) + scale_fill_manual(values=colors, name="Site Type:", labels=c("Apiary Absent", "Apiary Present")) + theme(legend.position=c(.8, .85),  panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + coord_cartesian(ylim = c(0, 1)) + scale_y_continuous(labels = scales::percent) + annotate(geom = "text", x = 1, y = .98, label = "*",cex = 10) + annotate(geom = "text", x = 2, y = .25, label = "*",cex = 9) 
+plot1 + theme_bw(base_size = 23) + scale_fill_manual(values=colors, name="Site Type:", labels=c("Apiary Absent", "Apiary Present")) + theme(legend.position=c(.8, .85)) + coord_cartesian(ylim = c(0, 1)) + scale_y_continuous(labels = scales::percent) + annotate(geom = "text", x = 1, y = .98, label = "*",cex = 12) + annotate(geom = "text", x = 2, y = .25, label = "*",cex = 12) + annotate(geom = "text", x = 0.75, y = .75, label = "N = 219",cex = 7) + annotate(geom = "text", x = 1.75, y = .13, label = "N = 219",cex = 7) + annotate(geom = "text", x = 1.2, y = .97, label = "N = 116",cex = 7) + annotate(geom = "text", x = 2.22, y = .23, label = "N = 116",cex = 7)
 
 
+########################################
+
+BombSurvDWV<- BombSurvNoAIPV[ which(BombSurvNoAIPV$target_name=='DWV'), ]
+table(BombSurvDWV$virusBINY, BombSurvDWV$species)
+
+BombSurvBQCV <- BombSurvNoAIPV[ which(BombSurvNoAIPV$target_name=='BQCV'), ]
+table(BombSurvBQCV$virusBINY)
+
+BombSurvBQCV2 <- BombSurvBQCV[ which(BombSurvBQCV$apiary == 'N'), ]
+
+table(BombSurvBQCV2$virusBINY)
+
+newdata <- mydata[ which(mydata$gender=='F' 
+                         & mydata$age > 65), ]
 
 
 ###################################################################################################
@@ -372,7 +386,13 @@ plot1 <- ggplot(fieldPlantsSum, aes(x=apiary, y=mean, fill=target_name)) +
   geom_bar(stat="identity", color="black",
            position=position_dodge()) + labs(y="% plants with virus detected", x="Site Type") + geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd, width = 0.2),position=position_dodge(.9))
 
-plot1 + theme_bw(base_size = 23) + scale_fill_manual(values=colors, name="Virus", labels=c("BQCV", "DWV")) + theme(legend.position=c(.86, .8),legend.background = element_rect(color = "black", fill = "white", size = .4, linetype = "solid")) + coord_cartesian(ylim = c(0, .5)) + scale_y_continuous(labels = scales::percent) 
+plot1 + theme_bw(base_size = 23) + scale_fill_manual(values=colors, name="Virus", labels=c("BQCV", "DWV")) + theme(legend.position=c(.86, .8),legend.background = element_rect(color = "black", fill = "white", size = .4, linetype = "solid")) + scale_y_continuous(labels = function(x) paste0(x*100, "%"), limits= c(0,.5)) + annotate(geom = "text", x = 1, y = .39, label = "N = 17",cex = 8) + annotate(geom = "text", x = 2, y = .25, label = "N = 18",cex = 8)
+
+
+
+
+
+
 
 
 
@@ -418,13 +438,15 @@ HBSiteSum$mean[HBSiteSum$mean==0] <- NA
 colors <- c("grey30", "white", "white")
 
 plot1 <- ggplot(HBSiteSum, aes(x=HBSiteBin, y=mean, fill=colors)) + 
-  geom_bar(stat="identity", color = "black") + labs(x="Level of DWV in Apis", y = "% Prevalence in Bombus")
+  geom_bar(stat="identity", color = "black") + labs(x="Level of DWV in Apis", y = "% Prevalence in Bombus") + scale_x_discrete(limits=c("High","Low","No Apis Caught"))
 
-plot1 + theme_bw(base_size = 23) + scale_fill_manual(values=colors) + coord_cartesian(ylim = c(0, 0.2)) + scale_y_continuous(labels = scales::percent) + theme(legend.position=c(3, 3)) + geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd, width = 0.2),position=position_dodge(.9))
-
-
+plot1 + theme_bw(base_size = 23) + scale_fill_manual(values=colors) + coord_cartesian(ylim = c(0, 0.25)) + scale_y_continuous(labels = function(x) paste0(x*100, "%"), limits= c(0,.5)) + theme(legend.position=c(3, 3)) + geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd, width = 0.2),position=position_dodge(.9)) + annotate(geom = "text", x = 1, y = .22, label = "N = 121",cex = 8) + annotate(geom = "text", x = 2, y = .12, label = "N = 150",cex = 8) + annotate(geom = "text", x = 3, y = .05, label = "N = 64",cex = 8)
 
 
+
+"N = 121"
+"N = 150"
+"N = 64"
 
 
 
@@ -439,6 +461,10 @@ plot1 + theme_bw(base_size = 23) + scale_fill_manual(values=colors) + coord_cart
 # CREATING MODELS FOR PLANT PREV:
 ###################################################################################################
 
+#Check to make sure that plant density did not differ based on apiary near/far:
+n <- aov(Plants$apiary_near_far~Plants$Density)
+summary(n)
+# p = 0.307
 
 # Full, Null and Reduced Models
 PlantsFull <- glmer(data=Plants, formula = BINYprefilter ~ apis + bombus + target_name + Density + (1|site), family = binomial(link = "logit"))

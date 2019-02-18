@@ -1,3 +1,4 @@
+# S. Alger
 # P. Alexander Burnham
 # 25, Feb. 2017
 # qPCR Results
@@ -28,6 +29,10 @@ library(plyr)
 library(dplyr)
 library(ggplot2)
 library(scales)
+library(lme4)
+library(car)
+library("multcomp")
+
 
 ##################################################################################-
 # Calculate genome copies per bee and remove actin from data set:
@@ -111,17 +116,20 @@ head(NFdata)
 x <- NFdata[which(NFdata$LOGviralLoad>0),]
 
 # write out data file as .csv
-write.csv(x=NFdata, file="NFdata.csv")
+#write.csv(x=NFdata, file="NFdata.csv")
 ##################################################################################-
 
-
+x <- read.csv("NFdata.csv", header=TRUE, sep = ",", stringsAsFactors = FALSE) 
 
 ###########_____DATA___ANALYSIS______############
 
-hist(NFdata$LOGviralLoad)
+hist(x$LOGviralLoad)
+
+xNo0<- x[ which(x$virusBINY=="1"), ]
+ImidDWV <- ImidDF[ which(ImidDF$DWVbinary=="1"), ]
 #----------------------------------------------------------------
 # summary stats for plotting purposes:
-VirusSummary <- ddply(x, c("Virus", "treatment"), summarise, 
+VirusSummary <- ddply(xNo0, c("Virus", "treatment"), summarise, 
                       n = length(LOGviralLoad),
                       mean = mean(LOGviralLoad, na.rm = TRUE),
                       sd = sd(LOGviralLoad, na.rm = TRUE),
@@ -144,22 +152,32 @@ plot2 <- ggplot(VirusSummary, aes(x=Virus, y=mean, fill=treatment)) +
 
 plot2 + theme_minimal(base_size = 17) + theme(legend.position=c(.85, .85)) + coord_cartesian(ylim = c(0, 8)) + scale_fill_manual(values=colors) 
 
-xsplit <- split(x, x$Virus)
-t.test(xsplit$BQCV$LOGviralLoad~xsplit$BQCV$treatment)
-t.test(xsplit$DWV$LOGviralLoad~xsplit$DWV$treatment)
+xsplit <- split(xNo0, xNo0$Virus)
+#t.test(xsplit$BQCV$LOGviralLoad~xsplit$BQCV$treatment)
+#t.test(xsplit$DWV$LOGviralLoad~xsplit$DWV$treatment)
+
+DWVload<-lmer(data = xsplit$DWV, formula = LOGviralLoad~ treatment + caste + (1|Colony))
+
+BQCVload<-lmer(data = xsplit$BQCV, formula = LOGviralLoad~ treatment + caste + (1|Colony))
+
+Anova(DWVload, test="Chisq")
+
+Anova(BQCVload, test="Chisq")
+
+
 
 #-----------------------------------------------------------------------------------
 # looking at prevalence:
 
 #----------------------------------------------------------------
 # summary stats for plotting purposes:
-PrevSummary <- ddply(NFdata, c("Virus", "treatment"), summarise, 
+PrevSummary <- ddply(x, c("Virus", "treatment"), summarise, 
                       n = length(virusBINY),
                       mean = mean(virusBINY, na.rm = TRUE),
                       sd = sd(virusBINY, na.rm = TRUE),
                       se = sd / sqrt(n))
 #subsetting the data to remove NA and IAPV (no viral loads)
-PrevSummary <- PrevSummary[-c(3,6,7,8,9),]
+#PrevSummary <- PrevSummary[-c(3,6,7,8,9),]
 
 print(PrevSummary)
 #----------------------------------------------------------------
@@ -177,3 +195,29 @@ plot2 <- ggplot(PrevSummary, aes(x=Virus, y=mean, fill=treatment)) +
 
 plot2 + theme_minimal(base_size = 17) + theme(legend.position=c(.85, .9)) + coord_cartesian(ylim = c(0, 1)) + scale_fill_manual(values=colors) 
 
+xsplit <- split(x, x$Virus)
+
+DWVmod<-glmer(data = xsplit$DWV, formula = virusBINY~ treatment + caste + (1|Colony), family = binomial)
+
+Anova(DWVmod, test="Chisq")
+summary(glht(DWVmod, mcp(caste="Tukey")))
+
+#Prevalence by caste Figure
+
+PrevSummary <- ddply(x, c("Virus", "caste"), summarise, 
+                     n = length(virusBINY),
+                     mean = mean(virusBINY, na.rm = TRUE),
+                     sd = sd(virusBINY, na.rm = TRUE),
+                     se = sd / sqrt(n))
+
+plot3 <- ggplot(PrevSummary, aes(x=Virus, y=mean, fill=caste)) + 
+  geom_bar(stat="identity", 
+           position=position_dodge()) +
+  geom_errorbar(aes(ymin=mean-se, ymax=mean+se), 
+                width=.4,
+                position=position_dodge(.9)) + labs(x="Virus", 
+                                                    y = "Virus Prevalence")
+
+plot3 + theme_minimal(base_size = 17) + theme(legend.position=c(.85, .9)) + coord_cartesian(ylim = c(0, 1)) + scale_fill_manual(values=colors) 
+
+table(xsplit$DWV$virusBINY, xsplit$DWV$caste)

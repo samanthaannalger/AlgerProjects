@@ -15,6 +15,8 @@ Shinydf <- read.csv("Shinydf.csv",
                           stringsAsFactors = FALSE)
 
 
+
+
 # What 'meds' are used at the apiary level? (To be used in big analysis to predict colony loss)
 MedUse <- Shinydf[! is.na(Shinydf$TreatmentsForColonyHealthMitigation), ]
 
@@ -117,12 +119,16 @@ summary(mod)
 # Full, Null and Reduced Models
 LossModFull <- lmer(data=Modeldf, formula = PerTotLoss ~ MiteCounts + mitTF + SupplementalFeed + Div + Beektype + (1|BeekeeperID))
 
+LossInteraction <- lmer(data=Modeldf, formula = PerTotLoss ~mitTF * Div + (1|BeekeeperID))
+
 LossModNull <- lmer(data=Modeldf, formula = PerTotLoss ~ 1  + (1|BeekeeperID))
 
 # Analysis of deviance, Type II Wald Chi Square test:
+library(car)
 Anova(LossModFull, test="Chisq")
+Anova(LossInteraction, test="Chisq")
 
-install.packages("lmtest")
+
 library("lmtest")
 acf(residuals(LossModFull))
 
