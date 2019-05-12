@@ -1,0 +1,105 @@
+---
+title: "Plants2015Survey"
+author: "Samantha A. Alger"
+date: "3/7/2017"
+output: pdf_document
+---
+
+```{r}
+# Clear memory of characters:
+ls()
+rm(list=ls())
+
+#Set Working Directory: 
+setwd("~/AlgerProjects/2015_Bombus_Survey/CSV_Files")
+
+# read in data:
+plants2015Survey <- read.csv("plants2015DF.csv", header=TRUE, sep = ",", stringsAsFactors=FALSE)
+
+SiteData <- read.csv("2015SurveySpatial.csv", header=TRUE, sep = ",", stringsAsFactors=FALSE)
+
+# merge datasets
+
+fieldPlants <- merge(plants2015Survey,SiteData, by="site")
+
+library(plyr)
+library(dplyr)
+library(ggplot2)
+
+#change apiary column to say "apiary, no apiary"
+fieldPlants$apiary[fieldPlants$apiary == "Y"] <- "apiary"
+fieldPlants$apiary[fieldPlants$apiary == "N"] <- "no apiary"
+
+# Are the plants with viruses at sites with or without apiaries?
+
+#ddply summarize:
+fieldPlantsSum <- ddply(fieldPlants, c("target_name", "apiary"), summarise, 
+                  n = length(BINYprefilter),
+                  mean = mean(BINYprefilter, na.rm=TRUE),
+                  sd = sd(BINYprefilter, na.rm=TRUE),
+                  se = sd / sqrt(n),
+                  sum = sum(BINYprefilter, na.rm=TRUE))
+              
+
+#creating the figure
+
+#choosing color pallet
+colors <- c("slategray3", "dodgerblue4")
+
+plot1 <- ggplot(fieldPlantsSum, aes(x=apiary, y=mean, fill=target_name)) +
+  geom_bar(stat="identity",
+           position=position_dodge()) + labs(x=NULL, y="% plants with virus detected")
+
+plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Virus", labels=c("BQCV", "DWV")) + theme(legend.position=c(.8, .85)) + coord_cartesian(ylim = c(0, .5)) + scale_y_continuous(labels = scales::percent)
+
+
+```
+
+```{r}
+# What flower types are the viruses on?
+
+#Subset only plant species positive for virus
+
+PosSites <- fieldPlants[which(fieldPlants$site==c("MART", "WHAL","JOSH")), ]
+
+
+#ddply summarize:
+PosPlantSpp <- ddply(PosPlants, c("target_name", "spp"), summarise, 
+                  n = length(BINYprefilter),
+                  mean = mean(BINYprefilter, na.rm=TRUE),
+                  sd = sd(BINYprefilter, na.rm=TRUE),
+                  se = sd / sqrt(n),
+                  sum = sum(BINYprefilter, na.rm=TRUE))
+              
+
+#creating the figure
+
+#choosing color pallet
+colors <- c("darkseagreen4", "wheat3")
+
+plot1 <- ggplot(PosPlantSpp, aes(x=spp, y=mean, fill=target_name)) +
+  geom_bar(stat="identity", col = "black",
+           position=position_dodge()) + labs(x=NULL, y="% plants with virus detected")
+
+plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Virus", labels=c("BQCV", "DWV")) + theme(legend.position=c(.8, .85)) + coord_cartesian(ylim = c(0, .5)) + scale_y_continuous(labels = scales::percent)
+
+```
+
+```{r}
+#Totals for each virus on all plants:
+#ddply summarize:
+fieldPlantsTotal <- ddply(fieldPlants, c("spp"), summarise, 
+                  sum = sum(BINYprefilter, na.rm=TRUE))
+              
+
+plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Virus", labels=c("BQCV", "DWV")) + theme(legend.position=c(.8, .85)) + coord_cartesian(ylim = c(0, .5)) + scale_y_continuous(labels = scales::percent)
+
+plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Virus", labels=c("BQCV", "DWV")) + theme(legend.position=c(.8, .85)) + coord_cartesian(ylim = c(0, .5)) + scale_y_continuous(labels = scales::percent)
+
+
+plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Virus", labels=c("BQCV", "DWV")) + theme(legend.position=c(.8, .85)) + coord_cartesian(ylim = c(0, .5)) + scale_y_continuous(labels = scales::percent)
+
+
+
+```
+

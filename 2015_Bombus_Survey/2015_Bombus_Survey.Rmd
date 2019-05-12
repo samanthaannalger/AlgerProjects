@@ -1,0 +1,691 @@
+---
+title: "BombSurv2015"
+author: "Samantha Alger & Alex Burnham"
+date: "October 27, 2016"
+output:
+  pdf_document:
+    fig_height: 5.5
+    fig_width: 7
+  html_document: default
+editor_options: 
+  chunk_output_type: console
+---
+
+**Metadata**
+
+**Author:** Samantha Alger & Alex Burnham
+
+**Date:** 27 October 2016
+
+**Data Set:** These data were collected during the a 2015 Bumble Bee Survey in Vermont by Samantha Alger and Alex Burnham with all testing is being done at the University of Vermont
+
+**Data Source:** 2015 Bumble Bee Survey
+
+**Funding Source:** Garden Club of America, Pollinator Partnership, Fabri Fiahlo (UVM), Roger Williams Park Zoo Sophie Danforth Conservation Fund. 
+
+**Data Collection:** Bumble bees were netted from flowers at field sites. 
+
+**Columns:** (from left to right) Site ID, Target (Actin, DWV, IAPV, or BQCV), sample ID, From the qPCR results: Ctmean, Ctsd, quantity mean, quantitysd, Run # (QPCR), Date specimen was collected, Field ID, Bee species, plant the bee was caught on, date the specimen was processed in the lab, was pollen found on the leg and collected (0-no, 1- yes), dil.factor (RNA diluted), apiary present/not present at site (1, 0), genome copy for target (not normalized), ACTIN genome copy, normalized target genome copy (normalized using ACTIN), 6-10 Honey Bees were collected at each site, homogenized and assayed for viruses, 'norm_genome_copbeeHB' is the normalized genome copy for honey bee for the target specified, 'CTmeanhb' is the CT value for the honey bee for each target (from qpcr data), 'HB collected' is whether honeybees were collected and processed at that site, 1 or NA, virus 'BINYPreFilter' is whether the bumble bee was positive for the virus of interest, 'virusBINY' is whether the bumble bee was positive for the virus but takes into accont the limit of detection for each target, 'HB_Abun' is # of honey bees over total number bee observed- taken from bee abundance survey at each site. 'HBSiteBin' is for DWV data only. Honey Bee virus load results showed two distinct groups 'high' (VL) and 'low' (VL); 'ShannonDIV', 'Simpson DIV', and 'FisherDIV' are three measurements of flowering plant diversity measured by counting and identifying flowering heads in a 1mx1m quadrat placed 10 times over 100 m transect; 'Density' is the density of flowering plants measured as above. 
+
+**Rows:** Bumble bee specimens
+
+**Missing values:** NA
+
+---
+##Preliminaries:
+```{r}
+#Preliminaries:
+# Clear memory of characters
+ls()
+rm(list=ls())
+
+# Call blue color palette for graphics
+library(RColorBrewer)
+library(ggplot2)
+library(dplyr)
+library(plyr)
+
+# Set Working Directory 
+setwd("~/AlgerProjects/2015_Bombus_Survey/CSV_Files")
+
+# read in data
+#BombSurv <- read.table("BombSurv.csv", header=TRUE, sep=",", stringsAsFactors=FALSE)
+
+BombSurv <- read.csv("BombSurvNHBS.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
+
+# remove unneeded columns from the DF
+BombSurv <- select(BombSurv, -X, -Ct_mean, -Ct_sd, -quantity_mean, -quantity_sd, -run, -date_processed, -dil.factor, -genome_copbee, -Ct_mean_hb, -ID, -ACT_genome_copbee, -siteNotes, -virusBINY_PreFilter,-City, -Name)
+
+# remove unneeded columns from the DF
+#BombSurv <- dplyr::select(BombSurv, -City, -Name, -virusBINY_PreFilter)
+
+# remove unwanted sites and bombus species
+BombSurv<-BombSurv[!BombSurv$site==("PITH"),]
+BombSurv<-BombSurv[!BombSurv$site==("STOW"),]
+BombSurv<-BombSurv[!BombSurv$site==("EFAIR"),]
+
+BombSurv<-BombSurv[!BombSurv$species==("Griseocollis"),]
+BombSurv<-BombSurv[!BombSurv$species==("Sandersonii"),]
+
+
+```
+
+##Prevelence of viruses in bumble bees
+```{r,  echo=FALSE}
+
+# using ddply to get summary of virusBINY by species and target name:
+VirusSum <- ddply(BombSurv, c("target_name"), summarise, 
+                  n = length(virusBINY),
+                  mean = mean(virusBINY, na.rm=TRUE),
+                  sd = sd(virusBINY, na.rm=TRUE),
+                  se = sd / sqrt(n))
+
+#choosing color pallet
+colors <- c("dodgerblue4", "dodgerblue4", "dodgerblue4")
+
+#Create a bar graph for viruses by bombus species (aes= aesthetics):
+plot1 <- ggplot(VirusSum, aes(x=target_name, y=mean, fill=target_name)) + 
+  geom_bar(stat="identity",
+           position=position_dodge()) + labs(x="Virus", y = "% Prevalence")
+
+plot1 + theme_minimal(base_size = 17) + theme(legend.position=c(3, 3)) + coord_cartesian(ylim = c(0, 1)) + scale_fill_manual(values=colors) + scale_y_continuous(labels = scales::percent)
+
+```
+
+##Prevalence by bumble bee species:
+**FIGURES:**
+```{r}
+
+# using ddply to get summary of virusBINY by species and target name:
+VirusSum <- ddply(BombSurv, c("species", "target_name"), summarise, 
+                  n = length(virusBINY),
+                  mean = mean(virusBINY, na.rm=TRUE),
+                  sd = sd(virusBINY, na.rm=TRUE),
+                  se = sd / sqrt(n))
+                  
+         
+#choosing color pallet
+colors <- c("steelblue", "tan3")
+
+#Create a bar graph for viruses by bombus species (aes= aesthetics):
+plot1 <- ggplot(VirusSum, aes(x=target_name, y=mean, fill=species)) + 
+  geom_bar(stat="identity", 
+           position=position_dodge()) + labs(x="Virus", y = "% Prevalence")
+
+plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Bombus Species:", labels=c("bimaculatus", "vagans")) + theme(legend.position=c(.8, .85)) + coord_cartesian(ylim = c(0, 1)) + scale_y_continuous(labels = scales::percent)
+
+```
+**Figure 1:** Percent prevalence (% of infected individuals) for two bumble bee species, *Bombus bimaculatus* and *Bombus vagans* for black queen cell virus (BQCV), deformed wing virus (DWV) and Israeli acute paralysis virus (IAPV). BQCV was significantly more prevalent among *B. bimaculatus* than *B. vagans* (p<0.00001). No significant differences in DWV prevalence between species (p = 0.9469). IAPV was detected only in low levels among a few individuals. This figure only includes bees with quantifiable viral infections above the threshold of detection.
+
+**STATS:**
+```{r}
+#stats for % prevalence, species differences
+statsplit <- split(BombSurv, BombSurv$target_name) 
+
+# chi.sq test for BQCV prev. vs species (p < 0.00001)
+chisq.test(statsplit$BQCV$virusBINY, statsplit$BQCV$species)
+fisher.test(statsplit$BQCV$virusBINY, statsplit$BQCV$species)
+
+# chi.sq test for DWV prev. vs species (p = 0.9469)
+chisq.test(statsplit$DWV$virusBINY, statsplit$DWV$species)
+
+```
+
+##Bumble bee virus prevalence as a function of Apiary present/absent
+**FIGURES**
+```{r}
+
+# make apiary binary a character so we can use it as a factor in the model
+BombSurv$apiary_near_far <- as.character(BombSurv$apiary_near_far)
+
+
+# using ddply to get summary of virusBINY by species and target name:
+VirusSum1 <- ddply(BombSurv, c("apiary_near_far", "target_name"), summarise, 
+                  n = length(virusBINY),
+                  mean = mean(virusBINY, na.rm=TRUE),
+                  sd = sd(virusBINY, na.rm=TRUE),
+                  se = sd / sqrt(n))
+
+#choosing color pallet
+colors <- c("slategray3", "dodgerblue4")
+
+#Create a bar graph for viruses by bombus species (aes= aesthetics):
+plot1 <- ggplot(VirusSum1, aes(x=target_name, y=mean, fill=apiary_near_far)) + 
+  geom_bar(stat="identity", 
+           position=position_dodge()) + labs(x="Virus", y = "% Prevalence")
+
+plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors, name="Site Type:", labels=c("Apiary Absent", "Apiary Present")) + theme(legend.position=c(.8, .85)) + coord_cartesian(ylim = c(0, 1)) + scale_y_continuous(labels = scales::percent)
+
+```
+**Figure 2:** Percent prevalence of infected bumble bee individuals for black queen cell virus (BQCV), deformed wing virus (DWV) and Israeli acute paralysis virus (IAPV). Bumble bees were either caught in sites with honey bee apiaries present or no apiary nearby. BQCV (p<.0001) and DWV (p=.00225) were more prevalent in bumble bees caught in sites with a honey bee apiary present than in sites without an apiary nearby. IAPV was detected only in very low levels among a few individuals. This figure only includes bees with quantifiable viral infections above the threshold of detection for quantification.
+
+**STATS**
+```{r}
+#stats for % prevalence, apiary_near_far differences
+#remove NAs before doing test
+PresAbst_stat <- BombSurv[which(BombSurv$apiary_near_far!="NA"),]
+
+PresAbst_stat <- split(PresAbst_stat, PresAbst_stat$target_name) 
+
+# chi.sq test for BQCV prev. vs apiary_near_far (p < 0.00001)
+chisq.test(PresAbst_stat$BQCV$virusBINY, PresAbst_stat$BQCV$apiary_near_far)
+
+# chi.sq test for DWV prev. vs apiary_near_far (p =  0.001814)
+chisq.test(PresAbst_stat$DWV$virusBINY, PresAbst_stat$DWV$apiary_near_far)
+```
+
+
+##Distribution of honey bee viral loads: "Clustered HoneyBees". Honey bee virus load data falls into a binomial distribution with samples eiher high or low.
+**FIGURES**
+```{r}
+# summary of viral load for by target and site
+CopDist <- ddply(BombSurv, c("target_name", "site"), summarise, 
+                  n = length(norm_genome_copbeeHB),
+                  mean = mean(norm_genome_copbeeHB, na.rm=TRUE),
+                  sd = sd(norm_genome_copbeeHB, na.rm=TRUE),
+                  se = sd / sqrt(n))
+
+CopDist<-CopDist[!CopDist$target_name==("BQCV"),]
+CopDist<-CopDist[!CopDist$target_name==("IAPV"),]
+      
+
+
+# histogram of log mean viral for DWV  at each site showing bimodality for site:
+hist(log(CopDist$mean), 
+     breaks=20,
+     xlim = c(5,25),
+     col = "dodgerblue4",
+     xlab = "Honeybee DWV level log(viral load)",
+     main = "Distribution of DWV Viral Load in Honeybees",
+     cex.lab = 1.3,
+     font.lab = 2
+     )
+
+```
+
+##Creating a figure showing bumble bee viral prevalence as a function of honey bee viral load (bins) or honey bees absent.
+**FIGURES**
+```{r}
+
+BombSurvSplit <- split(BombSurv, BombSurv$target_name)
+
+BombSurvSplit$DWV$HBSiteBin[is.na(BombSurvSplit$DWV$HBSiteBin)] <- "No Apis Caught"
+
+
+HBSiteSum <- ddply(BombSurvSplit$DWV, c("HBSiteBin", "target_name"), summarise, 
+                   n = length(virusBINY),
+                   mean = mean(virusBINY, na.rm=TRUE),
+                   sd = sd(virusBINY, na.rm=TRUE),
+                   se = sd / sqrt(n))
+
+
+colors <- c("slategray3", "dodgerblue4", "blue4")
+
+plot1 <- ggplot(HBSiteSum, aes(x=HBSiteBin, y=mean, fill=colors)) + 
+  geom_bar(stat="identity") + labs(x=NULL, y = "% Prevalence")
+
+plot1 + theme_minimal(base_size = 17) + scale_fill_manual(values=colors) + coord_cartesian(ylim = c(0, 0.2)) + scale_y_continuous(labels = scales::percent) + theme(legend.position=c(3, 3))
+
+```
+**Figure 3:** Percent prevalance for Bumble bees infected with deformed wing virus at sites where honey bees had high and low viral loads, and sites where no honey bees were present and therefore could not be collected. DWV was more prevalent in bumble bees caught at sites with honey bees with high average viral loads, than sites with honey bees with low average viral loads (p = 0.046, X2 = 3.9767).  
+
+```{r}
+# recode NAs for HBsiteBin as None to indicate no HB caught at site:
+
+x <- BombSurvSplit$DWV[BombSurvSplit$DWV$HBSiteBin!="No Apis Caught",]
+
+# loooking at diffence between high and low
+chisq.test(x$HBSiteBin, x$virusBINY)
+
+
+# chi.sq test for High and Low DWV load sites
+chisq.test(BombSurvSplit$DWV$HBSiteBin, BombSurvSplit$DWV$virusBINY)
+fisher.test(BombSurvSplit$DWV$HBSiteBin, BombSurvSplit$DWV$virusBINY)
+
+```
+
+##Difference in virus prevalence in bumble bees over the season:
+**FIGURES**
+```{r}
+# Figure to see differences in virus prevalence over time
+BombSurv$Date_collected <- as.Date(BombSurv$Date_collected, "%m/%d/%y")
+
+tempsplit <- split(BombSurv, BombSurv$target_name)
+
+
+BombSurv$Date_Pooled <- ifelse(BombSurv$Date_collected >= "2015-08-03", "August", ifelse(BombSurv$Date_collected >= "2015-07-28", "July", ifelse(BombSurv$Date_collected >= "2015-07-16", "July", "June"))) 
+
+BombSurv$Date_Pooled <- factor(BombSurv$Date_Pooled, levels = c("June", "July", "August"))
+
+library(dplyr)
+
+sp <- split(BombSurv, BombSurv$species)
+
+# create summary and sd and se using plyr
+library(plyr)
+VirusSum2 <- ddply(sp$Bimaculatus, c("target_name", "Date_Pooled"), summarise, 
+                  n = length(virusBINY),
+                  mean = mean(virusBINY),
+                  sd = sd(virusBINY),
+                  se = sd / sqrt(n))
+
+VirusSum2 <- VirusSum2[-(7:9),]
+
+
+library(ggplot2)
+
+#Create plot in ggplot 
+plot <- ggplot(data = VirusSum2, 
+               aes(x = Date_Pooled, 
+                   y = mean, 
+                   group = target_name, 
+                   colour = target_name)
+               ) + geom_line(size=1.5) + geom_point(size=4) + scale_colour_manual(values = c("dodgerblue4", "black")) + coord_cartesian(ylim = c(0, 1)) + labs(x = "Month", y = "% Prevalence", color="Virus:") + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.2)) + scale_y_continuous(labels = scales::percent) 
+
+# add a theme and add asterix for significance 
+plot + scale_fill_brewer(palette = "Paired") + theme_minimal(base_size = 17) + theme(legend.position=c(.85, .85)) + coord_cartesian(ylim = c(0, 1)) 
+ 
+mod <- glm(tempsplit$BQCV$virusBINY~tempsplit$BQCV$Date_collected)
+summary(mod)
+
+```
+
+Setting up data for regression between mean(bomble bee viral load) and HB viral load by site:
+```{r}
+# summary of bumbus viral load by site and target
+VirusModel <- ddply(BombSurv, c("target_name", "site"), summarise, 
+                  n = length(norm_genome_copbee),
+                  mean = mean(norm_genome_copbee),
+                  sd = sd(norm_genome_copbee),
+                  se = sd / sqrt(n))
+
+
+BombSurv$norm_genome_copbee[BombSurv$norm_genome_copbee == 0] <- NA
+
+VirusModelNA <- ddply(BombSurv, c("target_name", "site"), summarise, 
+                  n = length(norm_genome_copbee),
+                  mean = mean(norm_genome_copbee, na.rm=TRUE),
+                  sd = sd(norm_genome_copbee, na.rm=TRUE),
+                  se = sd / sqrt(n))
+
+
+# selcting the columns I want:
+VirusModelNA <- dplyr::select(VirusModelNA, target_name, site, mean)
+VirusModelNA <- rename(VirusModelNA, c("mean"="BombMeanNA"))
+VirusModelNA$BombMeanNA[VirusModelNA$BombMeanNA == "NaN"] <- 0
+
+# summary of HB viral load by site and target
+VirusModelHB <- ddply(BombSurv, c("target_name", "site"), summarise, 
+                  n = length(norm_genome_copbeeHB),
+                  mean = mean(norm_genome_copbeeHB),
+                  sd = sd(norm_genome_copbeeHB),
+                  se = sd / sqrt(n))
+
+VirusBombPrev <- ddply(BombSurv, c("target_name", "site"), summarise, 
+                  n = length(virusBINY),
+                  mean = mean(virusBINY),
+                  sd = sd(virusBINY),
+                  se = sd / sqrt(n))
+
+# selcting the columns I want:
+VirusBombPrev <- dplyr::select(VirusBombPrev, target_name, site, mean)
+VirusBombPrev <- rename(VirusBombPrev, c("mean"="BombPrev"))
+
+
+# get apiary near far data:
+library(dplyr)
+xx <- dplyr::select(BombSurv, site, apiary_near_far, target_name, ShannonDIV, Density, sumApiaries, sumColonies)
+xx <- unique(xx)
+
+# selcting the columns I want:
+VirusModelHB <- dplyr::select(VirusModelHB, target_name, site, mean)
+
+# merge HB and Bombus DFs and rename columns:
+viralLoadDF <- merge(VirusModelHB, VirusModel, by=c("target_name","site"))
+
+viralLoadDF <- rename(viralLoadDF, c("mean.x"="HBviralLoad", "mean.y"="BombusViralLoad"))
+
+# merge in eco data
+viralLoadDF <- merge(viralLoadDF, xx, by=c("target_name","site"))
+
+# merge in prev for bombus
+viralLoadDF <- merge(viralLoadDF, VirusBombPrev, by=c("target_name","site"))
+
+# merge for bombus
+viralLoadDF <- merge(viralLoadDF, VirusModelNA, by=c("target_name","site"))
+
+# remove IAPV data (all 0 anyway)
+viralLoadDF <- viralLoadDF[!viralLoadDF$target_name==("IAPV"),]
+
+# recoding NA as 0 for sites where no HB were found (prev of Virus is 0 so Viral load is also 0 or NULL)
+viralLoadDF$HBviralLoad[is.na(viralLoadDF$HBviralLoad)] <- 0
+
+# split DF by target name:
+x <- split(viralLoadDF, viralLoadDF$target_name)
+
+
+
+
+
+
+
+# linear regression of HB load and Bombus load for DWV
+plot(x=log10(x$DWV$HBviralLoad), y=log10(x$DWV$BombusViralLoad))
+modDWV <- lm(log10(x$DWV$BombusViralLoad+1)~log10(x$DWV$HBviralLoad+1))
+summary(modDWV)
+
+# linear regression of HB load and Bombus load for BQCV
+plot(x=log10(x$BQCV$HBviralLoad), y=log10(x$BQCV$BombusViralLoad))
+modBQCV <- lm(log10(x$BQCV$BombusViralLoad+1)~log10(x$BQCV$HBviralLoad+1))
+summary(modBQCV)
+
+# looking at mean bombus viral load by site viral prev for DWV (p=0.02)
+plot(x=x$DWV$BombPrev, y=log10(x$DWV$BombMeanNA))
+modDWV1 <- lm(log10(x$DWV$BombMeanNA+1)~x$DWV$BombPrev)
+summary(modDWV1)
+
+# looking at sans sites and values for each of them
+cbind(x$DWV$site, x$DWV$apiary_near_far, x$DWV$HBviralLoad, x$DWV$BombusViralLoad)
+
+```
+
+```{r}
+#Combining BombSurv with GIS data
+```
+
+## Working with mixed models:
+**ANLALYSIS**
+```{r}
+# print my clean data frame for glm analysis 
+print(viralLoadDF)
+
+# make apiary near far a factor variable:
+viralLoadDF$apiary_near_far <- as.factor(viralLoadDF$apiary_near_far)
+
+library(lme4)
+library(MASS)
+
+# mixed model for DWV load and apiary status (significant) 
+mod <- glmmPQL(data=x$DWV, fixed = BombMeanNA~apiary_near_far+sumApiary, random = ~ 1 | site, family = gaussian)
+
+summary(mod)
+
+# mixed model for BQCV load and apiary status (NOT significant)
+mod1 <- glmmPQL(data=x$BQCV, fixed = BombMeanNA~apiary_near_far + sumApiaries, random = ~ 1 | site, family = gaussian)
+
+summary(mod1)
+
+
+x$BQCV$apiary_near_far <- as.factor(x$BQCV$apiary_near_far)
+
+# mixed model of prevalence in BQCV vs sumApiries (sumApiaries=significant)
+mod3 <- glmmPQL(data=x$BQCV, fixed = BombPrev~apiary_near_far, random = ~ 1 | site, family = binomial (link = "logit"))
+
+summary(mod3)
+
+DFsplit <- split(BombSurv, BombSurv$target_name)
+
+DFsplit
+
+
+# mixed model for all viruses and apiary  near/far and sum apiaries (not significant)
+mod5 <- glmmPQL(data=BombSurv, fixed = virusBINY~apiary_near_far*target_name, random = ~ 1 | site, family = binomial (link = "logit"))
+
+summary(mod5)
+
+# mixed model for all viruses and apiary  near/far and sum apiaries (not significant)
+mod6 <- glmmPQL(data=DFsplit$DWV, fixed = norm_genome_copbee~apiary_near_far, random = ~ 1 |site + species, family = gaussian())
+
+summary(mod6)
+
+
+DFsplit$BQCV$HBSiteBin 
+
+
+
+
+mod3 <- glmmPQL(data=x$BQCV, fixed = BombPrev~apiary_near_far, random = ~ 1 | site, family = gaussian)
+
+summary(mod3)
+
+# mixed model of prevalence in DWV vs sumApiries (NOT significant)
+mod4 <- glmmPQL(data=x$DWV, fixed = BombPrev~apiary_near_far + sumApiaries, random = ~ 1 | site, family = gaussian)
+
+summary(mod4)
+
+
+
+```
+
+
+
+```{r}
+# working with lme4 in R
+
+
+
+library(lme4)
+
+# BQCV prevalence
+# Using glmer because need to specify binomial distribution because virusBINY is 0s and 1s
+# controlling for the random effects of site, species, lat and long
+BQCVmod <- glmer(data=DFsplit$BQCV, formula = virusBINY ~ apiary_near_far + (1|site) + (1|species) + (1|lat) + (1|long), family=binomial(link = "logit"))
+
+summary(BQCVmod)
+
+
+#DWV prevalence
+DWVmod <- glmer(data=DFsplit$DWV, formula = virusBINY ~ apiary_near_far + (1|site) + (1|species) + (1|lat) + (1|long), family=binomial(link = "logit"))
+
+summary(DWVmod)
+
+
+
+
+# DWV viral load test (likelyhood)
+
+# substetting only positive DWV bees
+DWVpos <- subset(DFsplit$DWV, virusBINY==1)
+# log tranforming those bees
+DWVpos$log10norm_genome_copbee <- log10(DWVpos$norm_genome_copbee)
+
+
+# null model
+DWVvl.null <- lmer(data=DWVpos, formula = log10norm_genome_copbee ~ 1 + (1|site) + (1|species), REML = FALSE)
+
+# full model
+DWVvl <- lmer(data=DWVpos, formula = log10norm_genome_copbee ~ sumApiaries + (1|site) + (1|species), REML = FALSE)
+# anova between null and full
+anova(DWVvl.null,DWVvl)
+
+coef(DWVvl)
+
+
+
+# BQCV viral load test (likelyhood)
+
+# substetting only positive BQCV bees
+BQCVpos <- subset(DFsplit$BQCV, virusBINY==1)
+# log tranforming those bees
+BQCVpos$log10norm_genome_copbee <- log10(BQCVpos$norm_genome_copbee)
+
+
+# null model
+BQVCvl.null <- lmer(data=BQCVpos, formula = log10norm_genome_copbee ~ 1 + (1|site) + (1|species), REML = FALSE)
+
+# full model
+BQVCvl <- lmer(data=BQCVpos, formula = log10norm_genome_copbee ~ sumApiaries + (1|site) + (1|species), REML = FALSE)
+# anova between null and full
+anova(BQVCvl.null,BQVCvl)
+
+
+
+
+
+
+
+
+
+
+```
+
+
+## Viral load by Apiary status
+```{r}
+
+
+viralLoadDF$logViralLoad <- log10(viralLoadDF$BombMeanNA+1)
+
+VirusSum1 <- ddply(viralLoadDF, c("apiary_near_far", "target_name"), summarise, 
+              n = length(logViralLoad),
+              mean = mean(logViralLoad, na.rm=TRUE),
+              sd = sd(logViralLoad, na.rm = TRUE),
+              se = sd / sqrt(n))
+
+colors <- c("slategray3", "dodgerblue4")
+
+plot1 <- ggplot(VirusSum1, aes(x=target_name, y=mean, fill=apiary_near_far)) + 
+  geom_bar(stat="identity", 
+           position=position_dodge()) +
+  geom_errorbar(aes(ymin=mean-se, ymax=mean+se), 
+                width=.4,
+                position=position_dodge(.9)) + labs(x="Virus", y = "Viral Load log(genome copies/site)")
+
+plot1 + theme_minimal(base_size = 17) + coord_cartesian(ylim = c(0, 10)) + scale_fill_manual(values=colors, name="Apiary Status:", labels=c("Far from Apiary", "Near Apiary")) + theme(legend.position=c(.8, .85)) + annotate(geom = "text", x = 2, y = 6.5, label = "**",cex = 10) + annotate(geom = "text", x = 1, y = 8.5, label = "n.s.",cex = 7) 
+
+```
+
+```{r}
+library(scales)
+plot1 <- ggplot(data = x$BQCV, 
+              aes(x = sumApiaries, 
+              y = BombPrev)) + geom_point(size=3) + labs(x = "# of Apiaries within 3 km", y = "% Prevalence of BQCV") + coord_cartesian(ylim = c(0, 1), xlim = c(0,10)) + theme_minimal(base_size = 17) + scale_y_continuous(labels = scales::percent) + scale_x_continuous(1:10)
+
+plot1
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##Using the spacial data to look at correlations in percent prevelence
+**SETTING UP DATA**
+```{r}
+# summaraizing data for % prev by site and target
+SiteVirPrev <- ddply(BombSurv, c("site", "target_name"), summarise, 
+                  n = length(virusBINY),
+                  mean = mean(virusBINY, na.rm=TRUE),
+                  sd = sd(virusBINY, na.rm=TRUE),
+                  se = sd / sqrt(n))
+
+SiteVirPrev
+
+
+# read in spacial data and select columns I want
+spac <- read.table("2015SurveySpatial.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
+
+spac <- select(spac, site, sumApiaries, sumColonies)
+
+# merge % prev data for spatial data
+spacData <- merge(SiteVirPrev, spac, by="site")
+
+# split by virus type
+splitDF <- split(spacData, spacData$target_name)
+
+# plot % prev by sum Apiaries for all three targets:
+
+plot(y=splitDF$DWV$mean, x=splitDF$DWV$sumApiaries)
+
+plot(y=splitDF$IAPV$mean, x=splitDF$IAPV$sumApiaries)
+
+plot1 <- plot(y=splitDF$BQCV$mean, x=splitDF$BQCV$sumApiaries, xlab="# apiaries within 3 km", ylab="prevalence BQCV in Bumble Bees")
+
+help(lines)
+# black queen cell lm
+mymod <- lm(data=splitDF$BQCV, splitDF$BQCV$mean~splitDF$BQCV$sumApiaries)
+abline(mymod)
+summary(mymod)
+
+# plot % prev by sumColonies for all three targets:
+plot(y=splitDF$DWV$mean, x=splitDF$DWV$sumColonies)
+
+plot(y=splitDF$IAPV$mean, x=splitDF$IAPV$sumColonies)
+
+plot(y=splitDF$BQCV$mean, x=splitDF$BQCV$sumColonies)
+
+# black queen cell lm
+mymod1 <- lm(data=splitDF$BQCV, splitDF$BQCV$mean~splitDF$BQCV$sumColonies)
+abline(mymod1)
+summary(mymod1)
+
+```
+##Looking at Mite Data
+```{r}
+# Data setup for Logistic Regressions on mites and spatial data
+
+logRegDF <- select(BombSurv, site, target_name, species, norm_genome_copbee, virusBINY, Varroa100, sumApiaries, sumColonies)
+
+logRegDF$logViralLoad <- log10(logRegDF$norm_genome_copbee)
+
+# Log(Bombus Viral Load)
+splitDF <- split(logRegDF, logRegDF$target_name)
+
+# fitting a logistic regression to the data (regressing virusBINY on Varroa100)
+splitDFmite <- splitDF$DWV[complete.cases(splitDF$DWV),]
+
+hist(splitDFmite$norm_genome_copbee, breaks = 20)
+hist(splitDFmite$logViralLoad, breaks = 8)
+
+#splitDFmite<-splitDFmite[!splitDFmite$site==("PAT"),]
+#splitDFmite<-splitDFmite[!splitDFmite$site==("BOST-NEAR"),]
+#splitDFmite<-splitDFmite[!splitDFmite$species==("Bimaculatus"),]
+
+miteMod <- glm(virusBINY~Varroa100, data=splitDFmite, family=binomial(link='logit'))
+summary(miteMod)
+
+```
+
+
+```{r}
+# Adding NHBS mite data
+
+NHBSdata <- read.csv("NHBS_2015_DataSubset1.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
+
+NHBSdata <- select(NHBSdata, site, Varroa100)
+
+# merge % prev data for mite data
+miteData <- merge(spacData, NHBSdata, by="site")
+
+# split by virus type
+splitMite <- split(miteData, miteData$target_name)
+
+# plot % prev by sum Apiaries for all three targets:
+
+plot(y=splitMite$DWV$mean, x=splitMite$DWV$Varroa100)
+
+plot(y=splitMite$IAPV$mean, x=splitMite$IAPV$Varroa100)
+
+plot(y=splitMite$BQCV$mean, x=splitMite$BQCV$Varroa100)
+
+# black queen cell lm
+mymod <- lm(data=splitMite$DWV, splitMite$DWV$mean~splitMite$DWV$Varroa100)
+abline(mymod)
+summary(mymod)
+```
+

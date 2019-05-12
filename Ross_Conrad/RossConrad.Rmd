@@ -1,0 +1,93 @@
+---
+title: "Bee Virus Results for Apiary '125'"
+author: "Samantha Alger & Alex Burnham"
+date: "November 2, 2016"
+output:
+  pdf_document:
+    fig_height: 5.5
+    fig_width: 7
+---
+
+**Metadata**
+
+**Author:** Samantha Alger & Alex Burnham
+
+**Date:** November 2, 2016
+
+**Data Set:** These data were collected from Ross Conrad's apiary "125" on August 18, 2016. Bees were screened for deformed wing virus (DWV) and Israeli acute paralysis virus (IAPV). All bees were negative for IAPV.
+
+**Funding Source:** NA
+
+**Data Collection:** All hives in the apiary were numbered and sampled (except for hive #6). Around 50 bees were collected in falcon tubes from each hive. For RNA extractions, 50 bees from each hive were homogenized using a mortar and pestle with liquid nitrogen. We used 0.3 grams of each homogenate in GITC buffer. We analyzed each sample using RT-qPCR for IAPV, DWV, and Actin. Genome copies were normalized using Actin as the reference gene.
+
+**Columns:** Sample name is "RC" for Ross Conrad and unique hive number. Target name is DWV (virus of interest), Ctmean, Ctsd, quantity mean, and quantity sd are from qPCR results. Run is the qPCR run #. dil. factor is the dilution of RNA used in PCR. genome copies is the target copies without reference gene. ACT genome copies is the reference genome copy number, norm genome copy is the normalized copies of DWV in each bee sample. Colony number is the unique ID given to each colony tested.
+
+**Rows:** Colonies tested.
+
+---
+
+```{r, echo=FALSE, message=FALSE}
+
+library(dplyr)
+
+# Set Working Directory: 
+setwd("~/Desktop/RScripts/Ross_Conrad")
+
+# read in data:
+ConradDF <- read.table("ConradDF.csv", header=TRUE, sep = ",") 
+
+
+```
+
+
+```{r,  echo=FALSE}
+#barplot of vial load by colony number
+
+par(mar = c(6, 6, 4, .5), mgp = c(4, 1, 0))
+
+barplot(ConradDF$norm_genome_copbee, 
+        names.arg = ConradDF$sample_name, 
+        xlab="Colony ID",
+        ylab="DWV Viral Load (average genome copies per bee)",
+        main="Deformed Wing Virus Loads by Colony in Apiary '125'",
+        col='goldenrod',
+        font.lab=2,
+        las=2
+)
+
+```
+
+**Figure 1:** Average deformed wing virus load per bee for each colony in apiary '125'
+
+```{r, echo=FALSE}
+barplot(log(ConradDF$norm_genome_copbee), 
+        names.arg = ConradDF$sample_name, 
+        xlab="Colony ID",
+        ylab="DWV Viral Load log(average genome copies per bee)",
+        main="Log Transformed Deformed Wing Virus Loads by Colony in  Apiary '125'",
+        col='cyan',
+        font.lab=2,
+        las=2
+)
+
+```
+
+
+**Figure 2:** Log transformation of average deformed wing virus load per bee for each colony in apiary '125'
+
+
+
+
+\pagebreak
+
+**Table 1:** Deformed wing virus loads for each colony tested in apiary '125'. Viral loads are given in average genome copies per bee.
+
+\includegraphics{ColonyNumber2.pdf}
+
+
+
+
+
+
+
+
