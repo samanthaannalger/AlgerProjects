@@ -5,6 +5,7 @@
 ###### SET UP DATA SET AND VARS FOR CALCULATIONS: #######
 MWm2 <- 24.25 # density of plants per 1 meter squared
 plotArea <- 137088 # area of plot in meters squared
+
 plantsSE <- 300 # number of plants sampled at each time step
 eggCounts <- c(0,0,0,1,1,3,0,0,0,0,0,0,0,0) # vector of counts of eggs at each of 14 time steps
 
@@ -21,6 +22,12 @@ sumeggs<-sum(totalEggsVec)
 sumeggs*.10
 
 
+
+
+
+
+
+
 # Clear memory of characters:
 ls()
 rm(list=ls())
@@ -31,7 +38,9 @@ library(ggplot2)
 library(reshape2)
 
 # Set Working Directory: 
-setwd("~/AlgerProjects/Milkweed/Data")
+# setwd("~/AlgerProjects/Milkweed/Data")
+setwd("~/Documents/GitHub/AlgerProjects/Milkweed/Data")
+
 
 # read in data:
 Monarch <- read.csv("MonarchData.csv", header=TRUE, sep = ",", stringsAsFactors = FALSE) 
@@ -85,3 +94,79 @@ d
 
 library(patchwork)
 d+b
+
+
+
+Dewing$value
+
+Borderview$value
+
+
+
+timePoints <- 13
+blocks <- 3
+Sites <- 2
+plants <- 100
+
+
+TotalEffortPerSite <- timePoints * blocks * plants
+
+# Borderview
+###########################################################################
+Bord <- ddply(Borderview, c("variable"), summarise, 
+              val = sum(value, na.rm = TRUE))
+
+Bord$variable <- as.character(Bord$variable)
+var <- c(Bord$variable, "total")
+val <- c(Bord$val, 28)
+Bord <- data.frame(var, val)
+Bord$Normal <- Bord$val / TotalEffortPerSite
+Bord$Double <- Bord$Normal*2
+###########################################################################
+
+
+# Dewing
+###########################################################################
+Dew <- ddply(Dewing, c("variable"), summarise, 
+                      val = sum(value, na.rm = TRUE))
+
+Dew$variable <- as.character(Dew$variable)
+var <- c(Dew$variable, "total")
+val <- c(Dew$val, 48)
+Dew <- data.frame(var, val)
+Dew$Normal <- Dew$val / TotalEffortPerSite
+Dew$Double <- Dew$Normal*2
+###########################################################################
+
+(Dew$Normal[3]*TotalEffortPerSite)/Bord$Normal[3]
+
+
+
+
+
+# Parameters:
+BordDens <- 24.25 # density of plants at borderview per 1 meter squared
+DewDens <- 12.42 # density of plants at dewing per 1 meter squared
+BordArea <- 140000 # Borderview area in meters
+DewArea <- 60000 # Dewing area in meters
+numFlowers <- 300 # number of flowers sampled per site per time step
+
+# vectors of egg counts at each time point for each site
+DewingEggs <- Dewing[Dewing$variable=="egg",]
+BorderviewEggs <- Borderview[Borderview$variable=="egg",]
+
+# number of plants at each time point
+numBord <- BordDens * BordArea
+numDew <- DewDens * DewArea
+
+# the sum of all estimated egg counts for each time step for each site
+TotEggsEstimateDewing <- sum((DewingEggs$value/numFlowers) * numDew)
+TotEggsEstimateBorderview <- sum((BorderviewEggs$value/numFlowers) * numBord)
+
+TotEggsEstimateDewing 
+TotEggsEstimateBorderview
+
+# number of eggs at dewing over the course of the year: 59616
+# number of eggs at borderview over the course of the year: 56583.33
+
+

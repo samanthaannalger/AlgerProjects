@@ -32,7 +32,7 @@ library(scales)
 ## Clean up for 2015 plant data___________________________________________
 
 # take only columns that we want:
-plantqPCR <- select(plantqPCR, labID, target_name, Ct_mean, Ct_sd, quantity_mean, quantity_sd)
+plantqPCR <- dplyr::select(plantqPCR, labID, target_name, Ct_mean, Ct_sd, quantity_mean, quantity_sd)
 
 
 # remove unwanted rows from dataframe:

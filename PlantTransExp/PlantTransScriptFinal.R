@@ -139,6 +139,9 @@ virus <- glmer(data=ModDatAcute, BINYprefilter ~ spp + (1|ID), family = binomial
 flower <- glmer(data=ModDatAcute, BINYprefilter ~ target_name + (1|ID), family = binomial(link="logit"))
 
 
+chisq.test(table(ModDatAcute$BINYprefilter, ModDatAcute$target_name))
+
+
 # full model test
 anova(null, full)
 # interaction test
@@ -260,7 +263,13 @@ anova(full3, null3)
 anova(main3, spp3)
 anova(main3, exp3)
 
+Anova(main3)
+
 summary(full3)
+
+
+
+
 # post hoc
 ht3 = glht(full3, mcp(spp="Tukey"))
 summary(ht3)
@@ -275,6 +284,33 @@ boxplot(Loadno0$loggenomeCopy~Loadno0$expMerge, ylab = "log load")
 ####################################################################################
 
 # ++++++++++++++++++++++++++++ prev +++++++++++++++++++++++++++++
+# visitation rates and duration of visits on viruses loads and prevalence
+full6 <- glmer(data=ModDat, BINYprefilter~visits*spp + (1|labID), family = binomial(link = "logit"))
+main6 <- glmer(data=ModDat, BINYprefilter~visits+spp + (1|labID), family = binomial(link = "logit"))
+anova(full6, main6)
+summary(full6)
+
+
+full7 <- glmer(data=ModDat, BINYprefilter~duration*spp + (1|labID), family = binomial(link = "logit"), nAGQ = 0)
+main7 <- glmer(data=ModDat, BINYprefilter~duration+spp + (1|labID), family = binomial(link = "logit"))
+anova(full7, main7)
+summary(full7)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # visitation rates and duration of visits on viruses loads and prevalence
 full4 <- glmer(data=ModDat,BINYprefilter~visits*foragetime + (1|labID), family = binomial(link = "logit"))
@@ -287,6 +323,22 @@ anova(main4, vis4)
 anova(main4, time4)
 
 summary(full4)
+
+
+main <- glmer(data=ModDat,BINYprefilter~visits+foragetime + (1|labID), family = binomial(link = "logit"))
+
+noForage <- glmer(data=ModDat,BINYprefilter~visits + (1|labID), family = binomial(link = "logit"))
+
+noVis <- glmer(data=ModDat,BINYprefilter~ foragetime + (1|labID), family = binomial(link = "logit"))
+
+anova(main, noForage)
+anova(main, noVis)
+
+
+
+
+
+
 
 fit = glm(BINYprefilter~visits, data=ModDat, family = binomial(link = "logit"))
 newdat <- data.frame(visits=seq(min(ModDat$visits, na.rm=T), max(ModDat$visits,  na.rm=T), len=100))
@@ -326,3 +378,4 @@ table(ModDat$visits, ModDat$expID)
 
 
 plot(y=Loadno0$loggenomeCopy, x=Loadno0$visits)
+

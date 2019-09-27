@@ -28,7 +28,7 @@ setwd("~/Documents/GitHub/AlgerProjects/Ross_Conrad")
 # load in data
 #Conrad <- read.table("ConradSARE.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
 #Conrad <- read.table("conradSAREtwo.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
-Conrad <- read.table("RossFinal.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
+Conrad <- read.table("SareFinalData.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
 
 ###############################################################
 # Varroa Figure
@@ -44,6 +44,8 @@ VarSum <- ddply(ConradSub, c("Treatment", "SamplingEvent"), summarise,
                 sd = sd(Varroa, na.rm = TRUE),
                 se = sd / sqrt(n))
 
+#VarSum <- VarSum[!VarSum$SamplingEvent==7,]
+
 # plotting DWV prev. for experiment 1
 colors <- c("slategray3", "dodgerblue4", "black", "blue")
 
@@ -51,16 +53,17 @@ ggplot(data = VarSum,
        aes(x = SamplingEvent, 
            y = mean, 
            color = Treatment)
-) + geom_point(size=4) + labs(x = "Sampling Event", y = "Varroa (mites/300 bees)") + coord_cartesian(ylim = c(0, 40), xlim = c(1,6)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05)) + geom_line(size=1.5) + scale_fill_brewer(palette = "Paired") + theme_classic(base_size = 17) + theme(legend.position=c(.85, .85),legend.key.width=unit(5,"line"), panel.border = element_blank(), axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'), axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'), panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs(color="Treatment:") + scale_x_continuous(breaks=c(1,2,3,4,5,6)) + scale_color_manual(values=colors)
+) + geom_point(size=4) + labs(x = "Sampling Event", y = "Varroa (mites/300 bees)") + coord_cartesian(ylim = c(0, 40), xlim = c(1,7)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05)) + geom_line(size=1.5) + scale_fill_brewer(palette = "Paired") + theme_classic(base_size = 17) + theme(legend.position=c(.85, .85),legend.key.width=unit(5,"line"), panel.border = element_blank(), axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'), axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'), panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs(color="Treatment:") + scale_x_continuous(breaks=c(1,2,3,4,5,6,7)) + scale_color_manual(values=colors)
 
+ConradSub1 <- ConradSub[!ConradSub$SamplingEvent==7,]
 
-mod <- glmer(data=ConradSub, formula = Varroa~Treatment * SamplingEvent + (1+SamplingEvent|ID), family = poisson)
+mod <- glmer(data=ConradSub1, formula = Varroa~Treatment * SamplingEvent + (1+SamplingEvent|ID), family = poisson)
 
 Anova(mod)
 
 ###############################################################
-# Honey Figure
 
+# Honey Figure
 HoneySum <- ddply(Conrad, c("Treatment", "SamplingEvent"), summarise, 
                    n = length(Honey),
                    mean = mean(Honey, na.rm=TRUE),
@@ -96,7 +99,6 @@ plot1 <- ggplot(HoneySum, aes(x=Treatment, y=mean, fill=SamplingEvent)) +
 plot1 + theme_minimal(base_size = 17) + coord_cartesian(ylim = c(0, 4)) + scale_fill_manual(values=colors, name="", labels=c("2016", "2017", "2018")) + theme(legend.position=c(.8, .88))
 
 #ANOVA testing honey
-
 HoneyModel <- aov(data=Conrad, Honey~Treatment*SamplingEvent)
 summary(HoneyModel)
 
@@ -105,6 +107,30 @@ summary(HoneyModel)
 # C and QS=A 
 # TF and TFQ=B
 ###############################################################
+
+
+
+
+
+Conrad$Date <- as.Date(Conrad$DateDied, "%m/%d/%y")
+TimeCourse <- Conrad[1:60,]
+
+TimeCourse$startDate <- rep("2016-04-01", 60)
+
+TimeCourse$SurvDays <- difftime(TimeCourse$Date ,TimeCourse$startDate , units = c("days"))
+
+library(ggfortify)
+library(survival)
+
+fit <- survfit(Surv(SurvDays, status) ~ Treatment, data = TimeCourse)
+
+autoplot(fit, surv.linetype = 'dashed', conf.int = FALSE,
+         censor.shape = '*', censor.size = 10, 
+         xlab = "Time (days)", ylab = "Percent Survival")
+
+
+
+
 # Survival Figure
 Conrad$SurvivalBINY <- ifelse(Conrad$Survival=="Yes",1,0)
 ConradTone <- Conrad[1:60,]
@@ -144,11 +170,29 @@ summary(Fullmod4)
 ###############################################################
 # Strength Figure
 
-StrengthSum <- ddply(Conrad, c("Treatment"), summarise, 
+StrengthSum <- ddply(Conrad, c("Treatment", "SamplingEvent"), summarise, 
                      n = length(Strength),
                      mean = mean(Strength, na.rm=TRUE),
                      sd = sd(Strength, na.rm = TRUE),
                      se = sd / sqrt(n))
+
+
+strength <- StrengthSum[!is.na(StrengthSum$mean),]
+
+ggplot(data = strength, 
+       aes(x = SamplingEvent, 
+           y = mean, 
+           color = Treatment)
+) + geom_point(size=4) + labs(x = "Sampling Event", y = "Varroa (mites/300 bees)") + coord_cartesian(ylim = c(300, 600), xlim = c(1,6)) + geom_errorbar(aes(ymin = mean - se, ymax = mean + se, width = 0.05)) + geom_line(size=1.5) + scale_fill_brewer(palette = "Paired") + theme_classic(base_size = 17) + theme(legend.position=c(.85, .85),legend.key.width=unit(5,"line"), panel.border = element_blank(), axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'), axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'), panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs(color="Treatment:") + scale_x_continuous(breaks=c(1,2,3)) + scale_color_manual(values=colors)
+
+
+
+
+
+
+
+
+
 
 colors <- c("slategray3", "dodgerblue4", "black", "blue")
 

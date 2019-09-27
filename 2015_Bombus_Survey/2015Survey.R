@@ -24,17 +24,27 @@ library("MuMIn")
 # Set Working Directory 
 
 # FOR SAM:
-setwd("~/AlgerProjects/2015_Bombus_Survey/CSV_Files") 
+#setwd("~/AlgerProjects/2015_Bombus_Survey/CSV_Files") 
 
 # FOR ALEX
-# setwd("~/Documents/GitHub/AlgerProjects/2015_Bombus_Survey/CSV_Files") 
+setwd("~/Documents/GitHub/AlgerProjects/2015_Bombus_Survey/CSV_Files") 
 
 # load in data
 BombSurv <- read.csv("BombSurvNHBS.csv", header=TRUE, stringsAsFactors=FALSE)
 BQCVrun <- read.csv("NegStrandSamplesRan.csv", header=TRUE, stringsAsFactors=FALSE)
 
+flowers <- read.csv("plants2015DF.csv", header=TRUE, stringsAsFactors=FALSE)
+
+
+
+  
+  ddply(flowers, c("target_name", "apiary_near_far"), summarise, 
+        n = length(BINYprefilter),
+        mean = mean(BINYprefilter))
+
+
 # plant virus prevalence data:
-Plants <- read.table("plants2015DF.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
+Plants <- read.csv("plants2015DF.csv",header=TRUE,sep=",",stringsAsFactors=FALSE)
 
 # load site level data and merge pathogen data with GIS HB colony/apiary output:
 SpatDat <- read.table("SpatDatBuffs.csv", header=TRUE,sep=",",stringsAsFactors=FALSE)
@@ -88,6 +98,20 @@ Plants <- merge(Plants, BeeAbund, all.x=TRUE, all.y=FALSE)
 Plants <- merge(Plants, SpatialDat, by=c("site","target_name"), all.x=TRUE, all.y=FALSE)
 
 
+BombSurv$isHB <- ifelse(BombSurv$site=="TIRE" | 
+                        BombSurv$site=="CLERK" |  
+                        BombSurv$site=="NEK" |  
+                        BombSurv$site=="FLAN",
+                        "noHB", "HB")
+
+pos <- BombSurv[BombSurv$norm_genome_copbeeHB>=1,]
+
+ddply(pos, c("target_name"), summarise, 
+                   n = length(norm_genome_copbeeHB),
+                   max = max(norm_genome_copbeeHB),
+                   min = min(norm_genome_copbeeHB),
+                   maxLOG = max(log10(norm_genome_copbeeHB)),
+                   minLOG = min(log10(norm_genome_copbeeHB)))
 
 
 ###################################################################################################
@@ -290,6 +314,7 @@ BombSurvNoAIPV<-BombSurv[!BombSurv$target_name==("IAPV"),]
 
 ###################################################################################################
 # Load:
+my_y_title <- expression(paste("# ", italic("Apis"), " colonies within 1km radius"))
 
 # remove 0s
 BombSurvNoAIPVno0<-BombSurvNoAIPV[!BombSurvNoAIPV$logVirus==0,]
@@ -299,7 +324,7 @@ plot <- ggplot(data = BombSurvNoAIPVno0,
                aes(x = ColoniesPooled, 
                    y = logVirus, 
                    fill = target_name)
-) + geom_boxplot(color="black") + coord_cartesian(ylim = c(5, 20)) + labs(x = "# apis colonies within 1km radius", y = "log(genome copies/bee)", fill="Virus:")
+) + geom_boxplot(color="black") + coord_cartesian(ylim = c(5, 20)) + labs(x = my_y_title, y = "log(genome copies/bee)", fill="Virus:")
 
 # add a theme 
 plot + theme_bw(base_size = 17) + scale_fill_manual(values=c("white", "gray40")) 
@@ -318,7 +343,7 @@ plot1 <- ggplot(data = VirusSum,
                 aes(x = ColoniesPooled, 
                     y = mean, 
                     shape = target_name)
-) + geom_point(size=4) + coord_cartesian(ylim = c(0, 1)) + labs(x = "# apis colonies within 1km radius", y = "% prevalence", shape="Virus:") + scale_y_continuous(labels = scales::percent) + geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd, width = 0.2))
+) + geom_point(size=4) + coord_cartesian(ylim = c(0, 1)) + labs(x = my_y_title, y = "% prevalence", shape="Virus:") + scale_y_continuous(labels = scales::percent) + geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd, width = 0.2))
 
 # add a theme 
 
@@ -361,7 +386,7 @@ newdata <- mydata[ which(mydata$gender=='F'
 ######################## CREATING PUBLICATION GRAPHICS FOR PLANT PREV #############################
 ###################################################################################################
 # create a binary varaible for apiary or no apiary 
-Plants$apiary <- ifelse(Plants$sumColonies1 <= 0, "no apiary","apiary")
+Plants$apiary <- ifelse(Plants$apiary_near_far == 0, "no apiary","apiary")
 Plants$HBlowHigh <- ifelse(Plants$apis <= 4, "Low HB","High HB")
 
 
@@ -384,7 +409,7 @@ plot1 <- ggplot(fieldPlantsSum, aes(x=apiary, y=mean, fill=target_name)) +
   geom_bar(stat="identity", color="black",
            position=position_dodge()) + labs(y="% plants with virus detected", x="Site Type") + geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd, width = 0.2),position=position_dodge(.9))
 
-plot1 + theme_bw(base_size = 23) + scale_fill_manual(values=colors, name="Virus", labels=c("BQCV", "DWV")) + theme(legend.position=c(.86, .8),legend.background = element_rect(color = "black", fill = "white", size = .4, linetype = "solid")) + scale_y_continuous(labels = function(x) paste0(x*100, "%"), limits= c(0,.5)) + annotate(geom = "text", x = 1, y = .39, label = "N = 17",cex = 8) + annotate(geom = "text", x = 2, y = .25, label = "N = 18",cex = 8)
+plot1 + theme_bw(base_size = 23) + scale_fill_manual(values=colors, name="Virus", labels=c("BQCV", "DWV")) + theme(legend.position=c(.86, .8),legend.background = element_rect(color = "black", fill = "white", size = .4, linetype = "solid")) + scale_y_continuous(labels = function(x) paste0(x*100, "%"), limits= c(0,.5)) + annotate(geom = "text", x = 1, y = .43, label = "N = 15",cex = 8) + annotate(geom = "text", x = 2, y = .25, label = "N = 21",cex = 8)
 
 
 
@@ -413,16 +438,22 @@ CopDist <- ddply(BombSurv, c("target_name", "site"), summarise,
 CopDist<-CopDist[!CopDist$target_name==("BQCV"),]
 CopDist<-CopDist[!CopDist$target_name==("IAPV"),]
 
+my_y_title <- expression(paste(italic("Apis"), " DWV log(viral load)"))
+
 
 ggplot(data=CopDist, aes(log(1 + mean))) + 
   geom_histogram(breaks=seq(5, 25, by = 1), 
                  col="black", 
                  fill="grey30") +
-  labs(x="Apis DWV log(viral load)", y="Frequency") + theme_bw(base_size=23)
+  labs(x=my_y_title, y="Frequency") + theme_bw(base_size=23)
 
 ################################################################################################
 
 # bar plot showing DWV level in apis by DWV prev in bombus
+my_y_title <- expression(paste("Level of DWV in " , italic("Apis")))
+my_x_title <- expression(paste("% Prevalence in " , italic("Bombus")))
+lab <- expression(paste("No " , italic("Apis"), " caught"))
+lb <- c("High","Low",lab)
 
 HBSiteSum <- ddply(DWV, c("HBSiteBin", "target_name"), summarise, 
                    n = length(virusBINY),
@@ -436,15 +467,10 @@ HBSiteSum$mean[HBSiteSum$mean==0] <- NA
 colors <- c("grey30", "white", "white")
 
 plot1 <- ggplot(HBSiteSum, aes(x=HBSiteBin, y=mean, fill=colors)) + 
-  geom_bar(stat="identity", color = "black") + labs(x="Level of DWV in Apis", y = "% Prevalence in Bombus") + scale_x_discrete(limits=c("High","Low","No Apis Caught"))
+  geom_bar(stat="identity", color = "black") + labs(x=my_y_title, y = my_x_title) + scale_x_discrete(labels=lb)
 
 plot1 + theme_bw(base_size = 23) + scale_fill_manual(values=colors) + coord_cartesian(ylim = c(0, 0.25)) + scale_y_continuous(labels = function(x) paste0(x*100, "%"), limits= c(0,.5)) + theme(legend.position=c(3, 3)) + geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd, width = 0.2),position=position_dodge(.9)) + annotate(geom = "text", x = 1, y = .22, label = "N = 121",cex = 8) + annotate(geom = "text", x = 2, y = .12, label = "N = 150",cex = 8) + annotate(geom = "text", x = 3, y = .05, label = "N = 64",cex = 8)
 
-
-
-"N = 121"
-"N = 150"
-"N = 64"
 
 
 
@@ -612,6 +638,10 @@ TheExtractor(Full=DWVloadModFull,
              Colonies=DWVloadModnoCols, 
              Density=DWVloadModnoDens,
              Species = DWVloadModnoSpec )
+
+
+
+
 
 #####################################################################################
 # BQCV PREV #########################################################################
@@ -825,5 +855,119 @@ ggplot(spatBQCV, aes(x=sumColonies1, y=BombPrev)) +
 
 
 
+###############################################################################################
+# Full, Null and Reduced Models
+DWVFullAbund <- glmer(data=DWV, formula = virusBINY ~ apis + Density + species + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+
+DWVNullAbund <- glmer(data=DWV, formula = virusBINY ~ 1 + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+
+DWVFullAbundnoApis <- glmer(data=DWV, formula = virusBINY ~ Density + species + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+
+DWVFullAbundnoDensity <- glmer(data=DWV, formula = virusBINY ~ apis +species + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+
+DWVFullAbundnoSpecies <- glmer(data=DWV, formula = virusBINY ~ apis + Density + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+
+# run the function to get results of models
+TheExtractor(Full=DWVFullAbund, 
+             Null=DWVNullAbund, 
+             Colonies=DWVFullAbundnoApis, 
+             Density=DWVFullAbundnoDensity,
+             Species = DWVFullAbundnoSpecies)
+###############################################################################################
+
+
+
+###############################################################################################
+# Full, Null and Reduced Models
+DWVloadModFull <- lmer(data=DWVno0, formula = logVirus ~ apis + Density + species + (1|site) + (1|species) + (1|lat) + (1|long))
+
+DWVloadModNull <- lmer(data=DWVno0, formula = logVirus ~ 1 + (1|site) + (1|species) + (1|lat) + (1|long))
+
+DWVloadModFullnoApis <- lmer(data=DWVno0, formula = logVirus ~ Density + species + (1|site) + (1|species) + (1|lat) + (1|long))
+
+DWVloadModFullnoDensity <- lmer(data=DWVno0, formula = logVirus ~ apis +  species + (1|site) + (1|species) + (1|lat) + (1|long))
+
+DWVloadModFullnoSpecies <- lmer(data=DWVno0, formula = logVirus ~ apis + Density + (1|site) + (1|species) + (1|lat) + (1|long))
+
+
+
+# run the function to get results of models
+TheExtractor(Full=DWVloadModFull, 
+             Null=DWVloadModNull, 
+             Colonies=DWVloadModFullnoApis, 
+             Density=DWVloadModFullnoDensity,
+             Species = DWVloadModFullnoSpecies)
+###############################################################################################
+
+
+
+###############################################################################################
+# Full, Null and Reduced Models
+BQCVprevModFull <- glmer(data=BQCV, formula = virusBINY~ apis + Density + species + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+
+BQCVprevModNull <- glmer(data=BQCV, formula = virusBINY~ 1 + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+
+BQCVprevModnoApis <- glmer(data=BQCV, formula = virusBINY~ Density + species + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+
+BQCVprevModnoDens <- glmer(data=BQCV, formula = virusBINY~ apis + species + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+
+BQCVprevModFullnoSpp <- glmer(data=BQCV, formula = virusBINY~ apis + Density + (1|site) + (1|lat) + (1|long), family = binomial(link = "logit"))
+
+
+# run the function to get results of models
+TheExtractor(Full=BQCVprevModFull, 
+             Null=BQCVprevModNull, 
+             Colonies=BQCVprevModnoApis, 
+             Density=BQCVprevModnoDens,
+             Species =BQCVprevModFullnoSpp)
+###############################################################################################
+
+
+
+###############################################################################################
+# Full, Null and Reduced Models
+BQCVloadModFull <- lmer(data=BQCVno0, formula = logVirus ~ apis + Density + species + (1|site) + (1|lat) + (1|long))
+
+BQCVloadNull <- lmer(data=BQCVno0, formula = logVirus ~ 1 + (1|site) + (1|lat) + (1|long))
+
+
+BQCVloadModnoApis <- lmer(data=BQCVno0, formula = logVirus ~  Density + species + (1|site) + (1|lat) + (1|long))
+
+BQCVloadModnoDens <- lmer(data=BQCVno0, formula = logVirus ~ apis + species + (1|site) + (1|lat) + (1|long))
+
+
+BQCVloadModnoSpp <- lmer(data=BQCVno0, formula = logVirus ~ apis + Density + (1|site) + (1|lat) + (1|long))
+
+
+
+# run the function to get results of models
+TheExtractor(Full=BQCVloadModFull, 
+             Null=BQCVloadNull, 
+             Colonies=BQCVloadModnoApis, 
+             Density=BQCVloadModnoDens,
+             Species = BQCVloadModnoSpp)
+###############################################################################################
+
+
+x <- select(BombSurv, site, apis, bombus, apiary_near_far)
+deduped.data <- unique(x)
+
+library(reshape2)
+deduped.data <- melt(deduped.data, id.vars = c("site", "apiary_near_far"))
+
+ap <- expression(italic("Apis"))
+bo <- expression(italic("Bombus"))
+
+
+deduped.data$apiary_near_far <- ifelse(deduped.data$apiary_near_far==1, "Apiary Present", "Apiary Absent")
+
+#Create plot in ggplot 
+plot <- ggplot(data = deduped.data, 
+               aes(x = apiary_near_far, 
+                   y = value, 
+                   fill = variable)
+) + geom_boxplot(color="black") + 
+  geom_point(aes(fill=variable), size = 7, shape = 21, position = position_jitterdodge()) + coord_cartesian(ylim = c(1, 65)) + labs(x = "Site Type", y = "Bee Abundance") + theme_bw(base_size = 20) + scale_fill_manual(name = NULL, values=c("white", "gray40"), labels=c(ap, bo)) + theme(legend.position = c(.15, .85)) 
+plot
 
 

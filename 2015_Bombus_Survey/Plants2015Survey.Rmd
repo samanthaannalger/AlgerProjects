@@ -64,7 +64,7 @@ PosSites <- fieldPlants[which(fieldPlants$site==c("MART", "WHAL","JOSH")), ]
 
 
 #ddply summarize:
-PosPlantSpp <- ddply(PosPlants, c("target_name", "spp"), summarise, 
+PosPlantSpp <- ddply(PosSites, c("target_name", "spp"), summarise, 
                   n = length(BINYprefilter),
                   mean = mean(BINYprefilter, na.rm=TRUE),
                   sd = sd(BINYprefilter, na.rm=TRUE),
