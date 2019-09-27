@@ -43,7 +43,8 @@ setwd("~/Documents/GitHub/AlgerProjects/Milkweed/Data")
 
 
 # read in data:
-Monarch <- read.csv("MonarchData.csv", header=TRUE, sep = ",", stringsAsFactors = FALSE) 
+Monarch <- read.csv("MonarchData.csv", header=TRUE, sep = ",", stringsAsFactors = FALSE)
+Bees <- read.csv("BeeSurveyObs.csv", header=TRUE, sep = ",", stringsAsFactors = FALSE) 
 
 head(Monarch)
 
@@ -54,44 +55,45 @@ MonarchStats <- ddply(Monarch, c("Site", "Date"), summarise,
 
 MonarchLong <- melt(MonarchStats, id.vars = c("Site", "Date"))
 
-MonarchLong <- MonarchLong[order(MonarchLong$Date),]
-
-MonarchLong$Date <- as.character(MonarchLong$Date)
 
 
-p <- ggplot(data=MonarchLong, aes(x=Date, y=value, color=variable)) +
-  geom_line(aes(linetype = Site), size=1.5) + 
-  geom_point(size=3) + 
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-  ylab("Number of Observations") + 
-  theme_minimal(base_size = 15)
 
-p + theme(legend.position="top", legend.box = "horizontal")
+BeeStats <- ddply(Bees, c("Site","Flower"), summarise, 
+                      'Bombus-queen' = sum(BigBombus, BigOrange, na.rm = TRUE),
+                      'Bombus-worker' = sum(SmallBombus, SmallOrange, na.rm = TRUE),
+                      'Black-big' = sum(BigBlack, na.rm = TRUE),
+                      'Black-slender' = sum(SmallBlack, na.rm = TRUE),
+                      'Black-tiny' = sum(TinyBlack, na.rm = TRUE),
+                      'Green' = sum(Green, na.rm = TRUE),
+                      'Apis' = sum(Apis, na.rm = TRUE),
+                      'Flies' = sum(Flies, na.rm = TRUE))
 
-
-x <- split(MonarchLong, MonarchLong$Site)
-Borderview <- x$Borderview 
-Dewing <- x$Dewing 
-
-b <- ggplot(Borderview, aes(x=Date, y=value, fill=variable)) + 
-  theme_minimal(base_size = 16) +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(hjust = 0.5), legend.position = c(.8, .8), axis.title.y=element_blank(),
-        axis.text.y=element_blank(),
-        axis.ticks.y=element_blank()) +
-  labs(title="Borderview", x ="Date", y = NULL, fill = "Life Stage") + 
-  geom_bar(stat="identity") +
-  coord_cartesian(ylim = c(0, 15))
-b
+BeeStats
 
 
-d <- ggplot(Dewing, aes(x=Date, y=value, fill=variable)) + 
-  theme_minimal(base_size = 16) +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(hjust = 0.5), legend.position =c(3,3)) +
-  labs(title="Dewing", x ="Date", y = "Number of Observations", fill = "Life Stage") + 
-  geom_bar(stat="identity") +
-  coord_cartesian(ylim = c(0, 15))
-d
+library(reshape2)
+BeeStats <- melt(BeeStats, id.vars = c("Site", "Flower"))
 
+BeeStats$logValue <- log10(BeeStats$value + 1)
+
+# Figure for bees at Borderview:
+BeeBV <- BeeStats[ which(BeeStats$Site=='Borderview'), ]
+
+
+
+#choosing color pallet
+colors <- c("steelblue", "grey30")
+
+plot1 <- ggplot(data=BeeBV, aes(x=variable, y=logValue, fill = Flower)) + geom_bar(stat = 'identity', position = 'dodge') 
+plot1 + theme_bw(base_size = 21) + scale_fill_manual(values=colors) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + labs(x = "Morphotype", y = "Log10(Observations)") + ggtitle('Borderview') + ylim(0, 3)
+
+# Figure for bees at Dewing:
+BeeDew <- BeeStats[ which(BeeStats$Site=='Dewing'), ]
+
+#choosing color pallet
+colors <- c("steelblue", "grey30")
+
+<<<<<<< HEAD
 library(patchwork)
 d+b
 
@@ -170,3 +172,7 @@ TotEggsEstimateBorderview
 # number of eggs at borderview over the course of the year: 56583.33
 
 
+=======
+plot1 <- ggplot(data=BeeDew, aes(x=variable, y=logValue, fill = Flower)) + geom_bar(stat = 'identity', position = 'dodge') 
+plot1 + theme_bw(base_size = 21) + scale_fill_manual(values=colors) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + labs(x = "Morphotype", y = "Log10(Observations)") + ggtitle('Dewing') + ylim(0, 3)
+>>>>>>> 5ee3c5086e4d4a5b59c0d6698871520473b1e613
