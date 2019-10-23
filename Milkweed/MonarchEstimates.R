@@ -93,22 +93,23 @@ BeeDew <- BeeStats[ which(BeeStats$Site=='Dewing'), ]
 #choosing color pallet
 colors <- c("steelblue", "grey30")
 
-<<<<<<< HEAD
-library(patchwork)
-d+b
+plot1 <- ggplot(data=BeeDew, aes(x=variable, y=logValue, fill = Flower)) + geom_bar(stat = 'identity', position = 'dodge') 
+plot1 + theme_bw(base_size = 21) + scale_fill_manual(values=colors) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + labs(x = "Morphotype", y = "Log10(Observations)") + ggtitle('Dewing') + ylim(0, 3)
 
 
 
-Dewing$value
-
-Borderview$value
 
 
 
-timePoints <- 13
-blocks <- 3
-Sites <- 2
-plants <- 100
+
+
+
+
+
+
+
+
+
 
 
 TotalEffortPerSite <- timePoints * blocks * plants
@@ -172,7 +173,6 @@ TotEggsEstimateBorderview
 # number of eggs at borderview over the course of the year: 56583.33
 
 
-=======
-plot1 <- ggplot(data=BeeDew, aes(x=variable, y=logValue, fill = Flower)) + geom_bar(stat = 'identity', position = 'dodge') 
-plot1 + theme_bw(base_size = 21) + scale_fill_manual(values=colors) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + labs(x = "Morphotype", y = "Log10(Observations)") + ggtitle('Dewing') + ylim(0, 3)
->>>>>>> 5ee3c5086e4d4a5b59c0d6698871520473b1e613
+
+
+

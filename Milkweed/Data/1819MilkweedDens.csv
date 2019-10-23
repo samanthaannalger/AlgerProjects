@@ -1,0 +1,1401 @@
+Date,Site,Block,Point,Plants/1_m_squared,Observer
+7/24/18,Borderview,South,1,29,EMW
+7/24/18,Borderview,South,2,27,EMW
+7/24/18,Borderview,South,3,25,EMW
+7/24/18,Borderview,South,4,41,EMW
+7/24/18,Borderview,South,5,15,EMW
+7/24/18,Borderview,South,6,26,EMW
+7/24/18,Borderview,South,7,18,EMW
+7/24/18,Borderview,South,8,40,EMW
+7/24/18,Borderview,South,9,31,EMW
+7/24/18,Borderview,South,10,16,EMW
+7/24/18,Borderview,South,11,30,EMW
+7/24/18,Borderview,South,12,28,EMW
+7/24/18,Borderview,South,13,65,EMW
+7/24/18,Borderview,South,14,31,EMW
+7/24/18,Borderview,South,15,51,EMW
+7/24/18,Borderview,South,16,32,EMW
+7/24/18,Borderview,South,17,35,EMW
+7/24/18,Borderview,South,18,29,EMW
+7/24/18,Borderview,South,19,33,EMW
+7/24/18,Borderview,South,20,31,EMW
+7/24/18,Borderview,South,21,19,EMW
+7/24/18,Borderview,South,22,36,EMW
+7/24/18,Borderview,South,23,28,EMW
+7/24/18,Borderview,South,24,34,EMW
+7/24/18,Borderview,South,25,19,EMW
+7/24/18,Borderview,South,26,12,EMW
+7/24/18,Borderview,South,27,25,EMW
+7/24/18,Borderview,South,28,28,EMW
+7/24/18,Borderview,South,29,24,EMW
+7/24/18,Borderview,South,30,21,EMW
+7/24/18,Borderview,South,31,54,EMW
+7/24/18,Borderview,South,32,19,EMW
+7/24/18,Borderview,South,33,13,EMW
+7/24/18,Borderview,South,34,23,EMW
+7/24/18,Borderview,South,35,39,EMW
+7/24/18,Borderview,South,36,46,EMW
+7/24/18,Borderview,South,37,18,EMW
+7/24/18,Borderview,South,38,14,EMW
+7/24/18,Borderview,South,39,18,SPH
+7/24/18,Borderview,South,40,20,SPH
+7/24/18,Borderview,South,41,37,SPH
+7/24/18,Borderview,South,42,30,SPH
+7/24/18,Borderview,South,43,40,SPH
+7/24/18,Borderview,South,44,20,SPH
+7/24/18,Borderview,South,45,28,SPH
+7/24/18,Borderview,South,46,23,SPH
+7/24/18,Borderview,South,47,28,SPH
+7/24/18,Borderview,South,48,30,SPH
+7/24/18,Borderview,South,49,28,SPH
+7/24/18,Borderview,South,50,20,SPH
+7/24/18,Borderview,South,51,14,SPH
+7/24/18,Borderview,South,52,26,SPH
+7/24/18,Borderview,South,53,23,SPH
+7/24/18,Borderview,South,54,27,SPH
+7/24/18,Borderview,South,55,35,SPH
+7/24/18,Borderview,South,56,18,SPH
+7/24/18,Borderview,South,57,21,SPH
+7/24/18,Borderview,South,58,19,SPH
+7/24/18,Borderview,South,59,19,SPH
+7/24/18,Borderview,South,60,26,SPH
+7/24/18,Borderview,South,61,19,SPH
+7/24/18,Borderview,South,62,37,SPH
+7/24/18,Borderview,South,63,30,SPH
+7/24/18,Borderview,South,64,25,SPH
+7/24/18,Borderview,South,65,24,SPH
+7/24/18,Borderview,South,66,25,SPH
+7/24/18,Borderview,South,67,29,SPH
+7/24/18,Borderview,South,68,39,SPH
+7/24/18,Borderview,South,69,21,SPH
+7/24/18,Borderview,South,70,28,SPH
+7/24/18,Borderview,South,71,26,SPH
+7/24/18,Borderview,South,72,24,SPH
+7/24/18,Borderview,South,73,16,SPH
+7/24/18,Borderview,South,74,13,SPH
+7/24/18,Borderview,South,75,25,SPH
+7/24/18,Borderview,South,76,21,SPH
+7/24/18,Borderview,South,77,9,SPH
+7/24/18,Borderview,South,78,14,SPH
+7/24/18,Borderview,South,79,10,SPH
+7/24/18,Borderview,South,80,22,SPH
+7/24/18,Borderview,South,81,19,SPH
+7/24/18,Borderview,South,82,20,SPH
+7/24/18,Borderview,South,83,24,SPH
+7/24/18,Borderview,South,84,14,SPH
+7/24/18,Borderview,South,85,38,SPH
+7/24/18,Borderview,South,86,20,SPH
+7/24/18,Borderview,South,87,17,SPH
+7/24/18,Borderview,South,88,16,SPH
+7/24/18,Borderview,South,89,26,SPH
+7/24/18,Borderview,South,90,24,SPH
+7/24/18,Borderview,South,91,12,SPH
+7/24/18,Borderview,South,92,26,SPH
+7/24/18,Borderview,South,93,37,SPH
+7/24/18,Borderview,South,94,11,SPH
+7/24/18,Borderview,South,95,39,SPH
+7/24/18,Borderview,South,96,20,SPH
+7/24/18,Borderview,South,97,16,SPH
+7/24/18,Borderview,South,98,17,SPH
+7/24/18,Borderview,South,99,24,SPH
+7/24/18,Borderview,South,100,18,SPH
+7/31/18,Borderview,North,51,30,SPH
+7/31/18,Borderview,North,52,18,SPH
+7/31/18,Borderview,North,53,9,SPH
+7/31/18,Borderview,North,54,23,SPH
+7/31/18,Borderview,North,55,9,SPH
+7/31/18,Borderview,North,56,23,SPH
+7/31/18,Borderview,North,57,20,SPH
+7/31/18,Borderview,North,58,21,SPH
+7/31/18,Borderview,North,59,24,SPH
+7/31/18,Borderview,North,60,22,SPH
+7/31/18,Borderview,North,61,27,SPH
+7/31/18,Borderview,North,62,30,SPH
+7/31/18,Borderview,North,63,25,SPH
+7/31/18,Borderview,North,64,11,SPH
+7/31/18,Borderview,North,65,17,SPH
+7/31/18,Borderview,North,66,15,SPH
+7/31/18,Borderview,North,67,20,SPH
+7/31/18,Borderview,North,68,25,SPH
+7/31/18,Borderview,North,69,21,SPH
+7/31/18,Borderview,North,70,39,SPH
+7/31/18,Borderview,North,71,23,SPH
+7/31/18,Borderview,North,72,24,SPH
+7/31/18,Borderview,North,73,25,SPH
+7/31/18,Borderview,North,74,27,SPH
+7/31/18,Borderview,North,75,17,SPH
+7/31/18,Borderview,North,76,13,SPH
+7/31/18,Borderview,North,77,21,SPH
+7/31/18,Borderview,North,78,23,SPH
+7/31/18,Borderview,North,79,21,SPH
+7/31/18,Borderview,North,80,24,SPH
+7/31/18,Borderview,North,81,23,SPH
+7/31/18,Borderview,North,82,25,SPH
+7/31/18,Borderview,North,83,21,SPH
+7/31/18,Borderview,North,84,20,SPH
+7/31/18,Borderview,North,85,19,SPH
+7/31/18,Borderview,North,86,21,SPH
+7/31/18,Borderview,North,87,20,SPH
+7/31/18,Borderview,North,88,4,SPH
+7/31/18,Borderview,North,89,25,SPH
+7/31/18,Borderview,North,90,4,SPH
+7/31/18,Borderview,North,91,26,SPH
+7/31/18,Borderview,North,92,33,SPH
+7/31/18,Borderview,North,93,29,SPH
+7/31/18,Borderview,North,94,32,SPH
+7/31/18,Borderview,North,95,21,SPH
+7/31/18,Borderview,North,96,11,SPH
+7/31/18,Borderview,North,97,13,SPH
+7/31/18,Borderview,North,98,15,SPH
+7/31/18,Borderview,North,99,15,SPH
+7/31/18,Borderview,North,100,15,SPH
+8/7/18,Dewing,West,1,13,SPH
+8/7/18,Dewing,West,2,19,SPH
+8/7/18,Dewing,West,3,7,SPH
+8/7/18,Dewing,West,4,18,SPH
+8/7/18,Dewing,West,5,25,SPH
+8/7/18,Dewing,West,6,11,SPH
+8/7/18,Dewing,West,7,11,SPH
+8/7/18,Dewing,West,8,9,SPH
+8/7/18,Dewing,West,9,36,SPH
+8/7/18,Dewing,West,10,12,SPH
+8/7/18,Dewing,West,11,20,SPH
+8/7/18,Dewing,West,12,6,SPH
+8/7/18,Dewing,West,13,22,SPH
+8/7/18,Dewing,West,14,33,SPH
+8/7/18,Dewing,West,15,17,SPH
+8/7/18,Dewing,West,16,13,SPH
+8/7/18,Dewing,West,17,14,SPH
+8/7/18,Dewing,West,18,16,SPH
+8/7/18,Dewing,West,19,24,SPH
+8/7/18,Dewing,West,20,5,SPH
+8/7/18,Dewing,West,21,5,SPH
+8/7/18,Dewing,West,22,22,SPH
+8/7/18,Dewing,West,23,8,SPH
+8/7/18,Dewing,West,24,20,SPH
+8/7/18,Dewing,West,25,3,SPH
+8/7/18,Dewing,West,26,24,SPH
+8/7/18,Dewing,West,27,14,SPH
+8/7/18,Dewing,West,28,6,SPH
+8/7/18,Dewing,West,29,22,SPH
+8/7/18,Dewing,West,30,14,SPH
+8/7/18,Dewing,West,31,20,SPH
+8/7/18,Dewing,West,32,13,SPH
+8/7/18,Dewing,West,33,13,SPH
+8/7/18,Dewing,West,34,15,SPH
+8/7/18,Dewing,West,35,9,SPH
+8/7/18,Dewing,West,36,30,SPH
+8/7/18,Dewing,West,37,19,SPH
+8/7/18,Dewing,West,38,30,SPH
+8/7/18,Dewing,West,39,8,SPH
+8/7/18,Dewing,West,40,23,SPH
+8/7/18,Dewing,West,41,27,SPH
+8/7/18,Dewing,West,42,6,SPH
+8/7/18,Dewing,West,43,23,SPH
+8/7/18,Dewing,West,44,22,SPH
+8/7/18,Dewing,West,45,13,SPH
+8/7/18,Dewing,West,46,11,SPH
+8/7/18,Dewing,West,47,1,SPH
+8/7/18,Dewing,West,48,13,SPH
+8/7/18,Dewing,West,49,14,SPH
+8/7/18,Dewing,West,50,13,SPH
+8/7/18,Dewing,West,51,8,SPH
+8/7/18,Dewing,West,52,8,SPH
+8/7/18,Dewing,West,53,8,SPH
+8/7/18,Dewing,West,54,20,SPH
+8/7/18,Dewing,West,55,24,SPH
+8/7/18,Dewing,West,56,17,SPH
+8/7/18,Dewing,West,57,17,SPH
+8/7/18,Dewing,West,58,16,SPH
+8/7/18,Dewing,West,59,15,SPH
+8/7/18,Dewing,West,60,8,SPH
+8/7/18,Dewing,West,61,13,SPH
+8/7/18,Dewing,West,62,14,SPH
+8/7/18,Dewing,West,63,6,SPH
+8/7/18,Dewing,West,64,3,SPH
+8/7/18,Dewing,West,65,12,SPH
+8/7/18,Dewing,West,66,15,SPH
+8/7/18,Dewing,West,67,17,SPH
+8/7/18,Dewing,West,68,6,SPH
+8/7/18,Dewing,West,69,8,SPH
+8/7/18,Dewing,West,70,5,SPH
+8/7/18,Dewing,West,71,23,SPH
+8/7/18,Dewing,West,72,8,SPH
+8/7/18,Dewing,West,73,14,SPH
+8/7/18,Dewing,West,74,7,SPH
+8/7/18,Dewing,West,75,13,SPH
+8/7/18,Dewing,West,76,21,SPH
+8/7/18,Dewing,West,77,12,SPH
+8/7/18,Dewing,West,78,11,SPH
+8/7/18,Dewing,West,79,14,SPH
+8/7/18,Dewing,West,80,14,SPH
+8/7/18,Dewing,West,81,12,SPH
+8/7/18,Dewing,West,82,8,SPH
+8/7/18,Dewing,West,83,11,SPH
+8/7/18,Dewing,West,84,9,SPH
+8/7/18,Dewing,West,85,6,SPH
+8/7/18,Dewing,West,86,8,SPH
+8/7/18,Dewing,West,87,9,SPH
+8/7/18,Dewing,West,88,11,SPH
+8/7/18,Dewing,West,89,7,SPH
+8/7/18,Dewing,West,90,10,SPH
+8/7/18,Dewing,West,91,11,SPH
+8/7/18,Dewing,West,92,11,SPH
+8/7/18,Dewing,West,93,16,SPH
+8/7/18,Dewing,West,94,22,SPH
+8/7/18,Dewing,West,95,14,SPH
+8/7/18,Dewing,West,96,17,SPH
+8/7/18,Dewing,West,97,20,SPH
+8/7/18,Dewing,West,98,17,SPH
+8/7/18,Dewing,West,99,4,SPH
+8/7/18,Dewing,West,100,7,SPH
+7/31/18,Borderview,North,1,17,EMW
+7/31/18,Borderview,North,2,48,EMW
+7/31/18,Borderview,North,3,16,EMW
+7/31/18,Borderview,North,4,24,EMW
+7/31/18,Borderview,North,5,17,EMW
+7/31/18,Borderview,North,6,37,EMW
+7/31/18,Borderview,North,7,23,EMW
+7/31/18,Borderview,North,8,28,EMW
+7/31/18,Borderview,North,9,28,EMW
+7/31/18,Borderview,North,10,26,EMW
+7/31/18,Borderview,North,11,19,EMW
+7/31/18,Borderview,North,12,24,EMW
+7/31/18,Borderview,North,13,23,EMW
+7/31/18,Borderview,North,14,30,EMW
+7/31/18,Borderview,North,15,27,EMW
+7/31/18,Borderview,North,16,14,EMW
+7/31/18,Borderview,North,17,39,EMW
+7/31/18,Borderview,North,18,31,EMW
+7/31/18,Borderview,North,19,40,EMW
+7/31/18,Borderview,North,20,42,EMW
+7/31/18,Borderview,North,21,26,EMW
+7/31/18,Borderview,North,22,21,EMW
+7/31/18,Borderview,North,23,24,EMW
+7/31/18,Borderview,North,24,40,EMW
+7/31/18,Borderview,North,25,26,EMW
+7/31/18,Borderview,North,26,17,EMW
+7/31/18,Borderview,North,27,14,EMW
+7/31/18,Borderview,North,28,19,EMW
+7/31/18,Borderview,North,29,33,EMW
+7/31/18,Borderview,North,30,16,EMW
+7/31/18,Borderview,North,31,25,EMW
+7/31/18,Borderview,North,32,32,EMW
+7/31/18,Borderview,North,33,19,EMW
+7/31/18,Borderview,North,34,33,EMW
+7/31/18,Borderview,North,35,26,EMW
+7/31/18,Borderview,North,36,18,EMW
+7/31/18,Borderview,North,37,14,EMW
+7/31/18,Borderview,North,38,27,EMW
+7/31/18,Borderview,North,39,24,EMW
+7/31/18,Borderview,North,40,35,EMW
+7/31/18,Borderview,North,41,22,EMW
+7/31/18,Borderview,North,42,28,EMW
+7/31/18,Borderview,North,43,20,EMW
+7/31/18,Borderview,North,44,13,EMW
+7/31/18,Borderview,North,45,32,EMW
+7/31/18,Borderview,North,46,15,EMW
+7/31/18,Borderview,North,47,15,EMW
+7/31/18,Borderview,North,48,33,EMW
+7/31/18,Borderview,North,49,31,EMW
+7/31/18,Borderview,North,50,15,EMW
+8/21/18,Borderview,Central-B,1,35,EMW
+8/21/18,Borderview,Central-B,2,28,EMW
+8/21/18,Borderview,Central-B,3,39,EMW
+8/21/18,Borderview,Central-B,4,34,EMW
+8/21/18,Borderview,Central-B,5,26,EMW
+8/21/18,Borderview,Central-B,6,12,EMW
+8/21/18,Borderview,Central-B,7,34,EMW
+8/21/18,Borderview,Central-B,8,35,EMW
+8/21/18,Borderview,Central-B,9,31,EMW
+8/21/18,Borderview,Central-B,10,25,EMW
+8/21/18,Borderview,Central-B,11,31,EMW
+8/21/18,Borderview,Central-B,12,23,EMW
+8/21/18,Borderview,Central-B,13,15,EMW
+8/21/18,Borderview,Central-B,14,24,EMW
+8/21/18,Borderview,Central-B,15,16,EMW
+8/21/18,Borderview,Central-B,16,16,EMW
+8/21/18,Borderview,Central-B,17,35,EMW
+8/21/18,Borderview,Central-B,18,40,EMW
+8/21/18,Borderview,Central-B,19,36,EMW
+8/21/18,Borderview,Central-B,20,28,EMW
+8/21/18,Borderview,Central-B,21,20,EMW
+8/21/18,Borderview,Central-B,22,30,EMW
+8/21/18,Borderview,Central-B,23,27,EMW
+8/21/18,Borderview,Central-B,24,18,EMW
+8/21/18,Borderview,Central-B,25,22,EMW
+8/21/18,Borderview,Central-B,26,12,EMW
+8/21/18,Borderview,Central-B,27,27,EMW
+8/21/18,Borderview,Central-B,28,24,EMW
+8/21/18,Borderview,Central-B,29,35,EMW
+8/21/18,Borderview,Central-B,30,22,EMW
+8/21/18,Borderview,Central-B,31,14,EMW
+8/21/18,Borderview,Central-B,32,22,EMW
+8/21/18,Borderview,Central-B,33,17,EMW
+8/21/18,Borderview,Central-B,34,17,EMW
+8/21/18,Borderview,Central-B,35,24,EMW
+8/21/18,Borderview,Central-B,36,28,EMW
+8/21/18,Borderview,Central-B,37,23,EMW
+8/21/18,Borderview,Central-B,38,22,EMW
+8/21/18,Borderview,Central-B,39,29,EMW
+8/21/18,Borderview,Central-B,40,31,EMW
+8/21/18,Borderview,Central-B,41,23,EMW
+8/21/18,Borderview,Central-B,42,21,EMW
+8/21/18,Borderview,Central-B,43,34,EMW
+8/21/18,Borderview,Central-B,44,36,EMW
+8/21/18,Borderview,Central-B,45,41,EMW
+8/21/18,Borderview,Central-B,46,25,EMW
+8/21/18,Borderview,Central-B,47,21,EMW
+8/21/18,Borderview,Central-B,48,22,EMW
+8/21/18,Borderview,Central-B,49,45,EMW
+8/21/18,Borderview,Central-B,50,34,EMW
+8/21/18,Dewing,East,1,24,EMW
+8/21/18,Dewing,East,2,23,EMW
+8/21/18,Dewing,East,3,23,EMW
+8/21/18,Dewing,East,4,12,EMW
+8/21/18,Dewing,East,5,18,EMW
+8/21/18,Dewing,East,6,14,EMW
+8/21/18,Dewing,East,7,15,EMW
+8/21/18,Dewing,East,8,12,EMW
+8/21/18,Dewing,East,9,11,EMW
+8/21/18,Dewing,East,10,12,EMW
+8/21/18,Dewing,East,11,14,EMW
+8/21/18,Dewing,East,12,18,EMW
+8/21/18,Dewing,East,13,20,EMW
+8/21/18,Dewing,East,14,13,EMW
+8/21/18,Dewing,East,15,12,EMW
+8/21/18,Dewing,East,16,20,EMW
+8/21/18,Dewing,East,17,12,EMW
+8/21/18,Dewing,East,18,16,EMW
+8/21/18,Dewing,East,19,17,EMW
+8/21/18,Dewing,East,20,20,EMW
+8/21/18,Dewing,East,21,14,EMW
+8/21/18,Dewing,East,22,13,EMW
+8/21/18,Dewing,East,23,23,EMW
+8/21/18,Dewing,East,24,16,EMW
+8/21/18,Dewing,East,25,12,EMW
+8/21/18,Dewing,East,26,16,EMW
+8/21/18,Dewing,East,27,10,EMW
+8/21/18,Dewing,East,28,2,EMW
+8/21/18,Dewing,East,29,4,EMW
+8/21/18,Dewing,East,30,0,EMW
+8/21/18,Dewing,East,31,2,EMW
+8/21/18,Dewing,East,32,4,EMW
+8/21/18,Dewing,East,33,0,EMW
+8/21/18,Dewing,East,34,16,EMW
+8/21/18,Dewing,East,35,11,EMW
+8/21/18,Dewing,East,36,10,EMW
+8/21/18,Dewing,East,37,8,EMW
+8/21/18,Dewing,East,38,6,EMW
+8/21/18,Dewing,East,39,7,EMW
+8/21/18,Dewing,East,40,10,EMW
+8/21/18,Dewing,East,41,1,EMW
+8/21/18,Dewing,East,42,13,EMW
+8/21/18,Dewing,East,43,13,EMW
+8/21/18,Dewing,East,44,20,EMW
+8/21/18,Dewing,East,45,9,EMW
+8/21/18,Dewing,East,46,15,SPH
+8/21/18,Dewing,East,47,19,SPH
+8/21/18,Dewing,East,48,14,SPH
+8/21/18,Dewing,East,49,14,SPH
+8/21/18,Dewing,East,50,13,SPH
+8/21/18,Dewing,East,51,21,SPH
+8/21/18,Dewing,East,52,16,SPH
+8/21/18,Dewing,East,53,14,SPH
+8/21/18,Dewing,East,54,17,SPH
+8/21/18,Dewing,East,55,17,SPH
+8/21/18,Dewing,East,56,5,SPH
+8/21/18,Dewing,East,57,10,SPH
+8/21/18,Dewing,East,58,17,SPH
+8/21/18,Dewing,East,59,11,SPH
+8/21/18,Dewing,East,60,11,SPH
+8/21/18,Dewing,East,61,8,SPH
+8/21/18,Dewing,East,62,11,SPH
+8/21/18,Dewing,East,63,11,SPH
+8/21/18,Dewing,East,64,8,SPH
+8/21/18,Dewing,East,65,20,SPH
+8/21/18,Dewing,East,66,10,SPH
+8/21/18,Dewing,East,67,16,SPH
+8/21/18,Dewing,East,68,1,SPH
+8/21/18,Dewing,East,69,25,SPH
+8/21/18,Dewing,East,70,18,SPH
+8/21/18,Dewing,East,71,16,SPH
+8/21/18,Dewing,East,72,13,SPH
+8/21/18,Dewing,East,73,17,SPH
+8/21/18,Dewing,East,74,12,SPH
+8/21/18,Dewing,East,75,19,SPH
+8/21/18,Dewing,East,76,6,SPH
+8/21/18,Dewing,East,77,10,SPH
+8/21/18,Dewing,East,78,6,SPH
+8/21/18,Dewing,East,79,3,SPH
+8/21/18,Dewing,East,80,2,SPH
+8/21/18,Dewing,East,81,5,SPH
+8/21/18,Dewing,East,82,0,SPH
+8/21/18,Dewing,East,83,10,SPH
+8/21/18,Dewing,East,84,12,SPH
+8/21/18,Dewing,East,85,9,SPH
+8/21/18,Dewing,East,86,8,SPH
+8/21/18,Dewing,East,87,10,SPH
+8/21/18,Dewing,East,88,16,SPH
+8/21/18,Dewing,East,89,12,SPH
+8/21/18,Dewing,East,90,13,SPH
+8/21/18,Dewing,East,91,14,SPH
+8/21/18,Dewing,East,92,10,SPH
+8/21/18,Dewing,East,93,10,SPH
+8/21/18,Dewing,East,94,11,SPH
+8/21/18,Dewing,East,95,7,SPH
+8/21/18,Dewing,East,96,6,SPH
+8/21/18,Dewing,East,97,7,SPH
+8/21/18,Dewing,East,98,19,SPH
+8/21/18,Dewing,East,99,8,SPH
+8/21/18,Dewing,East,100,3,SPH
+8/21/18,Borderview,Central-B,51,19,SPH
+8/21/18,Borderview,Central-B,52,22,SPH
+8/21/18,Borderview,Central-B,53,29,SPH
+8/21/18,Borderview,Central-B,54,21,SPH
+8/21/18,Borderview,Central-B,55,28,SPH
+8/21/18,Borderview,Central-B,56,12,SPH
+8/21/18,Borderview,Central-B,57,24,SPH
+8/21/18,Borderview,Central-B,58,35,SPH
+8/21/18,Borderview,Central-B,59,39,SPH
+8/21/18,Borderview,Central-B,60,19,SPH
+8/21/18,Borderview,Central-B,61,31,SPH
+8/21/18,Borderview,Central-B,62,23,SPH
+8/21/18,Borderview,Central-B,63,16,SPH
+8/21/18,Borderview,Central-B,64,28,SPH
+8/21/18,Borderview,Central-B,65,22,SPH
+8/21/18,Borderview,Central-B,66,20,SPH
+8/21/18,Borderview,Central-B,67,25,SPH
+8/21/18,Borderview,Central-B,68,19,SPH
+8/21/18,Borderview,Central-B,69,18,SPH
+8/21/18,Borderview,Central-B,70,11,SPH
+8/21/18,Borderview,Central-B,71,13,SPH
+8/21/18,Borderview,Central-B,72,13,SPH
+8/21/18,Borderview,Central-B,73,15,SPH
+8/21/18,Borderview,Central-B,74,28,SPH
+8/21/18,Borderview,Central-B,75,20,SPH
+8/21/18,Borderview,Central-B,76,19,SPH
+8/21/18,Borderview,Central-B,77,21,SPH
+8/21/18,Borderview,Central-B,78,18,SPH
+8/21/18,Borderview,Central-B,79,17,SPH
+8/21/18,Borderview,Central-B,80,11,SPH
+8/21/18,Borderview,Central-B,81,28,SPH
+8/21/18,Borderview,Central-B,82,14,SPH
+8/21/18,Borderview,Central-B,83,17,SPH
+8/21/18,Borderview,Central-B,84,13,SPH
+8/21/18,Borderview,Central-B,85,15,SPH
+8/21/18,Borderview,Central-B,86,17,SPH
+8/21/18,Borderview,Central-B,87,12,SPH
+8/21/18,Borderview,Central-B,88,20,SPH
+8/21/18,Borderview,Central-B,89,18,SPH
+8/21/18,Borderview,Central-B,90,32,SPH
+8/21/18,Borderview,Central-B,91,30,SPH
+8/21/18,Borderview,Central-B,92,33,SPH
+8/21/18,Borderview,Central-B,93,36,SPH
+8/21/18,Borderview,Central-B,94,35,SPH
+8/21/18,Borderview,Central-B,95,33,SPH
+8/21/18,Borderview,Central-B,96,34,SPH
+8/21/18,Borderview,Central-B,97,33,SPH
+8/21/18,Borderview,Central-B,98,10,SPH
+8/21/18,Borderview,Central-B,99,9,SPH
+8/21/18,Borderview,Central-B,100,17,SPH
+9/3/18,Dewing,Central-D,1,15,SPH
+9/3/18,Dewing,Central-D,2,13,SPH
+9/3/18,Dewing,Central-D,3,14,SPH
+9/3/18,Dewing,Central-D,4,16,SPH
+9/3/18,Dewing,Central-D,5,10,SPH
+9/3/18,Dewing,Central-D,6,1,SPH
+9/3/18,Dewing,Central-D,7,9,SPH
+9/3/18,Dewing,Central-D,8,12,SPH
+9/3/18,Dewing,Central-D,9,8,SPH
+9/3/18,Dewing,Central-D,10,0,SPH
+9/3/18,Dewing,Central-D,11,8,SPH
+9/3/18,Dewing,Central-D,12,6,SPH
+9/3/18,Dewing,Central-D,13,8,SPH
+9/3/18,Dewing,Central-D,14,5,SPH
+9/3/18,Dewing,Central-D,15,3,SPH
+9/3/18,Dewing,Central-D,16,0,SPH
+9/3/18,Dewing,Central-D,17,9,SPH
+9/3/18,Dewing,Central-D,18,2,SPH
+9/3/18,Dewing,Central-D,19,5,SPH
+9/3/18,Dewing,Central-D,20,1,SPH
+9/3/18,Dewing,Central-D,21,12,SPH
+9/3/18,Dewing,Central-D,22,16,SPH
+9/3/18,Dewing,Central-D,23,13,SPH
+9/3/18,Dewing,Central-D,24,5,SPH
+9/3/18,Dewing,Central-D,25,10,SPH
+9/3/18,Dewing,Central-D,26,16,SPH
+9/3/18,Dewing,Central-D,27,10,SPH
+9/3/18,Dewing,Central-D,28,11,SPH
+9/3/18,Dewing,Central-D,29,16,SPH
+9/3/18,Dewing,Central-D,30,13,SPH
+9/3/18,Dewing,Central-D,31,14,SPH
+9/3/18,Dewing,Central-D,32,16,SPH
+9/3/18,Dewing,Central-D,33,23,SPH
+9/3/18,Dewing,Central-D,34,19,SPH
+9/3/18,Dewing,Central-D,35,19,SPH
+9/3/18,Dewing,Central-D,36,11,SPH
+9/3/18,Dewing,Central-D,37,12,SPH
+9/3/18,Dewing,Central-D,38,7,SPH
+9/3/18,Dewing,Central-D,39,21,SPH
+9/3/18,Dewing,Central-D,40,20,SPH
+9/3/18,Dewing,Central-D,41,6,SPH
+9/3/18,Dewing,Central-D,42,13,SPH
+9/3/18,Dewing,Central-D,43,12,SPH
+9/3/18,Dewing,Central-D,44,16,SPH
+9/3/18,Dewing,Central-D,45,15,SPH
+9/3/18,Dewing,Central-D,46,24,SPH
+9/3/18,Dewing,Central-D,47,14,SPH
+9/3/18,Dewing,Central-D,48,8,SPH
+9/3/18,Dewing,Central-D,49,20,SPH
+9/3/18,Dewing,Central-D,50,20,SPH
+9/3/18,Dewing,Central-D,51,1,SPH
+9/3/18,Dewing,Central-D,52,9,SPH
+9/3/18,Dewing,Central-D,53,11,SPH
+9/3/18,Dewing,Central-D,54,10,SPH
+9/3/18,Dewing,Central-D,55,25,SPH
+9/3/18,Dewing,Central-D,56,10,SPH
+9/3/18,Dewing,Central-D,57,23,SPH
+9/3/18,Dewing,Central-D,58,8,SPH
+9/3/18,Dewing,Central-D,59,7,SPH
+9/3/18,Dewing,Central-D,60,16,SPH
+9/3/18,Dewing,Central-D,61,10,SPH
+9/3/18,Dewing,Central-D,62,12,SPH
+9/3/18,Dewing,Central-D,63,10,SPH
+9/3/18,Dewing,Central-D,64,6,SPH
+9/3/18,Dewing,Central-D,65,7,SPH
+9/3/18,Dewing,Central-D,66,7,SPH
+9/3/18,Dewing,Central-D,67,11,SPH
+9/3/18,Dewing,Central-D,68,17,SPH
+9/3/18,Dewing,Central-D,69,9,SPH
+9/3/18,Dewing,Central-D,70,7,SPH
+9/3/18,Dewing,Central-D,71,12,SPH
+9/3/18,Dewing,Central-D,72,8,SPH
+9/3/18,Dewing,Central-D,73,15,SPH
+9/3/18,Dewing,Central-D,74,7,SPH
+9/3/18,Dewing,Central-D,75,10,SPH
+9/3/18,Dewing,Central-D,76,11,SPH
+9/3/18,Dewing,Central-D,77,9,SPH
+9/3/18,Dewing,Central-D,78,15,SPH
+9/3/18,Dewing,Central-D,79,15,SPH
+9/3/18,Dewing,Central-D,80,14,SPH
+9/3/18,Dewing,Central-D,81,12,SPH
+9/3/18,Dewing,Central-D,82,13,SPH
+9/3/18,Dewing,Central-D,83,5,SPH
+9/3/18,Dewing,Central-D,84,7,SPH
+9/3/18,Dewing,Central-D,85,4,SPH
+9/3/18,Dewing,Central-D,86,8,SPH
+9/3/18,Dewing,Central-D,87,4,SPH
+9/3/18,Dewing,Central-D,88,14,SPH
+9/3/18,Dewing,Central-D,89,5,SPH
+9/3/18,Dewing,Central-D,90,12,SPH
+9/3/18,Dewing,Central-D,91,17,SPH
+9/3/18,Dewing,Central-D,92,12,SPH
+9/3/18,Dewing,Central-D,93,13,SPH
+9/3/18,Dewing,Central-D,94,6,SPH
+9/3/18,Dewing,Central-D,95,19,SPH
+9/3/18,Dewing,Central-D,96,16,SPH
+9/3/18,Dewing,Central-D,97,13,SPH
+9/3/18,Dewing,Central-D,98,15,SPH
+9/3/18,Dewing,Central-D,99,13,SPH
+9/3/18,Dewing,Central-D,100,9,SPH
+7/3/19,Dewing,West,1,39,FNN
+7/3/19,Dewing,West,2,11,FNN
+7/3/19,Dewing,West,3,26,FNN
+7/3/19,Dewing,West,4,20,FNN
+7/3/19,Dewing,West,5,43,FNN
+7/3/19,Dewing,West,6,24,FNN
+7/3/19,Dewing,West,7,27,FNN
+7/3/19,Dewing,West,8,56,FNN
+7/3/19,Dewing,West,9,31,FNN
+7/3/19,Dewing,West,10,49,FNN
+7/3/19,Dewing,West,11,25,FNN
+7/3/19,Dewing,West,12,28,FNN
+7/3/19,Dewing,West,13,13,FNN
+7/3/19,Dewing,West,14,0,FNN
+7/3/19,Dewing,West,15,43,FNN
+7/3/19,Dewing,West,16,39,FNN
+7/3/19,Dewing,West,17,40,FNN
+7/3/19,Dewing,West,18,23,FNN
+7/3/19,Dewing,West,19,36,FNN
+7/3/19,Dewing,West,20,39,FNN
+7/3/19,Dewing,West,21,32,FNN
+7/3/19,Dewing,West,22,17,FNN
+7/3/19,Dewing,West,23,46,FNN
+7/3/19,Dewing,West,24,47,FNN
+7/3/19,Dewing,West,25,40,FNN
+7/3/19,Dewing,West,26,52,FNN
+7/3/19,Dewing,West,27,15,FNN
+7/3/19,Dewing,West,28,13,FNN
+7/3/19,Dewing,West,29,33,FNN
+7/3/19,Dewing,West,30,29,FNN
+7/3/19,Dewing,West,31,58,FNN
+7/3/19,Dewing,West,32,20,FNN
+7/3/19,Dewing,West,33,37,FNN
+7/3/19,Dewing,West,34,23,FNN
+7/3/19,Dewing,West,35,36,FNN
+7/3/19,Dewing,West,36,48,FNN
+7/3/19,Dewing,West,37,42,FNN
+7/3/19,Dewing,West,38,34,FNN
+7/3/19,Dewing,West,39,10,FNN
+7/3/19,Dewing,West,40,43,FNN
+7/3/19,Dewing,West,41,40,FNN
+7/3/19,Dewing,West,42,46,FNN
+7/3/19,Dewing,West,43,30,FNN
+7/3/19,Dewing,West,44,52,FNN
+7/3/19,Dewing,West,45,27,FNN
+7/3/19,Dewing,West,46,29,FNN
+7/3/19,Dewing,West,47,27,FNN
+7/3/19,Dewing,West,48,30,FNN
+7/3/19,Dewing,West,49,40,FNN
+7/3/19,Dewing,West,50,26,FNN
+7/3/19,Dewing,West,51,24,FNN
+7/3/19,Dewing,West,52,25,FNN
+7/3/19,Dewing,West,53,46,FNN
+7/3/19,Dewing,West,54,30,FNN
+7/3/19,Dewing,West,55,23,FNN
+7/3/19,Dewing,West,56,22,FNN
+7/3/19,Dewing,West,57,20,FNN
+7/3/19,Dewing,West,58,35,FNN
+7/3/19,Dewing,West,59,12,FNN
+7/3/19,Dewing,West,60,22,FNN
+7/3/19,Dewing,West,61,15,FNN
+7/3/19,Dewing,West,62,26,FNN
+7/3/19,Dewing,West,63,12,FNN
+7/3/19,Dewing,West,64,48,FNN
+7/3/19,Dewing,West,65,36,FNN
+7/3/19,Dewing,West,66,49,FNN
+7/3/19,Dewing,West,67,30,FNN
+7/3/19,Dewing,West,68,32,FNN
+7/3/19,Dewing,West,69,17,FNN
+7/3/19,Dewing,West,70,15,FNN
+7/3/19,Dewing,West,71,4,FNN
+7/3/19,Dewing,West,72,24,FNN
+7/3/19,Dewing,West,73,17,FNN
+7/3/19,Dewing,West,74,23,FNN
+7/3/19,Dewing,West,75,19,FNN
+7/3/19,Dewing,West,76,5,FNN
+7/3/19,Dewing,West,77,0,FNN
+7/3/19,Dewing,West,78,0,FNN
+7/3/19,Dewing,West,79,0,FNN
+7/3/19,Dewing,West,80,0,FNN
+7/3/19,Dewing,West,81,0,FNN
+7/3/19,Dewing,West,82,0,FNN
+7/3/19,Dewing,West,83,0,FNN
+7/3/19,Dewing,West,84,34,FNN
+7/3/19,Dewing,West,85,19,FNN
+7/3/19,Dewing,West,86,33,FNN
+7/3/19,Dewing,West,87,21,FNN
+7/3/19,Dewing,West,88,43,FNN
+7/3/19,Dewing,West,89,36,FNN
+7/3/19,Dewing,West,90,28,FNN
+7/3/19,Dewing,West,91,27,FNN
+7/3/19,Dewing,West,92,28,FNN
+7/3/19,Dewing,West,93,34,FNN
+7/3/19,Dewing,West,94,8,FNN
+7/3/19,Dewing,West,95,32,FNN
+7/3/19,Dewing,West,96,23,FNN
+7/3/19,Dewing,West,97,40,FNN
+7/3/19,Dewing,West,98,26,FNN
+7/3/19,Dewing,West,99,38,FNN
+7/3/19,Dewing,West,100,30,FNN
+7/10/19,Dewing,Central D,1,24,TJS
+7/10/19,Dewing,Central D,2,21,TJS
+7/10/19,Dewing,Central D,3,22,TJS
+7/10/19,Dewing,Central D,4,28,TJS
+7/10/19,Dewing,Central D,5,36,TJS
+7/10/19,Dewing,Central D,6,26,TJS
+7/10/19,Dewing,Central D,7,34,TJS
+7/10/19,Dewing,Central D,8,33,TJS
+7/10/19,Dewing,Central D,9,30,TJS
+7/10/19,Dewing,Central D,10,29,TJS
+7/10/19,Dewing,Central D,11,22,TJS
+7/10/19,Dewing,Central D,12,23,TJS
+7/10/19,Dewing,Central D,13,20,TJS
+7/10/19,Dewing,Central D,14,20,TJS
+7/10/19,Dewing,Central D,15,25,TJS
+7/10/19,Dewing,Central D,16,19,TJS
+7/10/19,Dewing,Central D,17,14,TJS
+7/10/19,Dewing,Central D,18,21,TJS
+7/10/19,Dewing,Central D,19,25,TJS
+7/10/19,Dewing,Central D,20,32,TJS
+7/10/19,Dewing,Central D,21,26,TJS
+7/10/19,Dewing,Central D,22,38,TJS
+7/10/19,Dewing,Central D,23,41,TJS
+7/10/19,Dewing,Central D,24,22,TJS
+7/10/19,Dewing,Central D,25,43,TJS
+7/10/19,Dewing,Central D,26,35,TJS
+7/10/19,Dewing,Central D,27,26,TJS
+7/10/19,Dewing,Central D,28,45,TJS
+7/10/19,Dewing,Central D,29,31,TJS
+7/10/19,Dewing,Central D,30,30,TJS
+7/10/19,Dewing,Central D,31,21,TJS
+7/10/19,Dewing,Central D,32,32,TJS
+7/10/19,Dewing,Central D,33,29,TJS
+7/10/19,Dewing,Central D,34,42,TJS
+7/10/19,Dewing,Central D,35,31,TJS
+7/10/19,Dewing,Central D,36,33,TJS
+7/10/19,Dewing,Central D,37,32,TJS
+7/10/19,Dewing,Central D,38,30,TJS
+7/10/19,Dewing,Central D,39,37,TJS
+7/10/19,Dewing,Central D,40,34,TJS
+7/10/19,Dewing,Central D,41,35,TJS
+7/10/19,Dewing,Central D,42,33,TJS
+7/10/19,Dewing,Central D,43,34,TJS
+7/10/19,Dewing,Central D,44,24,TJS
+7/10/19,Dewing,Central D,45,16,TJS
+7/10/19,Dewing,Central D,46,27,TJS
+7/10/19,Dewing,Central D,47,16,TJS
+7/10/19,Dewing,Central D,48,16,TJS
+7/10/19,Dewing,Central D,49,19,TJS
+7/10/19,Dewing,Central D,50,21,TJS
+7/10/19,Dewing,Central D,51,19,TJS
+7/10/19,Dewing,Central D,52,41,TJS
+7/10/19,Dewing,Central D,53,36,TJS
+7/10/19,Dewing,Central D,54,23,TJS
+7/10/19,Dewing,Central D,55,20,TJS
+7/10/19,Dewing,Central D,56,22,TJS
+7/10/19,Dewing,Central D,57,19,TJS
+7/10/19,Dewing,Central D,58,36,TJS
+7/10/19,Dewing,Central D,59,38,TJS
+7/10/19,Dewing,Central D,60,29,TJS
+7/10/19,Dewing,Central D,61,37,TJS
+7/10/19,Dewing,Central D,62,22,TJS
+7/10/19,Dewing,Central D,63,18,TJS
+7/10/19,Dewing,Central D,64,26,TJS
+7/10/19,Dewing,Central D,65,15,TJS
+7/10/19,Dewing,Central D,66,11,TJS
+7/10/19,Dewing,Central D,67,38,TJS
+7/10/19,Dewing,Central D,68,25,TJS
+7/10/19,Dewing,Central D,69,34,TJS
+7/10/19,Dewing,Central D,70,37,TJS
+7/10/19,Dewing,Central D,71,21,TJS
+7/10/19,Dewing,Central D,72,32,TJS
+7/10/19,Dewing,Central D,73,37,TJS
+7/10/19,Dewing,Central D,74,28,TJS
+7/10/19,Dewing,Central D,75,32,TJS
+7/10/19,Dewing,Central D,76,31,TJS
+7/10/19,Dewing,Central D,77,26,TJS
+7/10/19,Dewing,Central D,78,18,TJS
+7/10/19,Dewing,Central D,79,24,TJS
+7/10/19,Dewing,Central D,80,22,TJS
+7/10/19,Dewing,Central D,81,19,TJS
+7/10/19,Dewing,Central D,82,19,TJS
+7/10/19,Dewing,Central D,83,14,TJS
+7/10/19,Dewing,Central D,84,23,TJS
+7/10/19,Dewing,Central D,85,35,TJS
+7/10/19,Dewing,Central D,86,41,TJS
+7/10/19,Dewing,Central D,87,14,TJS
+7/10/19,Dewing,Central D,88,21,TJS
+7/10/19,Dewing,Central D,89,26,TJS
+7/10/19,Dewing,Central D,90,21,TJS
+7/10/19,Dewing,Central D,91,22,TJS
+7/10/19,Dewing,Central D,92,27,TJS
+7/10/19,Dewing,Central D,93,23,TJS
+7/10/19,Dewing,Central D,94,30,TJS
+7/10/19,Dewing,Central D,95,27,TJS
+7/10/19,Dewing,Central D,96,25,TJS
+7/10/19,Dewing,Central D,97,33,TJS
+7/10/19,Dewing,Central D,98,22,TJS
+7/10/19,Dewing,Central D,99,24,TJS
+7/10/19,Dewing,Central D,100,24,TJS
+7/18/19,Dewing,East,1,47,JHM
+7/18/19,Dewing,East,2,24,JHM
+7/18/19,Dewing,East,3,18,JHM
+7/18/19,Dewing,East,4,13,JHM
+7/18/19,Dewing,East,5,25,JHM
+7/18/19,Dewing,East,6,31,JHM
+7/18/19,Dewing,East,7,34,JHM
+7/18/19,Dewing,East,8,36,JHM
+7/18/19,Dewing,East,9,13,JHM
+7/18/19,Dewing,East,10,17,JHM
+7/18/19,Dewing,East,11,23,JHM
+7/18/19,Dewing,East,12,27,JHM
+7/18/19,Dewing,East,13,20,JHM
+7/18/19,Dewing,East,14,26,JHM
+7/18/19,Dewing,East,15,28,JHM
+7/18/19,Dewing,East,16,23,JHM
+7/18/19,Dewing,East,17,34,JHM
+7/18/19,Dewing,East,18,29,JHM
+7/18/19,Dewing,East,19,15,JHM
+7/18/19,Dewing,East,20,14,JHM
+7/18/19,Dewing,East,21,26,JHM
+7/18/19,Dewing,East,22,24,JHM
+7/18/19,Dewing,East,23,13,JHM
+7/18/19,Dewing,East,24,9,JHM
+7/18/19,Dewing,East,25,22,JHM
+7/18/19,Dewing,East,26,26,JHM
+7/18/19,Dewing,East,27,40,JHM
+7/18/19,Dewing,East,28,29,JHM
+7/18/19,Dewing,East,29,37,JHM
+7/18/19,Dewing,East,30,33,JHM
+7/18/19,Dewing,East,31,21,JHM
+7/18/19,Dewing,East,32,24,JHM
+7/18/19,Dewing,East,33,21,JHM
+7/18/19,Dewing,East,34,23,JHM
+7/18/19,Dewing,East,35,34,JHM
+7/18/19,Dewing,East,36,17,JHM
+7/18/19,Dewing,East,37,25,JHM
+7/18/19,Dewing,East,38,6,JHM
+7/18/19,Dewing,East,39,13,JHM
+7/18/19,Dewing,East,40,34,JHM
+7/18/19,Dewing,East,41,39,JHM
+7/18/19,Dewing,East,42,11,JHM
+7/18/19,Dewing,East,43,29,JHM
+7/18/19,Dewing,East,44,16,JHM
+7/18/19,Dewing,East,45,30,JHM
+7/18/19,Dewing,East,46,33,JHM
+7/18/19,Dewing,East,47,21,JHM
+7/18/19,Dewing,East,48,11,JHM
+7/18/19,Dewing,East,49,19,JHM
+7/18/19,Dewing,East,50,18,JHM
+7/18/19,Dewing,East,51,28,JHM
+7/18/19,Dewing,East,52,27,JHM
+7/18/19,Dewing,East,53,24,JHM
+7/18/19,Dewing,East,54,8,JHM
+7/18/19,Dewing,East,55,31,JHM
+7/18/19,Dewing,East,56,17,JHM
+7/18/19,Dewing,East,57,25,JHM
+7/18/19,Dewing,East,58,30,JHM
+7/18/19,Dewing,East,59,18,JHM
+7/18/19,Dewing,East,60,12,JHM
+7/18/19,Dewing,East,61,16,JHM
+7/18/19,Dewing,East,62,26,JHM
+7/18/19,Dewing,East,63,19,JHM
+7/18/19,Dewing,East,64,16,JHM
+7/18/19,Dewing,East,65,20,JHM
+7/18/19,Dewing,East,66,8,JHM
+7/18/19,Dewing,East,67,11,JHM
+7/18/19,Dewing,East,68,23,JHM
+7/18/19,Dewing,East,69,18,JHM
+7/18/19,Dewing,East,70,24,JHM
+7/18/19,Dewing,East,71,28,JHM
+7/18/19,Dewing,East,72,18,JHM
+7/18/19,Dewing,East,73,14,JHM
+7/18/19,Dewing,East,74,36,JHM
+7/18/19,Dewing,East,75,22,JHM
+7/18/19,Dewing,East,76,41,JHM
+7/18/19,Dewing,East,77,39,JHM
+7/18/19,Dewing,East,78,28,JHM
+7/18/19,Dewing,East,79,26,JHM
+7/18/19,Dewing,East,80,7,JHM
+7/18/19,Dewing,East,81,2,JHM
+7/18/19,Dewing,East,82,17,JHM
+7/18/19,Dewing,East,83,13,JHM
+7/18/19,Dewing,East,84,26,JHM
+7/18/19,Dewing,East,85,29,JHM
+7/18/19,Dewing,East,86,7,JHM
+7/18/19,Dewing,East,87,33,JHM
+7/18/19,Dewing,East,88,19,JHM
+7/18/19,Dewing,East,89,31,JHM
+7/18/19,Dewing,East,90,25,JHM
+7/18/19,Dewing,East,91,41,JHM
+7/18/19,Dewing,East,92,30,JHM
+7/18/19,Dewing,East,93,25,JHM
+7/18/19,Dewing,East,94,22,JHM
+7/18/19,Dewing,East,95,32,JHM
+7/18/19,Dewing,East,96,28,JHM
+7/18/19,Dewing,East,97,33,JHM
+7/18/19,Dewing,East,98,21,JHM
+7/18/19,Dewing,East,99,36,JHM
+7/18/19,Dewing,East,100,26,JHM
+7/18/19,Borderview,North,1,24,JHM
+7/18/19,Borderview,North,2,31,JHM
+7/18/19,Borderview,North,3,23,JHM
+7/18/19,Borderview,North,4,38,JHM
+7/18/19,Borderview,North,5,26,JHM
+7/18/19,Borderview,North,6,21,JHM
+7/18/19,Borderview,North,7,33,JHM
+7/18/19,Borderview,North,8,30,JHM
+7/18/19,Borderview,North,9,36,JHM
+7/18/19,Borderview,North,10,42,JHM
+7/18/19,Borderview,North,11,37,JHM
+7/18/19,Borderview,North,12,40,JHM
+7/18/19,Borderview,North,13,47,JHM
+7/18/19,Borderview,North,14,56,JHM
+7/18/19,Borderview,North,15,41,JHM
+7/18/19,Borderview,North,16,33,JHM
+7/18/19,Borderview,North,17,28,JHM
+7/18/19,Borderview,North,18,31,JHM
+7/18/19,Borderview,North,19,15,JHM
+7/18/19,Borderview,North,20,18,JHM
+7/18/19,Borderview,North,21,14,JHM
+7/18/19,Borderview,North,22,17,JHM
+7/18/19,Borderview,North,23,32,JHM
+7/18/19,Borderview,North,24,44,JHM
+7/18/19,Borderview,North,25,38,JHM
+7/18/19,Borderview,North,26,45,JHM
+7/18/19,Borderview,North,27,34,JHM
+7/18/19,Borderview,North,28,33,JHM
+7/18/19,Borderview,North,29,30,JHM
+7/18/19,Borderview,North,30,39,JHM
+7/18/19,Borderview,North,31,37,JHM
+7/18/19,Borderview,North,32,40,JHM
+7/18/19,Borderview,North,33,29,JHM
+7/18/19,Borderview,North,34,32,JHM
+7/18/19,Borderview,North,35,44,JHM
+7/18/19,Borderview,North,36,33,JHM
+7/18/19,Borderview,North,37,29,JHM
+7/18/19,Borderview,North,38,36,JHM
+7/18/19,Borderview,North,39,32,JHM
+7/18/19,Borderview,North,40,23,JHM
+7/18/19,Borderview,North,41,31,JHM
+7/18/19,Borderview,North,42,26,JHM
+7/18/19,Borderview,North,43,38,JHM
+7/18/19,Borderview,North,44,31,JHM
+7/18/19,Borderview,North,45,21,JHM
+7/18/19,Borderview,North,46,29,JHM
+7/18/19,Borderview,North,47,22,JHM
+7/18/19,Borderview,North,48,32,JHM
+7/18/19,Borderview,North,49,27,JHM
+7/18/19,Borderview,North,50,26,JHM
+7/18/19,Borderview,North,51,40,JHM
+7/18/19,Borderview,North,52,38,JHM
+7/18/19,Borderview,North,53,20,JHM
+7/18/19,Borderview,North,54,46,JHM
+7/18/19,Borderview,North,55,30,JHM
+7/18/19,Borderview,North,56,48,JHM
+7/18/19,Borderview,North,57,37,JHM
+7/18/19,Borderview,North,58,29,JHM
+7/18/19,Borderview,North,59,25,JHM
+7/18/19,Borderview,North,60,43,JHM
+7/18/19,Borderview,North,61,41,JHM
+7/18/19,Borderview,North,62,52,JHM
+7/18/19,Borderview,North,63,43,JHM
+7/18/19,Borderview,North,64,17,JHM
+7/18/19,Borderview,North,65,32,JHM
+7/18/19,Borderview,North,66,43,JHM
+7/18/19,Borderview,North,67,43,JHM
+7/18/19,Borderview,North,68,20,JHM
+7/18/19,Borderview,North,69,29,JHM
+7/18/19,Borderview,North,70,19,JHM
+7/18/19,Borderview,North,71,34,JHM
+7/18/19,Borderview,North,72,39,JHM
+7/18/19,Borderview,North,73,47,JHM
+7/18/19,Borderview,North,74,33,JHM
+7/18/19,Borderview,North,75,35,JHM
+7/18/19,Borderview,North,76,41,JHM
+7/18/19,Borderview,North,77,43,JHM
+7/18/19,Borderview,North,78,35,JHM
+7/18/19,Borderview,North,79,53,JHM
+7/18/19,Borderview,North,80,42,JHM
+7/18/19,Borderview,North,81,39,JHM
+7/18/19,Borderview,North,82,38,JHM
+7/18/19,Borderview,North,83,29,JHM
+7/18/19,Borderview,North,84,33,JHM
+7/18/19,Borderview,North,85,48,JHM
+7/18/19,Borderview,North,86,41,JHM
+7/18/19,Borderview,North,87,28,JHM
+7/18/19,Borderview,North,88,33,JHM
+7/18/19,Borderview,North,89,37,JHM
+7/18/19,Borderview,North,90,38,JHM
+7/18/19,Borderview,North,91,43,JHM
+7/18/19,Borderview,North,92,31,JHM
+7/18/19,Borderview,North,93,24,JHM
+7/18/19,Borderview,North,94,30,JHM
+7/18/19,Borderview,North,95,47,JHM
+7/18/19,Borderview,North,96,40,JHM
+7/18/19,Borderview,North,97,37,JHM
+7/18/19,Borderview,North,98,54,JHM
+7/18/19,Borderview,North,99,48,JHM
+7/18/19,Borderview,North,100,35,JHM
+7/18/19,Borderview,Faith,1,34,JHM
+7/18/19,Borderview,Faith,2,28,JHM
+7/18/19,Borderview,Faith,3,31,JHM
+7/18/19,Borderview,Faith,4,42,JHM
+7/18/19,Borderview,Faith,5,22,JHM
+7/18/19,Borderview,Faith,6,30,JHM
+7/18/19,Borderview,Faith,7,28,JHM
+7/18/19,Borderview,Faith,8,39,JHM
+7/18/19,Borderview,Faith,9,41,JHM
+7/18/19,Borderview,Faith,10,30,JHM
+7/18/19,Borderview,Faith,11,35,JHM
+7/18/19,Borderview,Faith,12,32,JHM
+7/18/19,Borderview,Faith,13,24,JHM
+7/18/19,Borderview,Faith,14,41,JHM
+7/18/19,Borderview,Faith,15,39,JHM
+7/18/19,Borderview,Faith,16,30,JHM
+7/18/19,Borderview,Faith,17,36,JHM
+7/18/19,Borderview,Faith,18,39,JHM
+7/18/19,Borderview,Faith,19,19,JHM
+7/18/19,Borderview,Faith,20,31,JHM
+7/18/19,Borderview,Faith,21,44,JHM
+7/18/19,Borderview,Faith,22,23,JHM
+7/18/19,Borderview,Faith,23,32,JHM
+7/18/19,Borderview,Faith,24,29,JHM
+7/18/19,Borderview,Faith,25,40,JHM
+7/18/19,Borderview,Faith,26,36,JHM
+7/18/19,Borderview,Faith,27,47,JHM
+7/18/19,Borderview,Faith,28,38,JHM
+7/18/19,Borderview,Faith,29,40,JHM
+7/18/19,Borderview,Faith,30,32,JHM
+7/18/19,Borderview,Faith,31,37,JHM
+7/18/19,Borderview,Faith,32,41,JHM
+7/18/19,Borderview,Faith,33,22,JHM
+7/18/19,Borderview,Faith,34,39,JHM
+7/18/19,Borderview,Faith,35,51,JHM
+7/18/19,Borderview,Faith,36,35,JHM
+7/18/19,Borderview,Faith,37,14,JHM
+7/18/19,Borderview,Faith,38,34,JHM
+7/18/19,Borderview,Faith,39,33,JHM
+7/18/19,Borderview,Faith,40,24,JHM
+7/18/19,Borderview,Faith,41,24,JHM
+7/18/19,Borderview,Faith,42,12,JHM
+7/18/19,Borderview,Faith,43,28,JHM
+7/18/19,Borderview,Faith,44,33,JHM
+7/18/19,Borderview,Faith,45,45,JHM
+7/18/19,Borderview,Faith,46,28,JHM
+7/18/19,Borderview,Faith,47,21,JHM
+7/18/19,Borderview,Faith,48,25,JHM
+7/18/19,Borderview,Faith,49,39,JHM
+7/18/19,Borderview,Faith,50,28,JHM
+7/18/19,Borderview,Faith,51,24,JHM
+7/18/19,Borderview,Faith,52,22,JHM
+7/18/19,Borderview,Faith,53,30,JHM
+7/18/19,Borderview,Faith,54,38,JHM
+7/18/19,Borderview,Faith,55,51,JHM
+7/18/19,Borderview,Faith,56,48,JHM
+7/18/19,Borderview,Faith,57,35,JHM
+7/18/19,Borderview,Faith,58,30,JHM
+7/18/19,Borderview,Faith,59,54,JHM
+7/18/19,Borderview,Faith,60,32,JHM
+7/18/19,Borderview,Faith,61,11,JHM
+7/18/19,Borderview,Faith,62,17,JHM
+7/18/19,Borderview,Faith,63,19,JHM
+7/18/19,Borderview,Faith,64,22,JHM
+7/18/19,Borderview,Faith,65,34,JHM
+7/18/19,Borderview,Faith,66,33,JHM
+7/18/19,Borderview,Faith,67,19,JHM
+7/18/19,Borderview,Faith,68,14,JHM
+7/18/19,Borderview,Faith,69,25,JHM
+7/18/19,Borderview,Faith,70,28,JHM
+7/18/19,Borderview,Faith,71,31,JHM
+7/18/19,Borderview,Faith,72,24,JHM
+7/18/19,Borderview,Faith,73,37,JHM
+7/18/19,Borderview,Faith,74,9,JHM
+7/18/19,Borderview,Faith,75,11,JHM
+7/18/19,Borderview,Faith,76,21,JHM
+7/18/19,Borderview,Faith,77,47,JHM
+7/18/19,Borderview,Faith,78,12,JHM
+7/18/19,Borderview,Faith,79,46,JHM
+7/18/19,Borderview,Faith,80,49,JHM
+7/18/19,Borderview,Faith,81,34,JHM
+7/18/19,Borderview,Faith,82,34,JHM
+7/18/19,Borderview,Faith,83,41,JHM
+7/18/19,Borderview,Faith,84,37,JHM
+7/18/19,Borderview,Faith,85,38,JHM
+7/18/19,Borderview,Faith,86,54,JHM
+7/18/19,Borderview,Faith,87,61,JHM
+7/18/19,Borderview,Faith,88,52,JHM
+7/18/19,Borderview,Faith,89,38,JHM
+7/18/19,Borderview,Faith,90,37,JHM
+7/18/19,Borderview,Faith,91,28,JHM
+7/18/19,Borderview,Faith,92,33,JHM
+7/18/19,Borderview,Faith,93,55,JHM
+7/18/19,Borderview,Faith,94,34,JHM
+7/18/19,Borderview,Faith,95,32,JHM
+7/18/19,Borderview,Faith,96,43,JHM
+7/18/19,Borderview,Faith,97,23,JHM
+7/18/19,Borderview,Faith,98,22,JHM
+7/18/19,Borderview,Faith,99,11,JHM
+7/18/19,Borderview,Faith,100,18,JHM
+8/9/19,Borderview,Central B,1,20,TJS
+8/9/19,Borderview,Central B,2,27,TJS
+8/9/19,Borderview,Central B,3,34,TJS
+8/9/19,Borderview,Central B,4,26,TJS
+8/9/19,Borderview,Central B,5,23,TJS
+8/9/19,Borderview,Central B,6,17,TJS
+8/9/19,Borderview,Central B,7,18,TJS
+8/9/19,Borderview,Central B,8,25,TJS
+8/9/19,Borderview,Central B,9,21,TJS
+8/9/19,Borderview,Central B,10,27,TJS
+8/9/19,Borderview,Central B,11,33,TJS
+8/9/19,Borderview,Central B,12,31,TJS
+8/9/19,Borderview,Central B,13,18,TJS
+8/9/19,Borderview,Central B,14,15,TJS
+8/9/19,Borderview,Central B,15,9,TJS
+8/9/19,Borderview,Central B,16,18,TJS
+8/9/19,Borderview,Central B,17,28,TJS
+8/9/19,Borderview,Central B,18,24,TJS
+8/9/19,Borderview,Central B,19,27,TJS
+8/9/19,Borderview,Central B,20,34,TJS
+8/9/19,Borderview,Central B,21,25,TJS
+8/9/19,Borderview,Central B,22,17,TJS
+8/9/19,Borderview,Central B,23,21,TJS
+8/9/19,Borderview,Central B,24,29,TJS
+8/9/19,Borderview,Central B,25,23,TJS
+8/9/19,Borderview,Central B,26,32,TJS
+8/9/19,Borderview,Central B,27,34,TJS
+8/9/19,Borderview,Central B,28,14,TJS
+8/9/19,Borderview,Central B,29,21,TJS
+8/9/19,Borderview,Central B,30,15,TJS
+8/9/19,Borderview,Central B,31,12,TJS
+8/9/19,Borderview,Central B,32,19,TJS
+8/9/19,Borderview,Central B,33,17,TJS
+8/9/19,Borderview,Central B,34,25,TJS
+8/9/19,Borderview,Central B,35,18,TJS
+8/9/19,Borderview,Central B,36,17,TJS
+8/9/19,Borderview,Central B,37,27,TJS
+8/9/19,Borderview,Central B,38,15,TJS
+8/9/19,Borderview,Central B,39,22,TJS
+8/9/19,Borderview,Central B,40,22,TJS
+8/9/19,Borderview,Central B,41,21,TJS
+8/9/19,Borderview,Central B,42,26,TJS
+8/9/19,Borderview,Central B,43,28,TJS
+8/9/19,Borderview,Central B,44,24,TJS
+8/9/19,Borderview,Central B,45,17,TJS
+8/9/19,Borderview,Central B,46,27,TJS
+8/9/19,Borderview,Central B,47,31,TJS
+8/9/19,Borderview,Central B,48,25,TJS
+8/9/19,Borderview,Central B,49,16,TJS
+8/9/19,Borderview,Central B,50,10,TJS
+8/9/19,Borderview,Central B,51,15,TJS
+8/9/19,Borderview,Central B,52,17,TJS
+8/9/19,Borderview,Central B,53,20,TJS
+8/9/19,Borderview,Central B,54,27,TJS
+8/9/19,Borderview,Central B,55,28,TJS
+8/9/19,Borderview,Central B,56,20,TJS
+8/9/19,Borderview,Central B,57,29,TJS
+8/9/19,Borderview,Central B,58,21,TJS
+8/9/19,Borderview,Central B,59,19,TJS
+8/9/19,Borderview,Central B,60,30,TJS
+8/9/19,Borderview,Central B,61,29,TJS
+8/9/19,Borderview,Central B,62,21,TJS
+8/9/19,Borderview,Central B,63,38,TJS
+8/9/19,Borderview,Central B,64,23,TJS
+8/9/19,Borderview,Central B,65,20,TJS
+8/9/19,Borderview,Central B,66,25,TJS
+8/9/19,Borderview,Central B,67,27,TJS
+8/9/19,Borderview,Central B,68,18,TJS
+8/9/19,Borderview,Central B,69,19,TJS
+8/9/19,Borderview,Central B,70,27,TJS
+8/9/19,Borderview,Central B,71,28,TJS
+8/9/19,Borderview,Central B,72,22,TJS
+8/9/19,Borderview,Central B,73,27,TJS
+8/9/19,Borderview,Central B,74,35,TJS
+8/9/19,Borderview,Central B,75,36,TJS
+8/9/19,Borderview,Central B,76,62,TJS
+8/9/19,Borderview,Central B,77,48,TJS
+8/9/19,Borderview,Central B,78,27,TJS
+8/9/19,Borderview,Central B,79,41,TJS
+8/9/19,Borderview,Central B,80,26,TJS
+8/9/19,Borderview,Central B,81,37,TJS
+8/9/19,Borderview,Central B,82,25,TJS
+8/9/19,Borderview,Central B,83,25,TJS
+8/9/19,Borderview,Central B,84,28,TJS
+8/9/19,Borderview,Central B,85,27,TJS
+8/9/19,Borderview,Central B,86,66,TJS
+8/9/19,Borderview,Central B,87,33,TJS
+8/9/19,Borderview,Central B,88,12,TJS
+8/9/19,Borderview,Central B,89,17,TJS
+8/9/19,Borderview,Central B,90,21,TJS
+8/9/19,Borderview,Central B,91,19,TJS
+8/9/19,Borderview,Central B,92,28,TJS
+8/9/19,Borderview,Central B,93,28,TJS
+8/9/19,Borderview,Central B,94,19,TJS
+8/9/19,Borderview,Central B,95,34,TJS
+8/9/19,Borderview,Central B,96,42,TJS
+8/9/19,Borderview,Central B,97,22,TJS
+8/9/19,Borderview,Central B,98,24,TJS
+8/9/19,Borderview,Central B,99,19,TJS
+8/9/19,Borderview,Central B,100,48,TJS
+9/1/19,Borderview,Shore,1,18,TJS
+9/1/19,Borderview,Shore,2,12,TJS
+9/1/19,Borderview,Shore,3,18,TJS
+9/1/19,Borderview,Shore,4,22,TJS
+9/1/19,Borderview,Shore,5,16,TJS
+9/1/19,Borderview,Shore,6,18,TJS
+9/1/19,Borderview,Shore,7,17,TJS
+9/1/19,Borderview,Shore,8,11,TJS
+9/1/19,Borderview,Shore,9,10,TJS
+9/1/19,Borderview,Shore,10,11,TJS
+9/1/19,Borderview,Shore,11,21,TJS
+9/1/19,Borderview,Shore,12,21,TJS
+9/1/19,Borderview,Shore,13,23,TJS
+9/1/19,Borderview,Shore,14,16,TJS
+9/1/19,Borderview,Shore,15,39,TJS
+9/1/19,Borderview,Shore,16,28,TJS
+9/1/19,Borderview,Shore,17,26,TJS
+9/1/19,Borderview,Shore,18,44,TJS
+9/1/19,Borderview,Shore,19,49,TJS
+9/1/19,Borderview,Shore,20,32,TJS
+9/1/19,Borderview,Shore,21,9,TJS
+9/1/19,Borderview,Shore,22,18,TJS
+9/1/19,Borderview,Shore,23,15,TJS
+9/1/19,Borderview,Shore,24,18,TJS
+9/1/19,Borderview,Shore,25,6,TJS
+9/1/19,Borderview,Shore,26,16,TJS
+9/1/19,Borderview,Shore,27,12,TJS
+9/1/19,Borderview,Shore,28,12,TJS
+9/1/19,Borderview,Shore,29,15,TJS
+9/1/19,Borderview,Shore,30,16,TJS
+9/1/19,Borderview,Shore,31,24,TJS
+9/1/19,Borderview,Shore,32,13,TJS
+9/1/19,Borderview,Shore,33,32,TJS
+9/1/19,Borderview,Shore,34,21,TJS
+9/1/19,Borderview,Shore,35,15,TJS
+9/1/19,Borderview,Shore,36,32,TJS
+9/1/19,Borderview,Shore,37,15,TJS
+9/1/19,Borderview,Shore,38,23,TJS
+9/1/19,Borderview,Shore,39,15,TJS
+9/1/19,Borderview,Shore,40,14,TJS
+9/1/19,Borderview,Shore,41,13,TJS
+9/1/19,Borderview,Shore,42,16,TJS
+9/1/19,Borderview,Shore,43,17,TJS
+9/1/19,Borderview,Shore,44,11,TJS
+9/1/19,Borderview,Shore,45,20,TJS
+9/1/19,Borderview,Shore,46,9,TJS
+9/1/19,Borderview,Shore,47,25,TJS
+9/1/19,Borderview,Shore,48,30,TJS
+9/1/19,Borderview,Shore,49,35,TJS
+9/1/19,Borderview,Shore,50,28,TJS
+9/1/19,Borderview,Shore,51,34,TJS
+9/1/19,Borderview,Shore,52,6,TJS
+9/1/19,Borderview,Shore,53,10,TJS
+9/1/19,Borderview,Shore,54,7,TJS
+9/1/19,Borderview,Shore,55,6,TJS
+9/1/19,Borderview,Shore,56,10,TJS
+9/1/19,Borderview,Shore,57,21,TJS
+9/1/19,Borderview,Shore,58,32,TJS
+9/1/19,Borderview,Shore,59,39,TJS
+9/1/19,Borderview,Shore,60,30,TJS
+9/1/19,Borderview,Shore,61,17,TJS
+9/1/19,Borderview,Shore,62,12,TJS
+9/1/19,Borderview,Shore,63,19,TJS
+9/1/19,Borderview,Shore,64,21,TJS
+9/1/19,Borderview,Shore,65,10,TJS
+9/1/19,Borderview,Shore,66,10,TJS
+9/1/19,Borderview,Shore,67,8,TJS
+9/1/19,Borderview,Shore,68,12,TJS
+9/1/19,Borderview,Shore,69,11,TJS
+9/1/19,Borderview,Shore,70,13,TJS
+9/1/19,Borderview,Shore,71,15,TJS
+9/1/19,Borderview,Shore,72,11,TJS
+9/1/19,Borderview,Shore,73,21,TJS
+9/1/19,Borderview,Shore,74,13,TJS
+9/1/19,Borderview,Shore,75,20,TJS
+9/1/19,Borderview,Shore,76,10,TJS
+9/1/19,Borderview,Shore,77,13,TJS
+9/1/19,Borderview,Shore,78,18,TJS
+9/1/19,Borderview,Shore,79,13,TJS
+9/1/19,Borderview,Shore,80,21,TJS
+9/1/19,Borderview,Shore,81,24,TJS
+9/1/19,Borderview,Shore,82,14,TJS
+9/1/19,Borderview,Shore,83,16,TJS
+9/1/19,Borderview,Shore,84,13,TJS
+9/1/19,Borderview,Shore,85,17,TJS
+9/1/19,Borderview,Shore,86,19,TJS
+9/1/19,Borderview,Shore,87,18,TJS
+9/1/19,Borderview,Shore,88,13,TJS
+9/1/19,Borderview,Shore,89,25,TJS
+9/1/19,Borderview,Shore,90,20,TJS
+9/1/19,Borderview,Shore,91,18,TJS
+9/1/19,Borderview,Shore,92,10,TJS
+9/1/19,Borderview,Shore,93,11,TJS
+9/1/19,Borderview,Shore,94,17,TJS
+9/1/19,Borderview,Shore,95,12,TJS
+9/1/19,Borderview,Shore,96,7,TJS
+9/1/19,Borderview,Shore,97,16,TJS
+9/1/19,Borderview,Shore,98,17,TJS
+9/1/19,Borderview,Shore,99,10,TJS
+9/1/19,Borderview,Shore,100,13,TJS
+8/16/19,Borderview,South,1,35,TJS
+8/16/19,Borderview,South,2,24,TJS
+8/16/19,Borderview,South,3,19,TJS
+8/16/19,Borderview,South,4,26,TJS
+8/16/19,Borderview,South,5,23,TJS
+8/16/19,Borderview,South,6,18,TJS
+8/16/19,Borderview,South,7,17,TJS
+8/16/19,Borderview,South,8,29,TJS
+8/16/19,Borderview,South,9,14,TJS
+8/16/19,Borderview,South,10,17,TJS
+8/16/19,Borderview,South,11,18,TJS
+8/16/19,Borderview,South,12,28,TJS
+8/16/19,Borderview,South,13,9,TJS
+8/16/19,Borderview,South,14,13,TJS
+8/16/19,Borderview,South,15,35,TJS
+8/16/19,Borderview,South,16,26,TJS
+8/16/19,Borderview,South,17,24,TJS
+8/16/19,Borderview,South,18,42,TJS
+8/16/19,Borderview,South,19,23,TJS
+8/16/19,Borderview,South,20,15,TJS
+8/16/19,Borderview,South,21,18,TJS
+8/16/19,Borderview,South,22,13,TJS
+8/16/19,Borderview,South,23,18,TJS
+8/16/19,Borderview,South,24,20,TJS
+8/16/19,Borderview,South,25,23,TJS
+8/16/19,Borderview,South,26,21,TJS
+8/16/19,Borderview,South,27,20,TJS
+8/16/19,Borderview,South,28,31,TJS
+8/16/19,Borderview,South,29,25,TJS
+8/16/19,Borderview,South,30,23,TJS
+8/16/19,Borderview,South,31,22,TJS
+8/16/19,Borderview,South,32,14,TJS
+8/16/19,Borderview,South,33,4,TJS
+8/16/19,Borderview,South,34,8,TJS
+8/16/19,Borderview,South,35,15,TJS
+8/16/19,Borderview,South,36,8,TJS
+8/16/19,Borderview,South,37,12,TJS
+8/16/19,Borderview,South,38,19,TJS
+8/16/19,Borderview,South,39,21,TJS
+8/16/19,Borderview,South,40,24,TJS
+8/16/19,Borderview,South,41,29,TJS
+8/16/19,Borderview,South,42,14,TJS
+8/16/19,Borderview,South,43,24,TJS
+8/16/19,Borderview,South,44,19,TJS
+8/16/19,Borderview,South,45,34,TJS
+8/16/19,Borderview,South,46,11,TJS
+8/16/19,Borderview,South,47,8,TJS
+8/16/19,Borderview,South,48,8,TJS
+8/16/19,Borderview,South,49,16,TJS
+8/16/19,Borderview,South,50,28,TJS
+8/16/19,Borderview,South,51,21,TJS
+8/16/19,Borderview,South,52,24,TJS
+8/16/19,Borderview,South,53,40,TJS
+8/16/19,Borderview,South,54,18,TJS
+8/16/19,Borderview,South,55,15,TJS
+8/16/19,Borderview,South,56,26,TJS
+8/16/19,Borderview,South,57,23,TJS
+8/16/19,Borderview,South,58,26,TJS
+8/16/19,Borderview,South,59,25,TJS
+8/16/19,Borderview,South,60,18,TJS
+8/16/19,Borderview,South,61,21,TJS
+8/16/19,Borderview,South,62,17,TJS
+8/16/19,Borderview,South,63,15,TJS
+8/16/19,Borderview,South,64,14,TJS
+8/16/19,Borderview,South,65,23,TJS
+8/16/19,Borderview,South,66,27,TJS
+8/16/19,Borderview,South,67,9,TJS
+8/16/19,Borderview,South,68,12,TJS
+8/16/19,Borderview,South,69,25,TJS
+8/16/19,Borderview,South,70,18,TJS
+8/16/19,Borderview,South,71,19,TJS
+8/16/19,Borderview,South,72,16,TJS
+8/16/19,Borderview,South,73,18,TJS
+8/16/19,Borderview,South,74,15,TJS
+8/16/19,Borderview,South,75,12,TJS
+8/16/19,Borderview,South,76,22,TJS
+8/16/19,Borderview,South,77,19,TJS
+8/16/19,Borderview,South,78,11,TJS
+8/16/19,Borderview,South,79,12,TJS
+8/16/19,Borderview,South,80,20,TJS
+8/16/19,Borderview,South,81,24,TJS
+8/16/19,Borderview,South,82,25,TJS
+8/16/19,Borderview,South,83,35,TJS
+8/16/19,Borderview,South,84,46,TJS
+8/16/19,Borderview,South,85,39,TJS
+8/16/19,Borderview,South,86,33,TJS
+8/16/19,Borderview,South,87,27,TJS
+8/16/19,Borderview,South,88,16,TJS
+8/16/19,Borderview,South,89,25,TJS
+8/16/19,Borderview,South,90,30,TJS
+8/16/19,Borderview,South,91,10,TJS
+8/16/19,Borderview,South,92,17,TJS
+8/16/19,Borderview,South,93,13,TJS
+8/16/19,Borderview,South,94,21,TJS
+8/16/19,Borderview,South,95,19,TJS
+8/16/19,Borderview,South,96,22,TJS
+8/16/19,Borderview,South,97,20,TJS
+8/16/19,Borderview,South,98,27,TJS
+8/16/19,Borderview,South,99,21,TJS
+8/16/19,Borderview,South,100,18,TJS
