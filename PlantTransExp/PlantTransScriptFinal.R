@@ -172,11 +172,9 @@ virus <- glmer(data=ModDatAcute, BINYprefilter ~ spp + (1|ID), family = binomial
 flower <- glmer(data=ModDatAcute, BINYprefilter ~ target_name + (1|ID), family = binomial(link="logit"))
 
 
-<<<<<<< HEAD
+
 chisq.test(table(ModDatAcute$BINYprefilter, ModDatAcute$target_name))
 
-=======
->>>>>>> 5ee3c5086e4d4a5b59c0d6698871520473b1e613
 
 # full model test
 anova(null, full)
@@ -334,7 +332,7 @@ anova(full3, null3)
 anova(main3, spp3)
 anova(main3, exp3)
 
-<<<<<<< HEAD
+
 Anova(main3)
 
 summary(full3)
@@ -346,14 +344,10 @@ summary(full3)
 ht3 = glht(full3, mcp(spp="Tukey"))
 summary(ht3)
 Anova(main3)
-=======
->>>>>>> 5ee3c5086e4d4a5b59c0d6698871520473b1e613
 
 
 
 
-
-<<<<<<< HEAD
 # ++++++++++++++++++++++++++++ prev +++++++++++++++++++++++++++++
 # visitation rates and duration of visits on viruses loads and prevalence
 full6 <- glmer(data=ModDat, BINYprefilter~visits*spp + (1|labID), family = binomial(link = "logit"))
@@ -381,8 +375,6 @@ summary(full7)
 
 
 
-=======
->>>>>>> 5ee3c5086e4d4a5b59c0d6698871520473b1e613
 
 
 # visitation rates and duration of visits on viruses loads and prevalence
@@ -399,7 +391,6 @@ anova(full4, main4)
 anova(main4, vis4)
 anova(main4, time4)
 
-<<<<<<< HEAD
 summary(full4)
 
 
@@ -436,8 +427,6 @@ lines(BINYprefilter~foragetime, newdat, col="green4", lwd=2)
 #Loadno0$visitsFactor <- as.factor(Loadno0$visits)
 #Loadno0$foragetimeFactor <- as.factor(Loadno0$foragetime)
 
-=======
->>>>>>> 5ee3c5086e4d4a5b59c0d6698871520473b1e613
 
 full5 <- lmer(data=Loadno0, loggenomeCopy~ visits * foragetime + (1|labID), REML = FALSE)
 main5 <- lmer(data=Loadno0, loggenomeCopy~ visits + foragetime + (1|labID), REML = FALSE)
@@ -914,8 +903,6 @@ ggplot(VD, aes(x = PlantSpp, y = log10(Forage+1), color = ExpComp)) +
 
 
 
-<<<<<<< HEAD
+
 plot(y=Loadno0$loggenomeCopy, x=Loadno0$visits)
 
-=======
->>>>>>> 5ee3c5086e4d4a5b59c0d6698871520473b1e613
